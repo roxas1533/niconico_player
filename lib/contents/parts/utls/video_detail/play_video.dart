@@ -1,5 +1,6 @@
 import 'dart:convert';
 
+import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 import 'package:flutter_html/shims/dart_ui_real.dart';
@@ -158,7 +159,7 @@ class PlayVideoState extends State<PlayVideo> {
               VlcPlayer(
                 controller: _videoViewController,
                 aspectRatio: 16 / 9,
-                placeholder: const Center(child: CircularProgressIndicator()),
+                placeholder: const Center(child: CupertinoActivityIndicator()),
               ),
               Consumer(builder: ((context, ref, child) {
                 // ignore: invalid_use_of_protected_member

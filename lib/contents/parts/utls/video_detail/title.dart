@@ -23,13 +23,13 @@ class VideoDetailTitle extends StatelessWidget {
         child: Container(
           margin: const EdgeInsets.all(8.0),
           width: screenSize.width,
-          height: screenSize.height * 0.10,
+          height: screenSize.height * 0.106875,
           child: Row(
             children: [
               Image.network(
                 video.thumbnailUrl,
                 alignment: Alignment.center,
-                width: screenSize.height * 0.1777,
+                width: screenSize.height * 0.19,
                 fit: BoxFit.cover,
               ),
               Expanded(
@@ -43,7 +43,7 @@ class VideoDetailTitle extends StatelessWidget {
                               padding: const EdgeInsets.only(top: 3, right: 3),
                               child: AutoSizeText(
                                 video.title,
-                                style: const TextStyle(fontSize: 13.0),
+                                style: const TextStyle(fontSize: 14.0),
                                 minFontSize: 9,
                                 maxLines: 3,
                               ),

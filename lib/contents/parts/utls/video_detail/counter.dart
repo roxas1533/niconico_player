@@ -6,7 +6,7 @@ class VideoDetailCounter extends StatelessWidget {
   final VideoDetailInfo video;
 
   Expanded counterItem(String text, String detail) {
-    const style = TextStyle(fontSize: 16.0, fontWeight: FontWeight.bold);
+    const style = TextStyle(fontSize: 15.3, fontWeight: FontWeight.bold);
 
     return Expanded(
         child: Container(
