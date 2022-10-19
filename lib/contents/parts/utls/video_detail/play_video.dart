@@ -156,11 +156,19 @@ class PlayVideoState extends State<PlayVideo> {
               //   height: screenSize.width * 9 / 16,
               //   color: Colors.red,
               // ),
-              VlcPlayer(
-                controller: _videoViewController,
-                aspectRatio: 16 / 9,
-                placeholder: const Center(child: CupertinoActivityIndicator()),
-              ),
+              SizedBox(
+                  width: screenSize.width,
+                  height: screenSize.height,
+                  child: RotatedBox(
+                    quarterTurns: 1,
+                    child: VlcPlayer(
+                      controller: _videoViewController,
+                      aspectRatio: 9 / 16,
+                      placeholder:
+                          const Center(child: CupertinoActivityIndicator()),
+                    ),
+                  )),
+
               Consumer(builder: ((context, ref, child) {
                 // ignore: invalid_use_of_protected_member
                 // if (!hasListener) {
