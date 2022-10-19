@@ -1,3 +1,4 @@
+import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:html/parser.dart' show parse;
@@ -53,7 +54,8 @@ class RankingState extends ConsumerState<Ranking>
                       for (final d in snapshot.data!)
                         Container(
                             alignment: Alignment.center,
-                            height: screenSize.height * 0.085,
+                            // height: screenSize.height * 0.085,
+                            padding: const EdgeInsets.symmetric(vertical: 15),
                             child:
                                 Text(d, style: const TextStyle(fontSize: 14)))
                     ],
@@ -74,7 +76,7 @@ class RankingState extends ConsumerState<Ranking>
             } else {
               return Container(
                   alignment: Alignment.center,
-                  child: const CircularProgressIndicator(
+                  child: const CupertinoActivityIndicator(
                     color: Colors.grey,
                   ));
             }
