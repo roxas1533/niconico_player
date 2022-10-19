@@ -1,0 +1,31 @@
+import 'package:flutter/material.dart';
+
+class IconTextButton extends StatelessWidget {
+  const IconTextButton({
+    Key? key,
+    this.onPressed,
+    required this.icon,
+    required this.text,
+    this.margin = 8,
+  }) : super(key: key);
+
+  final VoidCallback? onPressed;
+  final Icon icon;
+  final Text text;
+  final double margin;
+
+  @override
+  Widget build(BuildContext context) {
+    return TextButton(
+      onPressed: onPressed,
+      child: Row(
+        mainAxisSize: MainAxisSize.min,
+        children: [
+          icon,
+          SizedBox(width: margin),
+          Flexible(child: text),
+        ],
+      ),
+    );
+  }
+}
