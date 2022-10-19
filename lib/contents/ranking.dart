@@ -53,7 +53,7 @@ class RankingState extends ConsumerState<Ranking>
                       for (final d in snapshot.data!)
                         Container(
                             alignment: Alignment.center,
-                            height: screenSize.height * 0.055,
+                            height: screenSize.height * 0.085,
                             child:
                                 Text(d, style: const TextStyle(fontSize: 14)))
                     ],
