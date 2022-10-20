@@ -1,18 +1,29 @@
+import 'package:audio_service/audio_service.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:intl/date_symbol_data_local.dart';
 
+import 'audio_handler.dart';
+import "constant.dart";
 import 'content_wrapper.dart';
 import 'footer.dart';
 import 'header.dart';
 
-void main() {
+Future<void> main() async {
   WidgetsFlutterBinding.ensureInitialized();
   //向き指定
   SystemChrome.setPreferredOrientations([
     DeviceOrientation.portraitUp, //縦固定
   ]);
+  audioHandler = await AudioService.init(
+    builder: () => AudioPlayerHandler(),
+    config: const AudioServiceConfig(
+      androidNotificationChannelId: 'com.mycompany.myapp.channel.audio',
+      androidNotificationChannelName: 'Audio playback',
+      androidNotificationOngoing: true,
+    ),
+  );
   runApp(const ProviderScope(child: MyApp()));
 }
 

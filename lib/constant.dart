@@ -1,8 +1,10 @@
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import "package:intl/intl.dart";
 
-// import 'package:flutter/foundation.dart';
+import 'audio_handler.dart';
 
+// import 'package:flutter/foundation.dart';
+late AudioPlayerHandler audioHandler;
 final naviSelectIndex = StateProvider((ref) => 0);
 // final rankingParam = StateProvider((ref) => RrankingParam(0, "すべて"));
 final List<String> itemLabel = ["ランキング", "検索", "視聴履歴", "ニコレポ", "その他"];

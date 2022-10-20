@@ -1,15 +1,17 @@
 import 'dart:convert';
 
+import 'package:audio_service/audio_service.dart';
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 import 'package:flutter_html/shims/dart_ui_real.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
-import 'package:flutter_vlc_player/flutter_vlc_player.dart';
 import 'package:http/http.dart' as http;
 import 'package:niconico/constant.dart';
+import 'package:niconico/contents/parts/utls/common.dart';
 import 'package:niconico/contents/parts/utls/space_box.dart';
 import 'package:niconico/contents/parts/utls/video_detail/play_video_paramater.dart';
+import 'package:rxdart/rxdart.dart';
 
 class PlayVideo extends StatefulWidget {
   const PlayVideo({Key? key, required this.video}) : super(key: key);
@@ -23,39 +25,46 @@ class PlayVideoState extends State<PlayVideo> {
   final playVideoParam = PlayVideoParam();
   bool hasListener = false;
   late Future _futureVideoViewController;
-  VlcPlayerController? _videoViewController;
+  // VlcPlayerController? _videoViewController;
   bool sliderChanging = false;
   bool disposeed = false;
   int duration = 0;
-  Future<VlcPlayerController> _getVideoController() async {
+  Future<String> _getVideoController() async {
     final res = await http.post(
         Uri.parse(widget.video.session["urls"][0]["url"] + "?_format=json"),
         body: json.encode(makeSessionPayloads(widget.video.session)),
         headers: {"Content-Type": "application/json"});
     Map<String, dynamic> videoData = json.decode(res.body);
+    await audioHandler.playerInit(MediaItem(
+      id: videoData["data"]["session"]["content_uri"],
+      title: widget.video.title,
+      artist: widget.video.userName,
+      duration: Duration(seconds: widget.video.lengthSeconds),
+      artUri: Uri.parse(widget.video.thumbnailUrl),
+    ));
 
-    _videoViewController = VlcPlayerController.network(
-      videoData["data"]["session"]["content_uri"],
-      autoPlay: true,
-      hwAcc: HwAcc.full,
-      options: VlcPlayerOptions(
-        video: VlcVideoOptions(["--no-drop-late-frames", "--no-skip-frames"]),
-      ),
-    );
-    _videoViewController!.addListener(controllerLisner);
-    return _videoViewController!;
-    // return "temp";
+    // _videoViewController = VlcPlayerController.network(
+    //   videoData["data"]["session"]["content_uri"],
+    //   autoPlay: true,
+    //   hwAcc: HwAcc.full,
+    //   options: VlcPlayerOptions(
+    //     video: VlcVideoOptions(["--no-drop-late-frames", "--no-skip-frames"]),
+    //   ),
+    // );
+    // _videoViewController!.addListener(controllerLisner);
+    // return _videoViewController!;
+    return "temp";
   }
 
-  void controllerLisner() {
-    if (_videoViewController!.value.isInitialized && !disposeed) {
-      if (!sliderChanging) {
-        _videoViewController!.getPosition().then((value) {
-          duration = value.inSeconds;
-        });
-      }
-    }
-  }
+  // void controllerLisner() {
+  //   if (_videoViewController!.value.isInitialized && !disposeed) {
+  //     if (!sliderChanging) {
+  //       _videoViewController!.getPosition().then((value) {
+  //         duration = value.inSeconds;
+  //       });
+  //     }
+  //   }
+  // }
 
   @override
   void initState() {
@@ -134,13 +143,14 @@ class PlayVideoState extends State<PlayVideo> {
   @override
   void dispose() async {
     disposeed = true;
+    audioHandler.stop();
     super.dispose();
-    if (_videoViewController != null) {
-      if (_videoViewController!.value.isInitialized) {
-        await _videoViewController!.stopRendererScanning();
-        await _videoViewController!.dispose();
-      }
-    }
+    // if (_videoViewController != null) {
+    //   if (_videoViewController!.value.isInitialized) {
+    //     await _videoViewController!.stopRendererScanning();
+    //     await _videoViewController!.dispose();
+    //   }
+    // }
   }
 
   @override
@@ -149,6 +159,7 @@ class PlayVideoState extends State<PlayVideo> {
     return FutureBuilder(
         future: _futureVideoViewController,
         builder: (context, snapshot) {
+          // if (snapshot.hasData) {
           if (snapshot.hasData) {
             return SizedBox(
               width: screenSize.width,
@@ -168,12 +179,13 @@ class PlayVideoState extends State<PlayVideo> {
                   SizedBox(
                     width: screenSize.height,
                     height: screenSize.width,
-                    child: VlcPlayer(
-                      controller: _videoViewController!,
-                      aspectRatio: 9 / 16,
-                      placeholder:
-                          const Center(child: CupertinoActivityIndicator()),
-                    ),
+                    child: audioHandler.getVlcPlayer(),
+                    // VlcPlayer(
+                    //   controller: _videoViewController!,
+                    //   aspectRatio: 9 / 16,
+                    //   placeholder:
+                    //       const Center(child: CupertinoActivityIndicator()),
+                    // ),
                   ),
                   SizedBox(
                     width: screenSize.height,
@@ -219,18 +231,28 @@ class PlayVideoState extends State<PlayVideo> {
                                                           .replay_10_sharp),
                                                     ),
                                                     const SpaceBox(width: 20),
-                                                    GestureDetector(
-                                                      onTap: () =>
-                                                          _playOrPauseVideo(
-                                                              _videoViewController!,
-                                                              ref),
-                                                      child: Icon(
-                                                        ref.watch(playVideoParam
-                                                                .isPlay)
-                                                            ? Icons.pause
-                                                            : Icons.play_arrow,
-                                                        size: 35,
-                                                      ),
+                                                    StreamBuilder<bool>(
+                                                      stream: audioHandler
+                                                          .playbackState
+                                                          .map((state) =>
+                                                              state.playing)
+                                                          .distinct(),
+                                                      builder:
+                                                          (context, snapshot) {
+                                                        final playing =
+                                                            snapshot.data ??
+                                                                false;
+                                                        return playing
+                                                            ? _button(
+                                                                Icons.pause,
+                                                                audioHandler
+                                                                    .pause)
+                                                            : _button(
+                                                                Icons
+                                                                    .play_arrow,
+                                                                audioHandler
+                                                                    .play);
+                                                      },
                                                     ),
                                                     const SpaceBox(width: 20),
                                                     GestureDetector(
@@ -242,80 +264,37 @@ class PlayVideoState extends State<PlayVideo> {
                                                 )),
                                             Expanded(
                                                 child: Container(
-                                                    margin: const EdgeInsets
-                                                            .symmetric(
-                                                        horizontal: 10),
-                                                    child: Row(children: [
-                                                      Text(
-                                                        VideoDetailInfo
-                                                            .secToTime(
-                                                                duration),
-                                                        style: const TextStyle(
-                                                          fontSize: 12,
-                                                        ),
-                                                      ),
-                                                      const SpaceBox(width: 5),
-                                                      SliderTheme(
-                                                          data: SliderThemeData(
-                                                              thumbColor:
-                                                                  Colors.blue,
-                                                              activeTrackColor:
-                                                                  Colors.blue,
-                                                              overlayShape:
-                                                                  SliderComponentShape
-                                                                      .noOverlay,
-                                                              thumbShape:
-                                                                  const RoundSliderThumbShape(
-                                                                      enabledThumbRadius:
-                                                                          5)),
-                                                          child: Expanded(
-                                                              child: Slider(
-                                                                  value: duration
-                                                                      .toDouble(),
-                                                                  min: 0,
-                                                                  max: widget
-                                                                      .video
-                                                                      .lengthSeconds
-                                                                      .toDouble(),
-                                                                  onChangeStart:
-                                                                      (value) =>
-                                                                          sliderChanging =
-                                                                              true,
-                                                                  onChanged: (double
-                                                                      newValue) {
-                                                                    setState(
-                                                                        () {
-                                                                      duration =
-                                                                          newValue
-                                                                              .toInt();
-                                                                    });
-                                                                  },
-                                                                  onChangeEnd:
-                                                                      (double
-                                                                          newValue) {
-                                                                    sliderChanging =
-                                                                        false;
-                                                                    _videoViewController!
-                                                                        .seekTo(
-                                                                            Duration(
-                                                                      seconds:
-                                                                          newValue
-                                                                              .toInt(),
-                                                                    ));
-                                                                  }))),
-                                                      const SpaceBox(
-                                                        width: 5,
-                                                      ),
-                                                      Text(
-                                                        VideoDetailInfo
-                                                            .secToTime(widget
-                                                                .video
-                                                                .lengthSeconds),
-                                                        style: const TextStyle(
-                                                          fontSize: 12,
-                                                        ),
-                                                      )
-                                                    ]))),
+                                              margin:
+                                                  const EdgeInsets.symmetric(
+                                                      horizontal: 10),
+                                              child: LayoutBuilder(
+                                                  builder: (ctx, constraints) {
+                                                return StreamBuilder<
+                                                    MediaState>(
+                                                  stream: _mediaStateStream,
+                                                  builder: (context, snapshot) {
+                                                    final mediaState =
+                                                        snapshot.data;
+                                                    return SeekBar(
+                                                      duration: mediaState
+                                                              ?.mediaItem
+                                                              ?.duration ??
+                                                          Duration.zero,
+                                                      position: mediaState
+                                                              ?.position ??
+                                                          Duration.zero,
+                                                      pWidth:
+                                                          constraints.maxWidth,
+                                                      onChangeEnd:
+                                                          (newPosition) {
+                                                        audioHandler
+                                                            .seek(newPosition);
+                                                      },
+                                                    );
+                                                  },
+                                                );
+                                              }),
+                                            )),
                                             GestureDetector(
                                               onTap: () {},
                                               child:
@@ -345,18 +324,18 @@ class PlayVideoState extends State<PlayVideo> {
     return tf ? "yes" : "no";
   }
 
-  void _playOrPauseVideo(VlcPlayerController controller, WidgetRef ref) async {
-    if (controller.value.isInitialized) {
-      if ((await controller.isPlaying())!) {
-        controller.pause();
-        debugPrint(controller.value.bufferPercent.toString());
-        ref.read(playVideoParam.isPlay.notifier).state = false;
-      } else {
-        controller.play();
-        ref.read(playVideoParam.isPlay.notifier).state = true;
-      }
-    }
-  }
+  GestureDetector _button(IconData iconData, VoidCallback onPressed,
+          {double size = 35}) =>
+      GestureDetector(
+        onTap: onPressed,
+        child: Icon(iconData, size: size),
+      );
+
+  Stream<MediaState> get _mediaStateStream =>
+      Rx.combineLatest2<MediaItem?, Duration, MediaState>(
+          audioHandler.mediaItem,
+          AudioService.position,
+          (mediaItem, position) => MediaState(mediaItem, position));
 
   Widget _buildOverlayContainer(
       {required Size screenSize,
@@ -418,4 +397,11 @@ class PlayVideoState extends State<PlayVideo> {
       ),
     );
   }
+}
+
+class MediaState {
+  final MediaItem? mediaItem;
+  final Duration position;
+
+  MediaState(this.mediaItem, this.position);
 }
