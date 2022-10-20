@@ -406,7 +406,7 @@ class PlayVideoState extends State<PlayVideo> {
               color: const Color.fromARGB(31, 37, 37, 37).withOpacity(0.9),
             ),
             width: width,
-            height: screenSize.width * 0.1170,
+            height: screenSize.width * 0.1190,
             child: ClipRRect(
               borderRadius: BorderRadius.circular(15),
               child: BackdropFilter(
