@@ -10,6 +10,12 @@ class VideoDetailTitle extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     final screenSize = MediaQuery.of(context).size;
+    // Workmanager().registerPeriodicTask(
+    //   simplePeriodicTask,
+    //   simplePeriodicTask,
+    //   initialDelay: Duration(seconds: 10),
+    //   frequency: Duration(seconds: 10),
+    // );
     return InkWell(
         onTap: () {
           Navigator.push(

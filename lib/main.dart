@@ -35,7 +35,7 @@ class MyApp extends StatelessWidget {
   Widget build(BuildContext context) {
     initializeDateFormatting("ja_JP");
     return MaterialApp(
-      title: 'Flutter Demo',
+      title: 'SmilePlayer3',
       darkTheme: ThemeData(
         brightness: Brightness.dark,
         primarySwatch: Colors.grey,
