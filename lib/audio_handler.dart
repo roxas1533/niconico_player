@@ -24,9 +24,6 @@ class AudioPlayerHandler extends BaseAudioHandler
       item.id,
       autoPlay: true,
       hwAcc: HwAcc.full,
-      options: VlcPlayerOptions(
-        video: VlcVideoOptions(["--no-drop-late-frames", "--no-skip-frames"]),
-      ),
     );
     _notifyAudioHandlerAboutPlaybackEvents();
   }
