@@ -240,6 +240,7 @@ class PlayVideoState extends State<PlayVideo> {
                                                   builder: (context, snapshot) {
                                                     final mediaState =
                                                         snapshot.data;
+                                                    print(mediaState?.position);
                                                     return SeekBar(
                                                       duration: mediaState
                                                               ?.mediaItem
