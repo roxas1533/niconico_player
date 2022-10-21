@@ -1,7 +1,6 @@
 import 'dart:convert';
 
 import 'package:audio_service/audio_service.dart';
-import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 import 'package:flutter_html/shims/dart_ui_real.dart';
@@ -25,9 +24,7 @@ class PlayVideoState extends State<PlayVideo> {
   final playVideoParam = PlayVideoParam();
   bool hasListener = false;
   late Future _futureVideoViewController;
-  // VlcPlayerController? _videoViewController;
   bool sliderChanging = false;
-  bool disposeed = false;
   int duration = 0;
   Future<String> _getVideoController() async {
     final res = await http.post(
@@ -35,36 +32,18 @@ class PlayVideoState extends State<PlayVideo> {
         body: json.encode(makeSessionPayloads(widget.video.session)),
         headers: {"Content-Type": "application/json"});
     Map<String, dynamic> videoData = json.decode(res.body);
-    await audioHandler.playerInit(MediaItem(
-      id: videoData["data"]["session"]["content_uri"],
-      title: widget.video.title,
-      artist: widget.video.userName,
-      duration: Duration(seconds: widget.video.lengthSeconds),
-      artUri: Uri.parse(widget.video.thumbnailUrl),
-    ));
-
-    // _videoViewController = VlcPlayerController.network(
-    //   videoData["data"]["session"]["content_uri"],
-    //   autoPlay: true,
-    //   hwAcc: HwAcc.full,
-    //   options: VlcPlayerOptions(
-    //     video: VlcVideoOptions(["--no-drop-late-frames", "--no-skip-frames"]),
-    //   ),
-    // );
-    // _videoViewController!.addListener(controllerLisner);
-    // return _videoViewController!;
+    await audioHandler.playerInit(
+        MediaItem(
+          id: videoData["data"]["session"]["content_uri"],
+          title: widget.video.title,
+          artist: widget.video.userName,
+          duration: Duration(seconds: widget.video.lengthSeconds),
+          artUri: Uri.parse(widget.video.thumbnailUrl),
+        ),
+        widget.video.session,
+        videoData);
     return "temp";
   }
-
-  // void controllerLisner() {
-  //   if (_videoViewController!.value.isInitialized && !disposeed) {
-  //     if (!sliderChanging) {
-  //       _videoViewController!.getPosition().then((value) {
-  //         duration = value.inSeconds;
-  //       });
-  //     }
-  //   }
-  // }
 
   @override
   void initState() {
@@ -142,15 +121,8 @@ class PlayVideoState extends State<PlayVideo> {
 
   @override
   void dispose() async {
-    disposeed = true;
     audioHandler.stop();
     super.dispose();
-    // if (_videoViewController != null) {
-    //   if (_videoViewController!.value.isInitialized) {
-    //     await _videoViewController!.stopRendererScanning();
-    //     await _videoViewController!.dispose();
-    //   }
-    // }
   }
 
   @override
@@ -167,7 +139,6 @@ class PlayVideoState extends State<PlayVideo> {
               child: RotatedBox(
                 quarterTurns: 1, //or 2
                 child: Stack(alignment: Alignment.center, children: [
-                  // Temp(),
                   // SizedBox(
                   //     width: screenSize.height,
                   //     height: screenSize.width,
@@ -180,12 +151,6 @@ class PlayVideoState extends State<PlayVideo> {
                     width: screenSize.height,
                     height: screenSize.width,
                     child: audioHandler.getVlcPlayer(),
-                    // VlcPlayer(
-                    //   controller: _videoViewController!,
-                    //   aspectRatio: 9 / 16,
-                    //   placeholder:
-                    //       const Center(child: CupertinoActivityIndicator()),
-                    // ),
                   ),
                   SizedBox(
                     width: screenSize.height,

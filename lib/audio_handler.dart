@@ -1,25 +1,25 @@
 import 'dart:async';
+import 'dart:convert';
 
 import 'package:audio_service/audio_service.dart';
-import 'package:flutter/cupertino.dart';
 import 'package:flutter_vlc_player/flutter_vlc_player.dart';
+import 'package:http/http.dart' as http;
 
 class AudioPlayerHandler extends BaseAudioHandler
     with
         QueueHandler, // mix in default queue callback implementations
         SeekHandler {
   VlcPlayerController? _videoViewController;
-  TimerNotifer _timerNotifer = TimerNotifer();
-  Future<void> playerInit(MediaItem item) async {
-    _timerNotifer = TimerNotifer();
-    Timer.periodic(const Duration(seconds: 1), (timer) {
-      _timerNotifer.count();
-      print(_timerNotifer.value.time);
-      if (_timerNotifer.value.time == 30) {
-        timer.cancel();
-      }
-    });
+  _HeartBeat? _heartBeat;
+  // TimerNotifer _timerNotifer = TimerNotifer();
+  bool stoped = false;
+  bool initialized = false;
+  Future<void> playerInit(MediaItem item, Map<String, dynamic> session,
+      Map<String, dynamic> videoData) async {
+    stoped = false;
     mediaItem.add(item);
+    _heartBeat = _HeartBeat(session, videoData);
+
     _videoViewController = VlcPlayerController.network(
       item.id,
       autoPlay: true,
@@ -61,12 +61,15 @@ class AudioPlayerHandler extends BaseAudioHandler
   Future<void> stop() async {
     if (_videoViewController != null) {
       await _videoViewController!.stop();
+      stoped = true;
+      _heartBeat!.stop();
       playbackState.add(playbackState.value.copyWith(
         playing: false,
-        processingState: AudioProcessingState.completed,
+        processingState: AudioProcessingState.idle,
       ));
       await _videoViewController!.stopRendererScanning();
       await _videoViewController!.dispose();
+      initialized = false;
       _videoViewController = null;
     }
   }
@@ -77,9 +80,6 @@ class AudioPlayerHandler extends BaseAudioHandler
   }
 
   void _notifyAudioHandlerAboutPlaybackEvents() {
-    // _timerNotifer.addListener(() {
-    //   print(_timerNotifer.value.time);
-    // });
     _videoViewController!.addListener(() {
       final playing = _videoViewController!.value.isPlaying;
       playbackState.add(playbackState.value.copyWith(
@@ -111,21 +111,59 @@ class AudioPlayerHandler extends BaseAudioHandler
         speed: _videoViewController!.value.playbackSpeed,
         // queueIndex: event.currentIndex,
       ));
+      if (!initialized &&
+          _videoViewController!.value.playingState ==
+              PlayingState.initialized) {
+        initialized = true;
+        Timer.periodic(const Duration(seconds: 40), (timer) {
+          if (stoped) {
+            timer.cancel();
+          } else if (_heartBeat != null) {
+            _heartBeat!.kepp();
+          }
+        });
+      }
     });
   }
 }
 
-class _Timer {
-  final int time;
-  _Timer({required this.time});
-  _Timer copyWith({int? time}) {
-    return _Timer(time: time ?? this.time);
-  }
-}
+class _HeartBeat {
+  static const ua =
+      "Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/102.0.5005.63 Safari/537.36";
+  static const headers = {
+    "Accept-Language": "ja,en-US;q=0.9,en;q=0.8",
+    "Content-Type": "application/json",
+    "Origin": "https://www.nicovideo.jp",
+    "Referer": "https://www.nicovideo.jp/",
+    "Connection": "keep-alive",
+    "Host": "api.dmc.nico",
+    "Sec-Fetch-Mode": "cors",
+    "Sec-Fetch-Dest": "empty",
+    "Sec-Fetch-Site": "cross-site",
+    "User-Agent": ua,
+    "Accept": "application/json"
+  };
+  late String _url;
+  late Map<String, dynamic> _data;
+  final Map<String, dynamic> _session;
+  final Map<String, dynamic> _videoData;
+  _HeartBeat(this._session, this._videoData) {
+    final urlApi = _session["urls"][0]["url"];
+    final id = _videoData["data"]["session"]["id"];
 
-class TimerNotifer extends ValueNotifier<_Timer> {
-  TimerNotifer() : super(_Timer(time: 0));
-  Future<void> count() async {
-    value = value.copyWith(time: value.time + 1);
+    _data = _videoData["data"];
+
+    _url = "$urlApi/$id?_format=json&_method=";
+  }
+  Future<void> kepp() async {
+    const method = "PUT";
+    await http.post(Uri.parse(_url + method),
+        headers: headers, body: json.encode(_data));
+  }
+
+  Future<void> stop() async {
+    const method = "DELETE";
+    await http.post(Uri.parse(_url + method),
+        headers: headers, body: json.encode(_data));
   }
 }
