@@ -2,16 +2,15 @@ import 'dart:async';
 import 'dart:convert';
 
 import 'package:audio_service/audio_service.dart';
-import 'package:flutter_vlc_player/flutter_vlc_player.dart';
+import 'package:fijkplayer/fijkplayer.dart';
+import 'package:flutter/cupertino.dart';
+import 'package:flutter/material.dart';
 import 'package:http/http.dart' as http;
 
 class AudioPlayerHandler extends BaseAudioHandler
-    with
-        QueueHandler, // mix in default queue callback implementations
-        SeekHandler {
-  VlcPlayerController? _videoViewController;
+    with QueueHandler, SeekHandler {
+  FijkPlayer? _videoViewController;
   _HeartBeat? _heartBeat;
-  // TimerNotifer _timerNotifer = TimerNotifer();
   bool stoped = false;
   bool initialized = false;
   Future<void> playerInit(MediaItem item, Map<String, dynamic> session,
@@ -19,26 +18,21 @@ class AudioPlayerHandler extends BaseAudioHandler
     stoped = false;
     mediaItem.add(item);
     _heartBeat = _HeartBeat(session, videoData);
-
-    _videoViewController = VlcPlayerController.network(
-      item.id,
-      autoPlay: true,
-      hwAcc: HwAcc.full,
-    );
+    _videoViewController = FijkPlayer();
+    _videoViewController!.setDataSource(item.id, autoPlay: true);
     _notifyAudioHandlerAboutPlaybackEvents();
   }
 
-  VlcPlayer getVlcPlayer() {
-    return VlcPlayer(
-      controller: _videoViewController!,
-      aspectRatio: 16 / 9,
+  Widget getVlcPlayer() {
+    return FijkView(
+      player: _videoViewController!,
+      color: Colors.black,
     );
   }
 
-  // The most common callbacks:
   @override
   Future<void> play() async {
-    await _videoViewController!.play();
+    await _videoViewController!.start();
     playbackState.add(playbackState.value.copyWith(
       playing: true,
       processingState: AudioProcessingState.ready,
@@ -59,13 +53,13 @@ class AudioPlayerHandler extends BaseAudioHandler
     if (_videoViewController != null) {
       await _videoViewController!.stop();
       stoped = true;
-      _heartBeat!.stop();
+      // _heartBeat!.stop();
       playbackState.add(playbackState.value.copyWith(
         playing: false,
         processingState: AudioProcessingState.idle,
       ));
-      await _videoViewController!.stopRendererScanning();
-      await _videoViewController!.dispose();
+      await _videoViewController!.release();
+      _videoViewController!.dispose();
       initialized = false;
       _videoViewController = null;
     }
@@ -73,12 +67,12 @@ class AudioPlayerHandler extends BaseAudioHandler
 
   @override
   Future<void> seek(Duration position) async {
-    await _videoViewController!.seekTo(position);
+    await _videoViewController!.seekTo(position.inMilliseconds);
   }
 
   void _notifyAudioHandlerAboutPlaybackEvents() {
     _videoViewController!.addListener(() {
-      final playing = _videoViewController!.value.isPlaying;
+      final playing = _videoViewController!.state == FijkState.started;
       playbackState.add(playbackState.value.copyWith(
         controls: [
           MediaControl.skipToPrevious,
@@ -91,27 +85,24 @@ class AudioPlayerHandler extends BaseAudioHandler
         },
         androidCompactActionIndices: const [0, 1, 3],
         processingState: const {
-          // PlayingState.initializing : AudioProcessingState.idle,
-          PlayingState.initializing: AudioProcessingState.loading,
-          PlayingState.buffering: AudioProcessingState.buffering,
-          PlayingState.initialized: AudioProcessingState.ready,
-          PlayingState.ended: AudioProcessingState.completed,
-          PlayingState.error: AudioProcessingState.error,
-          PlayingState.paused: AudioProcessingState.ready,
-          PlayingState.playing: AudioProcessingState.ready,
-          PlayingState.stopped: AudioProcessingState.completed,
-        }[_videoViewController!.value.playingState]!,
+          FijkState.idle: AudioProcessingState.idle,
+          FijkState.initialized: AudioProcessingState.loading,
+          FijkState.prepared: AudioProcessingState.ready,
+          FijkState.completed: AudioProcessingState.completed,
+          FijkState.error: AudioProcessingState.error,
+          FijkState.paused: AudioProcessingState.ready,
+          FijkState.started: AudioProcessingState.ready,
+        }[_videoViewController!.state]!,
         playing: playing,
-        updatePosition: _videoViewController!.value.position,
-        bufferedPosition: _videoViewController!.value.duration *
-            _videoViewController!.value.bufferPercent,
-        speed: _videoViewController!.value.playbackSpeed,
+        updatePosition: _videoViewController!.currentPos,
+        bufferedPosition: _videoViewController!.bufferPos,
+        // speed: _videoViewController.pla,
         // queueIndex: event.currentIndex,
       ));
       if (!initialized &&
-          _videoViewController!.value.playingState ==
-              PlayingState.initialized) {
+          _videoViewController!.state == FijkState.initialized) {
         initialized = true;
+
         Timer.periodic(const Duration(seconds: 40), (timer) {
           if (stoped) {
             timer.cancel();
