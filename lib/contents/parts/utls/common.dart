@@ -4,8 +4,6 @@ import 'dart:math';
 import 'package:flutter/material.dart';
 import 'package:niconico/constant.dart';
 
-import 'space_box.dart';
-
 // import 'package:rxdart/rxdart.dart';
 class PositionData {
   final Duration position;
@@ -107,5 +105,61 @@ class SeekBarState extends State<SeekBar> {
             )
           ],
         ));
+  }
+}
+
+class SpaceBox extends SizedBox {
+  const SpaceBox({Key? key, double width = 8, double height = 8})
+      : super(key: key, width: width, height: height);
+}
+
+class AnimatedSizeIcon extends StatefulWidget {
+  const AnimatedSizeIcon(
+      {Key? key,
+      required this.icon,
+      required this.size,
+      required this.touchEvent})
+      : super(key: key);
+  final IconData icon;
+  final double size;
+  final void Function() touchEvent;
+  @override
+  State<AnimatedSizeIcon> createState() => _AnimatedSizeIconState();
+}
+
+class _AnimatedSizeIconState extends State<AnimatedSizeIcon> {
+  bool _isPressed = false;
+  double _size = 0;
+
+  void _onTapDown(double defaultSize) {
+    setState(() {
+      _isPressed = !_isPressed;
+      _size = _isPressed ? defaultSize * 0.8 : defaultSize;
+    });
+  }
+
+  @override
+  void initState() {
+    _size = widget.size;
+    super.initState();
+  }
+
+  @override
+  Widget build(BuildContext context) {
+    return SizedBox(
+        width: widget.size,
+        height: widget.size,
+        child: GestureDetector(
+            onTap: () => widget.touchEvent(),
+            onTapDown: (_) => _onTapDown(widget.size),
+            onTapUp: (_) => _onTapDown(widget.size),
+            child: AnimatedSize(
+              duration: const Duration(milliseconds: 1200),
+              curve: Curves.linear,
+              child: Icon(
+                widget.icon,
+                size: _size,
+              ),
+            )));
   }
 }

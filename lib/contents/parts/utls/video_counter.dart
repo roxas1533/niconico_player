@@ -1,7 +1,8 @@
 import 'package:flutter/material.dart';
 import "package:niconico/constant.dart";
 import 'package:niconico/contents/parts/utls/parts_icon.dart';
-import 'package:niconico/contents/parts/utls/space_box.dart';
+
+import 'common.dart';
 
 class VideoCounter extends StatelessWidget {
   const VideoCounter({

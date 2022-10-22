@@ -1,7 +1,7 @@
 import 'package:flutter/material.dart';
 import "package:niconico/constant.dart";
 import 'package:niconico/contents/parts/ranking/ranking_number.dart';
-import 'package:niconico/contents/parts/utls/space_box.dart';
+import 'package:niconico/contents/parts/utls/common.dart';
 import 'package:niconico/contents/parts/utls/thumnails.dart';
 import 'package:niconico/contents/parts/utls/video_counter.dart';
 import 'package:niconico/contents/parts/utls/video_title.dart';

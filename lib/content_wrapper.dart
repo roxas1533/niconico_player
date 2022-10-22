@@ -15,23 +15,27 @@ class Content extends ConsumerWidget {
 
   @override
   Widget build(BuildContext context, WidgetRef ref) {
-    switch (ref.watch(naviSelectIndex)) {
-      case 0:
-        return const Ranking();
-      case 1:
-        return const Search();
-      case 2:
-        return const History();
-      case 3:
-        return const Nicorepo();
-      case 4:
-        return const Other();
-    }
-    return const Center(
-      child: Text(
-        "this is empty page",
-        style: TextStyle(fontSize: 30, fontWeight: FontWeight.bold),
-      ),
+    return IndexedStack(
+      index: ref.watch(naviSelectIndex),
+      children: const <Widget>[
+        Ranking(),
+        Search(),
+        History(),
+        Nicorepo(),
+        Other(),
+      ],
     );
+    // switch (ref.watch(naviSelectIndex)) {
+    //   case 0:
+    //     return const Ranking();
+    //   case 1:
+    //     return const Search();
+    //   case 2:
+    //     return const History();
+    //   case 3:
+    //     return const Nicorepo();
+    //   case 4:
+    //     return const Other();
+    // }
   }
 }

@@ -8,7 +8,6 @@ import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:http/http.dart' as http;
 import 'package:niconico/constant.dart';
 import 'package:niconico/contents/parts/utls/common.dart';
-import 'package:niconico/contents/parts/utls/space_box.dart';
 import 'package:niconico/contents/parts/utls/video_detail/play_video_paramater.dart';
 import 'package:rxdart/rxdart.dart';
 
@@ -169,14 +168,15 @@ class PlayVideoState extends State<PlayVideo> {
                                 Container(
                                     padding: const EdgeInsets.only(
                                         left: 15, right: 10),
-                                    child: GestureDetector(
-                                      onTap: () {
+                                    child: AnimatedSizeIcon(
+                                      touchEvent: () {
                                         SystemChrome.setEnabledSystemUIMode(
                                           SystemUiMode.edgeToEdge,
                                         );
                                         Navigator.pop(context);
                                       },
-                                      child: const Icon(Icons.clear_rounded),
+                                      icon: Icons.clear_rounded,
+                                      size: 24,
                                     )),
                                 Column(
                                   children: [
@@ -195,10 +195,11 @@ class PlayVideoState extends State<PlayVideo> {
                                                   mainAxisAlignment:
                                                       MainAxisAlignment.center,
                                                   children: [
-                                                    GestureDetector(
-                                                      onTap: () {},
-                                                      child: const Icon(Icons
-                                                          .replay_10_sharp),
+                                                    AnimatedSizeIcon(
+                                                      icon:
+                                                          Icons.replay_10_sharp,
+                                                      size: 24,
+                                                      touchEvent: () {},
                                                     ),
                                                     const SpaceBox(width: 20),
                                                     StreamBuilder<bool>(
@@ -213,15 +214,22 @@ class PlayVideoState extends State<PlayVideo> {
                                                             snapshot.data ??
                                                                 false;
                                                         return playing
-                                                            ? _button(
-                                                                Icons.pause,
-                                                                audioHandler
-                                                                    .pause)
-                                                            : _button(
-                                                                Icons
+                                                            ? AnimatedSizeIcon(
+                                                                icon:
+                                                                    Icons.pause,
+                                                                size: 35,
+                                                                touchEvent:
+                                                                    audioHandler
+                                                                        .pause,
+                                                              )
+                                                            : AnimatedSizeIcon(
+                                                                icon: Icons
                                                                     .play_arrow,
-                                                                audioHandler
-                                                                    .play);
+                                                                size: 35,
+                                                                touchEvent:
+                                                                    audioHandler
+                                                                        .play,
+                                                              );
                                                       },
                                                     ),
                                                     const SpaceBox(width: 20),
@@ -265,11 +273,10 @@ class PlayVideoState extends State<PlayVideo> {
                                                 );
                                               }),
                                             )),
-                                            GestureDetector(
-                                              onTap: () {},
-                                              child:
-                                                  const Icon(Icons.more_horiz),
-                                            ),
+                                            AnimatedSizeIcon(
+                                                icon: Icons.more_horiz,
+                                                size: 24,
+                                                touchEvent: () {}),
                                           ],
                                         )),
                                   ],
@@ -293,13 +300,6 @@ class PlayVideoState extends State<PlayVideo> {
   String tf2yn(bool tf) {
     return tf ? "yes" : "no";
   }
-
-  GestureDetector _button(IconData iconData, VoidCallback onPressed,
-          {double size = 35}) =>
-      GestureDetector(
-        onTap: onPressed,
-        child: Icon(iconData, size: size),
-      );
 
   Stream<MediaState> get _mediaStateStream =>
       Rx.combineLatest2<MediaItem?, Duration, MediaState>(

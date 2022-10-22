@@ -1,7 +1,7 @@
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import "package:intl/intl.dart";
 
-import 'audio_handler.dart';
+import 'contents/parts/utls/video_detail/video_player.dart';
 
 // import 'package:flutter/foundation.dart';
 late AudioPlayerHandler audioHandler;

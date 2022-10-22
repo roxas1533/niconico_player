@@ -4,9 +4,9 @@ import 'package:flutter/services.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:intl/date_symbol_data_local.dart';
 
-import 'audio_handler.dart';
 import "constant.dart";
 import 'content_wrapper.dart';
+import 'contents/parts/utls/video_detail/video_player.dart';
 import 'footer.dart';
 import 'header.dart';
 
