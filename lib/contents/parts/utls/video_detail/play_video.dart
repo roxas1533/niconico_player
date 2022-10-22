@@ -150,7 +150,7 @@ class PlayVideoState extends State<PlayVideo> {
                   SizedBox(
                     width: screenSize.height,
                     height: screenSize.width,
-                    child: audioHandler.getVlcPlayer(),
+                    child: audioHandler.getPlayer(),
                   ),
                   SizedBox(
                     width: screenSize.height,
@@ -170,7 +170,12 @@ class PlayVideoState extends State<PlayVideo> {
                                     padding: const EdgeInsets.only(
                                         left: 15, right: 10),
                                     child: GestureDetector(
-                                      onTap: () => Navigator.pop(context),
+                                      onTap: () {
+                                        SystemChrome.setEnabledSystemUIMode(
+                                          SystemUiMode.edgeToEdge,
+                                        );
+                                        Navigator.pop(context);
+                                      },
                                       child: const Icon(Icons.clear_rounded),
                                     )),
                                 Column(

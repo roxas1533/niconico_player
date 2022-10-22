@@ -3,7 +3,6 @@ import 'dart:convert';
 
 import 'package:audio_service/audio_service.dart';
 import 'package:fijkplayer/fijkplayer.dart';
-import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 import 'package:http/http.dart' as http;
 
@@ -23,11 +22,12 @@ class AudioPlayerHandler extends BaseAudioHandler
     _notifyAudioHandlerAboutPlaybackEvents();
   }
 
-  Widget getVlcPlayer() {
-    return FijkView(
+  Widget getPlayer() {
+    return Material(
+        child: FijkView(
       player: _videoViewController!,
       color: Colors.black,
-    );
+    ));
   }
 
   @override
@@ -53,7 +53,7 @@ class AudioPlayerHandler extends BaseAudioHandler
     if (_videoViewController != null) {
       await _videoViewController!.stop();
       stoped = true;
-      // _heartBeat!.stop();
+      _heartBeat!.stop();
       playbackState.add(playbackState.value.copyWith(
         playing: false,
         processingState: AudioProcessingState.idle,
