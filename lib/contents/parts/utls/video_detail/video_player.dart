@@ -12,13 +12,29 @@ class VideoPlayerHandler extends BaseAudioHandler
   FijkPlayer? _videoViewController;
   _HeartBeat? _heartBeat;
   bool stoped = false;
+  late MediaItem item;
+  late Stream<Duration> currentPosSubs;
+
   bool initialized = false;
   Future<void> playerInit(MediaItem item, Map<String, dynamic> session,
       Map<String, dynamic> videoData, CommentObjectList c) async {
+    this.item = item;
     stoped = false;
     mediaItem.add(item);
     _heartBeat = _HeartBeat(session, videoData);
     _videoViewController = FijkPlayer()..setDataSource(item.id, autoPlay: true);
+    // await _videoViewController!
+    //     .setOption(FijkOption.hostCategory, "http-detect-range-support", 0);
+
+    await _videoViewController!
+        .setOption(FijkOption.playerCategory, "enable-accurate-seek", 1);
+    // await _videoViewController!
+    //     .setOption(FijkOption.playerCategory, "max-buffer-size", 100);
+
+    await _videoViewController!
+        .setOption(FijkOption.formatCategory, "fflags", "fastseek");
+
+    currentPosSubs = _videoViewController!.onCurrentPosUpdate;
     _notifyAudioHandlerAboutPlaybackEvents(c);
   }
 
@@ -53,7 +69,7 @@ class VideoPlayerHandler extends BaseAudioHandler
     if (_videoViewController != null) {
       await _videoViewController!.stop();
       stoped = true;
-      _heartBeat!.stop();
+      // _heartBeat!.stop();
       playbackState.add(playbackState.value.copyWith(
         playing: false,
         processingState: AudioProcessingState.idle,
@@ -67,15 +83,25 @@ class VideoPlayerHandler extends BaseAudioHandler
 
   @override
   Future<void> seek(Duration position) async {
+    // await stop();
+    // _videoViewController!.stop();
+    // _videoViewController!.reset();
+    // _videoViewController = FijkPlayer()..setDataSource(item.id, autoPlay: true);
+
+    // _videoViewController!.setOption(
+    //     FijkOption.playerCategory, "seek-at-start", position.inMilliseconds);
+    // _notifyAudioHandlerAboutPlaybackEvents(null);
+
     await _videoViewController!.seekTo(position.inMilliseconds);
+
+    // print(_videoViewController!.currentPos);
   }
 
-  void _notifyAudioHandlerAboutPlaybackEvents(CommentObjectList c) {
+  void _notifyAudioHandlerAboutPlaybackEvents(CommentObjectList? c) {
     _videoViewController!.addListener(() {
       final playing = _videoViewController!.state == FijkState.started;
-      c.isPlaying = playing;
-      c.time = _videoViewController!.currentPos.inMilliseconds;
-
+      // c.isPlaying = playing;
+      // c.time = _videoViewController!.currentPos.inMilliseconds;
       playbackState.add(playbackState.value.copyWith(
         controls: [
           MediaControl.skipToPrevious,

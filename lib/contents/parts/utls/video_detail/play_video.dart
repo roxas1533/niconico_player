@@ -28,6 +28,12 @@ class PlayVideoState extends State<PlayVideo> {
   late CommentObjectList _commentObjectList;
   bool sliderChanging = false;
   final jsonHeader = {"Content-Type": "application/json"};
+  Stream<MediaState> get _mediaStateStream =>
+      Rx.combineLatest2<MediaItem?, Duration, MediaState>(
+          audioHandler.mediaItem,
+          audioHandler.currentPosSubs,
+          (mediaItem, position) => MediaState(mediaItem, position));
+
   Future<String> _getVideoController() async {
     final videoDataResPonse = await http.post(
         Uri.parse(widget.video.session["urls"][0]["url"] + "?_format=json"),
@@ -63,6 +69,7 @@ class PlayVideoState extends State<PlayVideo> {
         widget.video.session,
         videoData,
         _commentObjectList);
+
     return "temp";
   }
 
@@ -260,12 +267,6 @@ class PlayVideoState extends State<PlayVideo> {
           }
         });
   }
-
-  Stream<MediaState> get _mediaStateStream =>
-      Rx.combineLatest2<MediaItem?, Duration, MediaState>(
-          audioHandler.mediaItem,
-          AudioService.position,
-          (mediaItem, position) => MediaState(mediaItem, position));
 
   Widget _buildOverlayContainer(
       {required Size screenSize,
