@@ -5,21 +5,21 @@ import 'package:audio_service/audio_service.dart';
 import 'package:fijkplayer/fijkplayer.dart';
 import 'package:flutter/material.dart';
 import 'package:http/http.dart' as http;
+import 'package:niconico/contents/parts/utls/video_detail/comment_player/base_view.dart';
 
-class AudioPlayerHandler extends BaseAudioHandler
+class VideoPlayerHandler extends BaseAudioHandler
     with QueueHandler, SeekHandler {
   FijkPlayer? _videoViewController;
   _HeartBeat? _heartBeat;
   bool stoped = false;
   bool initialized = false;
   Future<void> playerInit(MediaItem item, Map<String, dynamic> session,
-      Map<String, dynamic> videoData) async {
+      Map<String, dynamic> videoData, CommentObjectList c) async {
     stoped = false;
     mediaItem.add(item);
     _heartBeat = _HeartBeat(session, videoData);
-    _videoViewController = FijkPlayer();
-    _videoViewController!.setDataSource(item.id, autoPlay: true);
-    _notifyAudioHandlerAboutPlaybackEvents();
+    _videoViewController = FijkPlayer()..setDataSource(item.id, autoPlay: true);
+    _notifyAudioHandlerAboutPlaybackEvents(c);
   }
 
   Widget getPlayer() {
@@ -70,9 +70,12 @@ class AudioPlayerHandler extends BaseAudioHandler
     await _videoViewController!.seekTo(position.inMilliseconds);
   }
 
-  void _notifyAudioHandlerAboutPlaybackEvents() {
+  void _notifyAudioHandlerAboutPlaybackEvents(CommentObjectList c) {
     _videoViewController!.addListener(() {
       final playing = _videoViewController!.state == FijkState.started;
+      c.isPlaying = playing;
+      c.time = _videoViewController!.currentPos.inMilliseconds;
+
       playbackState.add(playbackState.value.copyWith(
         controls: [
           MediaControl.skipToPrevious,

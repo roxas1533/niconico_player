@@ -138,6 +138,7 @@ class VideoDetail extends StatelessWidget {
                 isNicodicArticleExists: tag["isNicodicArticleExists"])
         ],
         session: info["data"]["media"]["delivery"]["movie"]["session"],
+        nvComment: info["data"]["comment"]["nvComment"],
       );
       return videoDetailInfo;
     } else {

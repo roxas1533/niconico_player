@@ -17,7 +17,7 @@ Future<void> main() async {
     DeviceOrientation.portraitUp, //縦固定
   ]);
   audioHandler = await AudioService.init(
-    builder: () => AudioPlayerHandler(),
+    builder: () => VideoPlayerHandler(),
     config: const AudioServiceConfig(
       androidNotificationChannelId: 'com.mycompany.myapp.channel.audio',
       androidNotificationChannelName: 'Audio playback',

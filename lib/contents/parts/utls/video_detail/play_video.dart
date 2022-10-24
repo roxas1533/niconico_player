@@ -8,7 +8,9 @@ import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:http/http.dart' as http;
 import 'package:niconico/constant.dart';
 import 'package:niconico/contents/parts/utls/common.dart';
+import 'package:niconico/contents/parts/utls/video_detail/comment_player/base_view.dart';
 import 'package:niconico/contents/parts/utls/video_detail/play_video_paramater.dart';
+import 'package:niconico/functions.dart';
 import 'package:rxdart/rxdart.dart';
 
 class PlayVideo extends StatefulWidget {
@@ -23,14 +25,33 @@ class PlayVideoState extends State<PlayVideo> {
   final playVideoParam = PlayVideoParam();
   bool hasListener = false;
   late Future _futureVideoViewController;
+  late CommentObjectList _commentObjectList;
   bool sliderChanging = false;
-  int duration = 0;
+  final jsonHeader = {"Content-Type": "application/json"};
   Future<String> _getVideoController() async {
-    final res = await http.post(
+    final videoDataResPonse = await http.post(
         Uri.parse(widget.video.session["urls"][0]["url"] + "?_format=json"),
         body: json.encode(makeSessionPayloads(widget.video.session)),
-        headers: {"Content-Type": "application/json"});
-    Map<String, dynamic> videoData = json.decode(res.body);
+        headers: jsonHeader);
+    Map<String, dynamic> videoData = json.decode(videoDataResPonse.body);
+
+    final nvComment = widget.video.nvComment;
+
+    final params = {
+      "params": nvComment["params"],
+      "additionals": {},
+      "threadKey": nvComment["threadKey"],
+    };
+
+    final commentDataResPonse = await http.post(
+        Uri.parse(nvComment["server"] + "/v1/threads"),
+        body: json.encode(params),
+        headers: {"X-Frontend-Id": "6", "X-Frontend-Version": "0"});
+
+    Map<String, dynamic> commentData =
+        json.decode(utf8.decode(commentDataResPonse.bodyBytes));
+    _commentObjectList = CommentObjectList(commentData);
+
     await audioHandler.playerInit(
         MediaItem(
           id: videoData["data"]["session"]["content_uri"],
@@ -40,7 +61,8 @@ class PlayVideoState extends State<PlayVideo> {
           artUri: Uri.parse(widget.video.thumbnailUrl),
         ),
         widget.video.session,
-        videoData);
+        videoData,
+        _commentObjectList);
     return "temp";
   }
 
@@ -51,71 +73,6 @@ class PlayVideoState extends State<PlayVideo> {
       SystemUiMode.leanBack,
     );
     _futureVideoViewController = _getVideoController();
-  }
-
-  Map<String, dynamic> makeSessionPayloads(Map<String, dynamic> session) {
-    final protocol = session["protocols"][0];
-    final urls = session["urls"];
-    bool isWellKnownPort = true;
-    bool isSsl = true;
-    for (final url in urls) {
-      isWellKnownPort = url["isWellKnownPort"];
-      isSsl = url["isSsl"];
-      break;
-    }
-    final payloads = {};
-    payloads["recipe_id"] = session["recipeId"];
-    payloads["content_id"] = session["contentId"];
-    payloads["content_type"] = "movie";
-    payloads["content_src_id_sets"] = [
-      {
-        "content_src_ids": [
-          {
-            "src_id_to_mux": {
-              "video_src_ids": session["videos"],
-              "audio_src_ids": session["audios"]
-            }
-          },
-        ]
-      }
-    ];
-    payloads["timing_constraint"] = "unlimited";
-    payloads["keep_method"] = {
-      "heartbeat": {"lifetime": session["heartbeatLifetime"]}
-    };
-    payloads["protocol"] = {
-      "name": protocol,
-      "parameters": {
-        "http_parameters": {
-          "parameters": {
-            "hls_parameters": {
-              "use_well_known_port": tf2yn(isWellKnownPort),
-              "use_ssl": tf2yn(isSsl),
-              "transfer_preset": "",
-              "segment_duration": 6000,
-            }
-          }
-        }
-      }
-    };
-    payloads["content_uri"] = "";
-    payloads["session_operation_auth"] = {
-      "session_operation_auth_by_signature": {
-        "token": session["token"],
-        "signature": session["signature"]
-      }
-    };
-    payloads["content_auth"] = {
-      "auth_type": session["authTypes"][protocol],
-      "content_key_timeout": session["contentKeyTimeout"],
-      "service_id": "nicovideo",
-      "service_user_id": session["serviceUserId"]
-    };
-    payloads["client_info"] = {
-      "player_id": session["playerId"],
-    };
-    payloads["priority"] = session["priority"];
-    return {"session": payloads};
   }
 
   @override
@@ -151,6 +108,13 @@ class PlayVideoState extends State<PlayVideo> {
                     height: screenSize.width,
                     child: audioHandler.getPlayer(),
                   ),
+                  SizedBox(
+                      width: screenSize.height,
+                      height: screenSize.width,
+                      child: CommentPlayer(
+                        screenSize: screenSize,
+                        commentObjectList: _commentObjectList,
+                      )),
                   SizedBox(
                     width: screenSize.height,
                     height: screenSize.width,
@@ -295,10 +259,6 @@ class PlayVideoState extends State<PlayVideo> {
                 ));
           }
         });
-  }
-
-  String tf2yn(bool tf) {
-    return tf ? "yes" : "no";
   }
 
   Stream<MediaState> get _mediaStateStream =>

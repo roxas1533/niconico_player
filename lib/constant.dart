@@ -4,8 +4,8 @@ import "package:intl/intl.dart";
 import 'contents/parts/utls/video_detail/video_player.dart';
 
 // import 'package:flutter/foundation.dart';
-late AudioPlayerHandler audioHandler;
-final naviSelectIndex = StateProvider((ref) => 0);
+late VideoPlayerHandler audioHandler;
+final naviSelectIndex = StateProvider((ref) => 1);
 // final rankingParam = StateProvider((ref) => RrankingParam(0, "すべて"));
 final List<String> itemLabel = ["ランキング", "検索", "視聴履歴", "ニコレポ", "その他"];
 final Map<String, String> genreMap = {
@@ -108,6 +108,7 @@ class VideoDetailInfo extends VideoInfo {
     required this.userThumailUrl,
     required this.tags,
     required this.session,
+    required this.nvComment,
   });
   VideoDetailInfo.copy(
       VideoInfo videoInfo,
@@ -118,6 +119,7 @@ class VideoDetailInfo extends VideoInfo {
       this.userThumailUrl,
       this.tags,
       this.session,
+      this.nvComment,
       this.lengthSeconds)
       : super(
           title: videoInfo.title,
@@ -138,6 +140,7 @@ class VideoDetailInfo extends VideoInfo {
   final int lengthSeconds;
   final List<TagInfo> tags;
   final Map<String, dynamic> session;
+  final Map<String, dynamic> nvComment;
 
   @override
   String getPostedAtTime() {
@@ -173,4 +176,30 @@ class RankingParam {
   static final tag = StateProvider((ref) => "すべて");
   static final term = StateProvider((ref) => "24h");
   static final genreId = StateProvider((ref) => 0);
+}
+
+class Point {
+  double x;
+  double y;
+  Point(this.x, this.y);
+  @override
+  String toString() {
+    return 'Point{x: $x, y: $y}';
+  }
+
+  static bool lineJudge(Point a, Point b, Point c, Point d) {
+    double s, t;
+    s = (a.x - b.x) * (c.y - a.y) - (a.y - b.y) * (c.x - a.x);
+    t = (a.x - b.x) * (d.y - a.y) - (a.y - b.y) * (d.x - a.x);
+    if (s * t > 0) {
+      return false;
+    }
+
+    s = (c.x - d.x) * (a.y - c.y) - (c.y - d.y) * (a.x - c.x);
+    t = (c.x - d.x) * (b.y - c.y) - (c.y - d.y) * (b.x - c.x);
+    if (s * t > 0) {
+      return false;
+    }
+    return true;
+  }
 }
