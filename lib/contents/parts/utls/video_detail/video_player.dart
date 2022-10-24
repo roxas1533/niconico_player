@@ -23,8 +23,16 @@ class VideoPlayerHandler extends BaseAudioHandler
     mediaItem.add(item);
     _heartBeat = _HeartBeat(session, videoData);
     _videoViewController = FijkPlayer()..setDataSource(item.id, autoPlay: true);
-    // await _videoViewController!
-    //     .setOption(FijkOption.hostCategory, "http-detect-range-support", 0);
+    await _videoViewController!
+        .setOption(FijkOption.formatCategory, "analyzeduration", 100);
+    await _videoViewController!
+        .setOption(FijkOption.formatCategory, "probesize", 10240);
+    await _videoViewController!
+        .setOption(FijkOption.formatCategory, "flush_packets", 1);
+    await _videoViewController!
+        .setOption(FijkOption.playerCategory, "packet-buffering", 0);
+    await _videoViewController!
+        .setOption(FijkOption.playerCategory, "framedrop", 1);
 
     await _videoViewController!
         .setOption(FijkOption.playerCategory, "enable-accurate-seek", 1);
@@ -81,6 +89,8 @@ class VideoPlayerHandler extends BaseAudioHandler
     }
   }
 
+  Duration get currentPos => _videoViewController!.currentPos;
+
   @override
   Future<void> seek(Duration position) async {
     // await stop();
@@ -97,11 +107,10 @@ class VideoPlayerHandler extends BaseAudioHandler
     // print(_videoViewController!.currentPos);
   }
 
-  void _notifyAudioHandlerAboutPlaybackEvents(CommentObjectList? c) {
+  void _notifyAudioHandlerAboutPlaybackEvents(CommentObjectList c) {
     _videoViewController!.addListener(() {
       final playing = _videoViewController!.state == FijkState.started;
-      // c.isPlaying = playing;
-      // c.time = _videoViewController!.currentPos.inMilliseconds;
+      c.isPlaying = playing;
       playbackState.add(playbackState.value.copyWith(
         controls: [
           MediaControl.skipToPrevious,

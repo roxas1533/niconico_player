@@ -205,7 +205,11 @@ class PlayVideoState extends State<PlayVideo> {
                                                     ),
                                                     const SpaceBox(width: 20),
                                                     GestureDetector(
-                                                      onTap: () {},
+                                                      onTap: () => audioHandler
+                                                          .seek(audioHandler
+                                                                  .currentPos +
+                                                              const Duration(
+                                                                  seconds: 10)),
                                                       child: const Icon(Icons
                                                           .forward_10_sharp),
                                                     ),
@@ -224,6 +228,11 @@ class PlayVideoState extends State<PlayVideo> {
                                                   builder: (context, snapshot) {
                                                     final mediaState =
                                                         snapshot.data;
+                                                    _commentObjectList
+                                                        .time = mediaState
+                                                            ?.position
+                                                            .inMilliseconds ??
+                                                        0;
                                                     return SeekBar(
                                                       duration: mediaState
                                                               ?.mediaItem
