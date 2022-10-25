@@ -50,7 +50,7 @@ class CommentObject {
         text: comment,
         style: const TextStyle(
           fontSize: 29,
-          fontFamily: "Mincho",
+          fontFamily: "msgothic",
           fontWeight: FontWeight.w600,
           color: Colors.white,
           shadows: <Shadow>[

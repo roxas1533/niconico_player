@@ -91,7 +91,7 @@ flutter:
     fonts:
         - family: Mincho
           fonts:
-              - asset: assets/fonts/MS-Mincho.ttf
+              - asset: assets/fonts/msgothic.ttf
     #   - family: Trajan Pro
     #     fonts:
     #       - asset: fonts/TrajanPro.ttf
