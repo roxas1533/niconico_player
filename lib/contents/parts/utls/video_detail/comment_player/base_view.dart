@@ -33,7 +33,7 @@ class CommentPainter extends CustomPainter {
 class CommentObject {
   double _x, _y;
   late List<Point> _points;
-  late final TextPainter _tp, _tpf;
+  late final TextPainter _tp;
   static double width = 0;
   bool isDead = false;
   double vpos;
@@ -48,30 +48,23 @@ class CommentObject {
     _tp = TextPainter(
       text: TextSpan(
         text: comment,
-        style: TextStyle(
-          fontSize: 29,
-          fontFamily: "Mincho",
-          foreground: Paint()
-            ..style = PaintingStyle.stroke
-            ..strokeWidth = 2
-            ..color = const Color.fromARGB(255, 70, 70, 70),
-        ),
-      ),
-      textAlign: TextAlign.left,
-      textDirection: TextDirection.ltr,
-    )..layout();
-    _tpf = TextPainter(
-      text: TextSpan(
-        text: comment,
         style: const TextStyle(
-          fontFamily: "Mincho",
           fontSize: 29,
+          fontFamily: "Mincho",
+          fontWeight: FontWeight.w600,
           color: Colors.white,
+          shadows: <Shadow>[
+            Shadow(
+              offset: Offset(2.0, -2.0),
+              color: Color.fromARGB(255, 65, 65, 65),
+            ),
+          ],
         ),
       ),
       textAlign: TextAlign.left,
       textDirection: TextDirection.ltr,
     )..layout();
+
     _points = [
       Point(width, vpos),
       Point(width + _tp.width, vpos),
@@ -106,7 +99,6 @@ class CommentObject {
 
   void render(double t, Canvas canvas) {
     _tp.paint(canvas, Offset(_x, _y));
-    _tpf.paint(canvas, Offset(_x, _y));
   }
 
   void update(double dt, int time) {
