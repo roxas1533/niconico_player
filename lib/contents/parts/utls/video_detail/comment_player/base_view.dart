@@ -53,7 +53,7 @@ class CommentObject {
           fontFamily: "Mincho",
           foreground: Paint()
             ..style = PaintingStyle.stroke
-            ..strokeWidth = 1
+            ..strokeWidth = 2
             ..color = const Color.fromARGB(255, 70, 70, 70),
         ),
       ),
