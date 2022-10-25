@@ -155,7 +155,7 @@ class _AnimatedSizeIconState extends State<AnimatedSizeIcon> {
             onTapUp: (_) => _onTapDown(widget.size),
             onTapCancel: () => _onTapDown(widget.size),
             child: AnimatedSize(
-              duration: const Duration(milliseconds: 1200),
+              duration: const Duration(seconds: 3),
               curve: Curves.linear,
               child: Icon(
                 widget.icon,

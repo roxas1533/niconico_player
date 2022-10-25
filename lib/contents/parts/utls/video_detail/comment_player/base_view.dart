@@ -33,8 +33,7 @@ class CommentPainter extends CustomPainter {
 class CommentObject {
   double _x, _y;
   late List<Point> _points;
-  late final TextSpan _span;
-  late final TextPainter _tp;
+  late final TextPainter _tp, _tpf;
   static double width = 0;
   bool isDead = false;
   double vpos;
@@ -45,19 +44,34 @@ class CommentObject {
   CommentObject(this._x, this._y, String comment, this.vpos) {
     // com = comment;
     // t = time;
-    _span = TextSpan(
-      text: comment,
-      style: const TextStyle(
-        color: Colors.white,
-        fontSize: 29,
-      ),
-    );
+    // _span =
     _tp = TextPainter(
-      text: _span,
+      text: TextSpan(
+        text: comment,
+        style: TextStyle(
+          fontSize: 29,
+          fontFamily: "Mincho",
+          foreground: Paint()
+            ..style = PaintingStyle.stroke
+            ..strokeWidth = 1
+            ..color = const Color.fromARGB(255, 70, 70, 70),
+        ),
+      ),
       textAlign: TextAlign.left,
       textDirection: TextDirection.ltr,
-    );
-    _tp.layout();
+    )..layout();
+    _tpf = TextPainter(
+      text: TextSpan(
+        text: comment,
+        style: const TextStyle(
+          fontFamily: "Mincho",
+          fontSize: 29,
+          color: Colors.white,
+        ),
+      ),
+      textAlign: TextAlign.left,
+      textDirection: TextDirection.ltr,
+    )..layout();
     _points = [
       Point(width, vpos),
       Point(width + _tp.width, vpos),
@@ -92,6 +106,7 @@ class CommentObject {
 
   void render(double t, Canvas canvas) {
     _tp.paint(canvas, Offset(_x, _y));
+    _tpf.paint(canvas, Offset(_x, _y));
   }
 
   void update(double dt, int time) {

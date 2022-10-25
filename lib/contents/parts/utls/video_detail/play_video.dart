@@ -31,7 +31,8 @@ class PlayVideoState extends State<PlayVideo> {
   Stream<MediaState> get _mediaStateStream =>
       Rx.combineLatest2<MediaItem?, Duration, MediaState>(
           audioHandler.mediaItem,
-          audioHandler.currentPosSubs,
+          // audioHandler.currentPosSubs,
+          AudioService.position,
           (mediaItem, position) => MediaState(mediaItem, position));
 
   Future<String> _getVideoController() async {
@@ -91,30 +92,27 @@ class PlayVideoState extends State<PlayVideo> {
   @override
   Widget build(BuildContext context) {
     final screenSize = MediaQuery.of(context).size;
+    final width = screenSize.height;
+    final height = screenSize.width;
     return FutureBuilder(
         future: _futureVideoViewController,
         builder: (context, snapshot) {
-          // if (snapshot.hasData) {
           if (snapshot.hasData) {
             return SizedBox(
-              width: screenSize.width,
-              height: screenSize.height,
+              width: width,
+              height: height,
               child: RotatedBox(
                 quarterTurns: 1, //or 2
                 child: Stack(alignment: Alignment.center, children: [
-                  // SizedBox(
-                  //     width: screenSize.height,
-                  //     height: screenSize.width,
-                  //     child: Container(
-                  //       width: screenSize.width,
-                  //       height: screenSize.width * 9 / 16,
-                  //       color: Colors.red,
-                  //     )),
-                  SizedBox(
-                    width: screenSize.height,
-                    height: screenSize.width,
-                    child: audioHandler.getPlayer(),
-                  ),
+                  StreamBuilder<MediaState>(
+                      stream: _mediaStateStream,
+                      builder: (__, _) {
+                        return SizedBox(
+                          width: height < width ? null : width,
+                          height: height < width ? height : null,
+                          child: audioHandler.getPlayer(),
+                        );
+                      }),
                   SizedBox(
                       width: screenSize.height,
                       height: screenSize.width,
@@ -123,8 +121,8 @@ class PlayVideoState extends State<PlayVideo> {
                         commentObjectList: _commentObjectList,
                       )),
                   SizedBox(
-                    width: screenSize.height,
-                    height: screenSize.width,
+                    width: width,
+                    height: height,
                     child: Consumer(builder: ((context, ref, child) {
                       return GestureDetector(
                           behavior: HitTestBehavior.opaque,
@@ -169,8 +167,15 @@ class PlayVideoState extends State<PlayVideo> {
                                                     AnimatedSizeIcon(
                                                       icon:
                                                           Icons.replay_10_sharp,
-                                                      size: 24,
-                                                      touchEvent: () {},
+                                                      size: 30,
+                                                      touchEvent: () {
+                                                        audioHandler.seek(audioHandler
+                                                                .playbackState
+                                                                .value
+                                                                .updatePosition +
+                                                            const Duration(
+                                                                seconds: -10));
+                                                      },
                                                     ),
                                                     const SpaceBox(width: 20),
                                                     StreamBuilder<bool>(
@@ -184,34 +189,32 @@ class PlayVideoState extends State<PlayVideo> {
                                                         final playing =
                                                             snapshot.data ??
                                                                 false;
-                                                        return playing
-                                                            ? AnimatedSizeIcon(
-                                                                icon:
-                                                                    Icons.pause,
-                                                                size: 35,
-                                                                touchEvent:
-                                                                    audioHandler
-                                                                        .pause,
-                                                              )
-                                                            : AnimatedSizeIcon(
-                                                                icon: Icons
+                                                        return AnimatedSizeIcon(
+                                                            icon: playing
+                                                                ? Icons.pause
+                                                                : Icons
                                                                     .play_arrow,
-                                                                size: 35,
-                                                                touchEvent:
-                                                                    audioHandler
-                                                                        .play,
-                                                              );
+                                                            size: 35,
+                                                            touchEvent: playing
+                                                                ? audioHandler
+                                                                    .pause
+                                                                : audioHandler
+                                                                    .play);
                                                       },
                                                     ),
                                                     const SpaceBox(width: 20),
-                                                    GestureDetector(
-                                                      onTap: () => audioHandler
-                                                          .seek(audioHandler
-                                                                  .currentPos +
-                                                              const Duration(
-                                                                  seconds: 10)),
-                                                      child: const Icon(Icons
-                                                          .forward_10_sharp),
+                                                    AnimatedSizeIcon(
+                                                      touchEvent: () {
+                                                        audioHandler.seek(audioHandler
+                                                                .playbackState
+                                                                .value
+                                                                .updatePosition +
+                                                            const Duration(
+                                                                seconds: 10));
+                                                      },
+                                                      icon: Icons
+                                                          .forward_10_sharp,
+                                                      size: 30,
                                                     ),
                                                   ],
                                                 )),
@@ -228,6 +231,7 @@ class PlayVideoState extends State<PlayVideo> {
                                                   builder: (context, snapshot) {
                                                     final mediaState =
                                                         snapshot.data;
+
                                                     _commentObjectList
                                                         .time = mediaState
                                                             ?.position
