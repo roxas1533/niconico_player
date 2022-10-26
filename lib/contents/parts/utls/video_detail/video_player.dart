@@ -93,6 +93,7 @@ class VideoPlayerHandler extends BaseAudioHandler
         processingState: const {
           VideoState.loading: AudioProcessingState.idle,
           VideoState.initialized: AudioProcessingState.ready,
+          VideoState.buffering: AudioProcessingState.buffering,
           VideoState.completed: AudioProcessingState.completed,
           VideoState.error: AudioProcessingState.error,
           VideoState.paused: AudioProcessingState.ready,
