@@ -86,7 +86,6 @@ class RankingState extends ConsumerState<Ranking>
 
   Future<List<String>> _getPopulerTag(String tag) async {
     List<String> tagList = [];
-    //TODO: キャッシュ対応
     http.Response resp = await http.get(Uri.parse(
         'https://www.nicovideo.jp/ranking/genre/$tag?video_ranking_menu'));
     if (resp.statusCode == 200) {

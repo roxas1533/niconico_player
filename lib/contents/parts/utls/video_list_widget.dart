@@ -6,14 +6,14 @@ import 'package:niconico/contents/parts/utls/thumnails.dart';
 import 'package:niconico/contents/parts/utls/video_counter.dart';
 import 'package:niconico/contents/parts/utls/video_title.dart';
 
-class RainkingWidget extends StatelessWidget {
-  const RainkingWidget({
+class VideoListWidget extends StatelessWidget {
+  const VideoListWidget({
     Key? key,
     required this.videoInfo,
-    required this.rank,
+    this.rank,
   }) : super(key: key);
   final VideoInfo videoInfo;
-  final int rank;
+  final int? rank;
 
   // This widget is the root of your application.
   @override
@@ -30,7 +30,7 @@ class RainkingWidget extends StatelessWidget {
             alignment: AlignmentDirectional.center,
             children: [
               Row(mainAxisAlignment: MainAxisAlignment.end, children: [
-                RankingNumber(rank: rank),
+                rank != null ? RankingNumber(rank: rank!) : Container(),
                 const Icon(Icons.arrow_forward_ios,
                     size: 15.0, color: Colors.grey),
                 const SpaceBox(width: 10),

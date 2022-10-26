@@ -51,7 +51,12 @@ class VideoInfo {
   final String lengthVideo;
   final String postedAt;
   String getPostedAtTime() {
-    DateTime datetime = DateFormat("yyyy年MM月dd日 hh：mm：ss").parse(postedAt);
+    late DateTime datetime;
+    try {
+      datetime = DateFormat("yyyy年MM月dd日 hh：mm：ss").parse(postedAt);
+    } catch (e) {
+      datetime = DateTime.parse(postedAt);
+    }
     DateTime now = DateTime.now();
     final difference = now.difference(datetime);
     final formatter = DateFormat('yyyy/MM/dd HH:mm:ss', "ja_JP");
@@ -176,6 +181,19 @@ class RankingParam {
   static final tag = StateProvider((ref) => "すべて");
   static final term = StateProvider((ref) => "24h");
   static final genreId = StateProvider((ref) => 0);
+}
+
+class SearchParam {
+  // static const termKey = {
+  //   "hour": "毎時",
+  //   "24h": "24時間",
+  //   "week": "週間(すべてのみ)",
+  //   "month": "月間(すべてのみ)",
+  //   "total": "全期間(すべてのみ)"
+  // };
+  static final searchWord = StateProvider((ref) => "");
+  // static final term = StateProvider((ref) => "24h");
+  // static final genreId = StateProvider((ref) => 0);
 }
 
 class Point {

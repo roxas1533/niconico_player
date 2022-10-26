@@ -7,7 +7,7 @@ import 'package:niconico/constant.dart';
 import 'package:niconico/contents/parts/utls/video_detail.dart';
 import 'package:webfeed/webfeed.dart';
 
-import 'ranking_widget.dart';
+import '../utls/video_list_widget.dart';
 
 class RainkingPage extends ConsumerWidget {
   const RainkingPage({
@@ -18,7 +18,8 @@ class RainkingPage extends ConsumerWidget {
   final String tag;
   final String genreId;
 
-  // This widget is the root of your application.
+  // void setTerm
+
   @override
   Widget build(BuildContext context, WidgetRef ref) {
     return FutureBuilder(
@@ -26,11 +27,8 @@ class RainkingPage extends ConsumerWidget {
         builder:
             (BuildContext context, AsyncSnapshot<List<VideoInfo>> snapshot) {
           if (snapshot.hasData) {
-            return
-                // Flexible(
-                Scrollbar(
-                    child: ListView.builder(
-              // controller: _scrollController,
+            return Scrollbar(
+                child: ListView.builder(
               padding: const EdgeInsets.only(top: 5),
               itemCount: snapshot.data!.length,
               itemBuilder: (BuildContext context, int index) {
@@ -43,7 +41,7 @@ class RainkingPage extends ConsumerWidget {
                                   videoId: VideoInfo.extractVideoId(
                                       snapshot.data![index].videoId)!)));
                     },
-                    child: RainkingWidget(
+                    child: VideoListWidget(
                       videoInfo: snapshot.data![index],
                       rank: index + 1,
                     ));

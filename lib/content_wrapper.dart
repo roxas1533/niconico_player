@@ -25,17 +25,5 @@ class Content extends ConsumerWidget {
         Other(),
       ],
     );
-    // switch (ref.watch(naviSelectIndex)) {
-    //   case 0:
-    //     return const Ranking();
-    //   case 1:
-    //     return const Search();
-    //   case 2:
-    //     return const History();
-    //   case 3:
-    //     return const Nicorepo();
-    //   case 4:
-    //     return const Other();
-    // }
   }
 }
