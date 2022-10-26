@@ -108,7 +108,8 @@ class VideoPlayerHandler extends BaseAudioHandler
           if (stoped) {
             timer.cancel();
           } else if (_heartBeat != null) {
-            c.time = _videoViewController?.value.position.inMilliseconds ?? 0;
+            _videoViewController!.position
+                .then((value) => c.time = value?.inMilliseconds ?? 0);
           }
         });
         Timer.periodic(const Duration(seconds: 40), (timer) {
