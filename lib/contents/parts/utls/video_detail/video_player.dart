@@ -91,7 +91,8 @@ class VideoPlayerHandler extends BaseAudioHandler
         },
         androidCompactActionIndices: const [0, 1, 3],
         processingState: const {
-          VideoState.initialized: AudioProcessingState.loading,
+          VideoState.loading: AudioProcessingState.idle,
+          VideoState.initialized: AudioProcessingState.ready,
           VideoState.completed: AudioProcessingState.completed,
           VideoState.error: AudioProcessingState.error,
           VideoState.paused: AudioProcessingState.ready,
