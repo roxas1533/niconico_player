@@ -231,12 +231,6 @@ class PlayVideoState extends State<PlayVideo> {
                                                   builder: (context, snapshot) {
                                                     final mediaState =
                                                         snapshot.data;
-
-                                                    _commentObjectList
-                                                        .time = mediaState
-                                                            ?.position
-                                                            .inMilliseconds ??
-                                                        0;
                                                     return SeekBar(
                                                       duration: mediaState
                                                               ?.mediaItem

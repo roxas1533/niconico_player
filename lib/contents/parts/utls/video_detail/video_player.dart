@@ -78,6 +78,7 @@ class VideoPlayerHandler extends BaseAudioHandler
     _videoViewController!.addListener(() {
       final playing = _videoViewController!.value.isPlaying;
       c.isPlaying = playing;
+
       playbackState.add(playbackState.value.copyWith(
         controls: [
           MediaControl.skipToPrevious,
@@ -103,9 +104,13 @@ class VideoPlayerHandler extends BaseAudioHandler
       ));
       if (!initialized && _videoViewController!.value.isPlaying) {
         initialized = true;
-        // Timer.periodic(const Duration(milliseconds: 100), (Timer timer) async {
-        //   print(await _videoViewController!.position);
-        // });
+        Timer.periodic(const Duration(milliseconds: 100), (Timer timer) async {
+          if (stoped) {
+            timer.cancel();
+          } else if (_heartBeat != null) {
+            c.time = _videoViewController?.value.position.inMilliseconds ?? 0;
+          }
+        });
         Timer.periodic(const Duration(seconds: 40), (timer) {
           if (stoped) {
             timer.cancel();
