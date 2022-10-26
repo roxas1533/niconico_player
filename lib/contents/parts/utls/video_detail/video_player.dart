@@ -81,10 +81,9 @@ class VideoPlayerHandler extends BaseAudioHandler
 
       playbackState.add(playbackState.value.copyWith(
         controls: [
-          MediaControl.skipToPrevious,
+          MediaControl.rewind,
           if (playing) MediaControl.pause else MediaControl.play,
-          MediaControl.stop,
-          MediaControl.skipToNext,
+          MediaControl.fastForward,
         ],
         systemActions: const {
           MediaAction.seek,
