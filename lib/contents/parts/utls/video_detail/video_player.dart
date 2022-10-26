@@ -96,7 +96,7 @@ class VideoPlayerHandler extends BaseAudioHandler
           VideoState.error: AudioProcessingState.error,
           VideoState.paused: AudioProcessingState.ready,
           VideoState.started: AudioProcessingState.ready,
-        }[getState(_videoViewController!.value)]!,
+        }[getState(_videoViewController?.value)]!,
         playing: playing,
         updatePosition: _videoViewController!.value.position,
         // bufferedPosition: _videoViewController!.value.bu,
@@ -166,6 +166,7 @@ class _HeartBeat {
 }
 
 enum VideoState {
+  loading,
   initialized,
   buffering,
   completed,
@@ -174,20 +175,20 @@ enum VideoState {
   started,
 }
 
-VideoState getState(VideoPlayerValue value) {
-  if (value.isInitialized) {
-    if (value.hasError) {
-      return VideoState.error;
-    } else if (value.isPlaying) {
-      return VideoState.started;
-    } else if (value.isBuffering) {
-      return VideoState.buffering;
-    } else if (value.position == value.duration) {
-      return VideoState.completed;
-    } else {
-      return VideoState.paused;
-    }
-  } else {
+VideoState getState(VideoPlayerValue? value) {
+  if (value == null) {
+    return VideoState.loading;
+  } else if (value.hasError) {
+    return VideoState.error;
+  } else if (value.isBuffering) {
+    return VideoState.buffering;
+  } else if (value.isPlaying) {
+    return VideoState.started;
+  } else if (value.isInitialized) {
     return VideoState.initialized;
+  } else if (value.position == value.duration) {
+    return VideoState.completed;
+  } else {
+    return VideoState.paused;
   }
 }
