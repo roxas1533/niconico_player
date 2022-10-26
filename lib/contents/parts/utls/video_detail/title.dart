@@ -29,15 +29,21 @@ class VideoDetailTitle extends StatelessWidget {
         child: Container(
           margin: const EdgeInsets.all(8.0),
           width: screenSize.width,
-          height: screenSize.height * 0.106875,
+          height: screenSize.height * 0.19 * (3 / 4),
           child: Row(
             children: [
-              Image.network(
-                video.thumbnailUrl,
-                alignment: Alignment.center,
-                width: screenSize.height * 0.19,
-                fit: BoxFit.cover,
-              ),
+              Container(
+                  color: Colors.black,
+                  width: screenSize.height * 0.19,
+                  height: screenSize.height * 0.19 * (3 / 4),
+                  child: AspectRatio(
+                      aspectRatio: 4 / 3,
+                      child: Image.network(
+                        video.thumbnailUrl,
+                        alignment: Alignment.center,
+                        width: screenSize.height * 0.19,
+                        fit: BoxFit.fitWidth,
+                      ))),
               Expanded(
                   child: Container(
                       padding: const EdgeInsets.symmetric(horizontal: 6.0),
