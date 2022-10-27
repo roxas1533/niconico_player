@@ -6,7 +6,7 @@ import 'package:intl/date_symbol_data_local.dart';
 
 import "constant.dart";
 import 'content_wrapper.dart';
-import 'contents/parts/utls/video_detail/video_player.dart';
+import 'contents/parts/utls/video_detail/video_player/video_player.dart';
 import 'footer.dart';
 import 'header.dart';
 

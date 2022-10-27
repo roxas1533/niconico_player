@@ -1,7 +1,8 @@
+import 'package:audio_service/audio_service.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import "package:intl/intl.dart";
 
-import 'contents/parts/utls/video_detail/video_player.dart';
+import 'contents/parts/utls/video_detail/video_player/video_player.dart';
 
 // import 'package:flutter/foundation.dart';
 late VideoPlayerHandler audioHandler;
@@ -220,4 +221,11 @@ class Point {
     }
     return true;
   }
+}
+
+class MediaState {
+  final MediaItem? mediaItem;
+  final Duration position;
+
+  MediaState(this.mediaItem, this.position);
 }

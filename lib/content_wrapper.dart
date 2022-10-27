@@ -20,9 +20,9 @@ class Content extends ConsumerWidget {
       children: <Widget>[
         const Ranking(),
         Search(),
-        History(),
-        Nicorepo(),
-        Other(),
+        const History(),
+        const Nicorepo(),
+        const Other(),
       ],
     );
   }

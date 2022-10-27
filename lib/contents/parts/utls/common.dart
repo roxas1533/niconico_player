@@ -1,32 +1,40 @@
 import 'dart:math';
 
-// import 'package:audio_service/audio_service.dart';
 import 'package:flutter/material.dart';
 import 'package:niconico/constant.dart';
 
-// import 'package:rxdart/rxdart.dart';
 class PositionData {
-  final Duration position;
-  final Duration bufferedPosition;
-  final Duration duration;
+  final Duration? position;
+  final Duration? duration;
 
-  PositionData(this.position, this.bufferedPosition, this.duration);
+  String get getStringPosition => position != null
+      ? VideoDetailInfo.secToTime(position!.inSeconds)
+      : '--:--';
+
+  double get getValuePosition =>
+      position != null ? position!.inMilliseconds.toDouble() : 0.0;
+
+  String get getStringDuration => duration != null
+      ? VideoDetailInfo.secToTime(duration!.inSeconds)
+      : '--:--';
+
+  double get getValueDuration =>
+      duration != null ? duration!.inMilliseconds.toDouble() : 0.0;
+
+  PositionData(this.position, this.duration);
 }
 
 class SeekBar extends StatefulWidget {
-  final Duration duration;
-  final Duration position;
-  final Duration bufferedPosition;
+  final PositionData positionData;
+
   final double pWidth;
   final ValueChanged<Duration>? onChanged;
   final ValueChanged<Duration>? onChangeEnd;
 
   const SeekBar({
     Key? key,
-    required this.duration,
-    required this.position,
+    required this.positionData,
     required this.pWidth,
-    this.bufferedPosition = Duration.zero,
     this.onChanged,
     this.onChangeEnd,
   }) : super(key: key);
@@ -46,8 +54,8 @@ class SeekBarState extends State<SeekBar> {
   @override
   Widget build(BuildContext context) {
     final value = min(
-      _dragValue ?? widget.position.inMilliseconds.toDouble(),
-      widget.duration.inMilliseconds.toDouble(),
+      _dragValue ?? widget.positionData.getValuePosition,
+      widget.positionData.getValueDuration,
     );
     if (_dragValue != null && !_dragging) {
       _dragValue = null;
@@ -57,7 +65,7 @@ class SeekBarState extends State<SeekBar> {
         child: Row(
           children: [
             Text(
-              VideoDetailInfo.secToTime(widget.position.inSeconds),
+              widget.positionData.getStringPosition,
               style: const TextStyle(
                 fontSize: 12,
               ),
@@ -73,7 +81,7 @@ class SeekBarState extends State<SeekBar> {
                       const RoundSliderThumbShape(enabledThumbRadius: 5)),
               child: Slider(
                 min: 0.0,
-                max: widget.duration.inMilliseconds.toDouble(),
+                max: widget.positionData.getValueDuration,
                 value: value,
                 onChanged: (value) {
                   if (!_dragging) {
@@ -98,7 +106,7 @@ class SeekBarState extends State<SeekBar> {
               width: 5,
             ),
             Text(
-              VideoDetailInfo.secToTime(widget.duration.inSeconds),
+              widget.positionData.getStringDuration,
               style: const TextStyle(
                 fontSize: 12,
               ),
