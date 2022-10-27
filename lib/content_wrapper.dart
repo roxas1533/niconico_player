@@ -17,8 +17,8 @@ class Content extends ConsumerWidget {
   Widget build(BuildContext context, WidgetRef ref) {
     return IndexedStack(
       index: ref.watch(naviSelectIndex),
-      children: const <Widget>[
-        Ranking(),
+      children: <Widget>[
+        const Ranking(),
         Search(),
         History(),
         Nicorepo(),

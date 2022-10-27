@@ -10,13 +10,14 @@ import 'package:webfeed/webfeed.dart';
 import '../utls/video_list_widget.dart';
 
 class RainkingPage extends ConsumerWidget {
-  const RainkingPage({
+  RainkingPage({
     Key? key,
     required this.genreId,
     required this.tag,
   }) : super(key: key);
   final String tag;
   final String genreId;
+  final _scrollController = ScrollController();
 
   // void setTerm
 
@@ -29,6 +30,9 @@ class RainkingPage extends ConsumerWidget {
           if (snapshot.hasData) {
             return Scrollbar(
                 child: ListView.builder(
+              controller: _scrollController,
+              primary: false,
+              shrinkWrap: true,
               padding: const EdgeInsets.only(top: 5),
               itemCount: snapshot.data!.length,
               itemBuilder: (BuildContext context, int index) {

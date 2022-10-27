@@ -8,9 +8,10 @@ import 'package:niconico/contents/parts/utls/video_detail.dart';
 import 'package:niconico/contents/parts/utls/video_list_widget.dart';
 
 class Search extends ConsumerWidget {
-  const Search({
+  Search({
     Key? key,
   }) : super(key: key);
+  final _scrollController = ScrollController();
 
   @override
   Widget build(BuildContext context, WidgetRef ref) {
@@ -19,25 +20,32 @@ class Search extends ConsumerWidget {
         builder:
             (BuildContext context, AsyncSnapshot<List<VideoInfo>> snapshot) {
           if (snapshot.hasData) {
+            // if (snapshot.data!.isEmpty) {
+            //   return Container(
+            //     alignment: Alignment.center,
+            //     child: const Text('検索結果がありません'),
+            //   );
+            // }
             return Scrollbar(
+                controller: _scrollController,
                 child: ListView.builder(
-              padding: const EdgeInsets.only(top: 5),
-              itemCount: snapshot.data!.length,
-              itemBuilder: (BuildContext context, int index) {
-                return InkWell(
-                    onTap: () {
-                      Navigator.push(
-                          context,
-                          MaterialPageRoute(
-                              builder: (context) => VideoDetail(
-                                  videoId: VideoInfo.extractVideoId(
-                                      snapshot.data![index].videoId)!)));
-                    },
-                    child: VideoListWidget(
-                      videoInfo: snapshot.data![index],
-                    ));
-              },
-            ));
+                  padding: const EdgeInsets.only(top: 5),
+                  itemCount: snapshot.data!.length,
+                  itemBuilder: (BuildContext context, int index) {
+                    return InkWell(
+                        onTap: () {
+                          Navigator.push(
+                              context,
+                              MaterialPageRoute(
+                                  builder: (context) => VideoDetail(
+                                      videoId: VideoInfo.extractVideoId(
+                                          snapshot.data![index].videoId)!)));
+                        },
+                        child: VideoListWidget(
+                          videoInfo: snapshot.data![index],
+                        ));
+                  },
+                ));
           } else {
             return Container(
                 alignment: Alignment.center,
@@ -58,7 +66,7 @@ class Search extends ConsumerWidget {
     const fields =
         "contentId,title,viewCounter,startTime,lengthSeconds,thumbnailUrl,commentCounter,mylistCounter,likeCounter";
     http.Response resp = await http.get(Uri.parse(
-        "${baseUrl}q=${Uri.encodeFull(word)}&targets=title&fields=$fields&_sort=-viewCounter&_offset=0&_limit=30&_context=smileplayer"));
+        "${baseUrl}q=${Uri.encodeFull(word)}&targets=title&fields=$fields&_sort=-viewCounter&_offset=0&_limit=3&_context=smileplayer"));
 
     if (resp.statusCode == 200) {
       final Map<String, dynamic> result = json.decode(resp.body);

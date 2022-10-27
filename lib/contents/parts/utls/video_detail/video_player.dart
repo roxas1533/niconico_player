@@ -105,7 +105,7 @@ class VideoPlayerHandler extends BaseAudioHandler
       ));
       if (!initialized && _videoViewController!.value.isPlaying) {
         initialized = true;
-        Timer.periodic(const Duration(milliseconds: 100), (Timer timer) async {
+        Timer.periodic(const Duration(milliseconds: 33), (Timer timer) async {
           if (stoped) {
             timer.cancel();
           } else if (_heartBeat != null) {

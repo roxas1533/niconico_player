@@ -34,6 +34,7 @@ class CommentObject {
   double _x, _y;
   late List<Point> _points;
   late final TextPainter _tp;
+  late final TextPainter _ts;
   static double width = 0;
   bool isDead = false;
   double vpos;
@@ -55,12 +56,27 @@ class CommentObject {
           color: Colors.white,
           shadows: <Shadow>[
             Shadow(
-              offset: Offset(2.0, -2.0),
-              color: Color.fromARGB(255, 65, 65, 65),
+              offset: Offset(1.3, -1.3),
+              color: Color.fromARGB(255, 104, 104, 104),
             ),
           ],
         ),
       ),
+      textAlign: TextAlign.left,
+      textDirection: TextDirection.ltr,
+    )..layout();
+    _ts = TextPainter(
+      text: TextSpan(
+          text: comment,
+          style: TextStyle(
+            fontSize: 29,
+            fontFamily: "msgothic",
+            fontWeight: FontWeight.w600,
+            foreground: Paint()
+              ..style = PaintingStyle.stroke
+              ..strokeWidth = 2
+              ..color = const Color.fromARGB(255, 104, 104, 104),
+          )),
       textAlign: TextAlign.left,
       textDirection: TextDirection.ltr,
     )..layout();
@@ -98,6 +114,8 @@ class CommentObject {
   }
 
   void render(double t, Canvas canvas) {
+    _ts.paint(canvas, Offset(_x, _y));
+
     _tp.paint(canvas, Offset(_x, _y));
   }
 
