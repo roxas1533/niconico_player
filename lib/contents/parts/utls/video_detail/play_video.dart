@@ -53,6 +53,7 @@ class PlayVideoState extends State<PlayVideo> {
 
     Map<String, dynamic> commentData =
         json.decode(utf8.decode(commentDataResPonse.bodyBytes));
+
     _commentObjectList = CommentObjectList(commentData);
 
     await audioHandler.playerInit(

@@ -1,4 +1,5 @@
 import 'package:audio_service/audio_service.dart';
+import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import "package:intl/intl.dart";
 
@@ -222,6 +223,52 @@ class Point {
     return true;
   }
 }
+
+const commentColor = {
+  "white": Colors.white,
+  "black": Colors.black,
+  "red": Color(0xFFFF0000),
+  "pink": Color(0xFFFF8080),
+  "purple": Color(0xFFc080FF),
+  "blue": Color(0xFF0000FF),
+  "cyan": Color(0xFF00FFFF),
+  "green": Color(0xFF00FF00),
+  "yellow": Color(0xFFFFFF00),
+  "orange": Color(0xFFFFC000),
+  "niconicowhite": Color(0xFFCCCC99),
+  "white2": Color(0xFFCCCC99),
+  "truered": Color(0xFFCC0033),
+  "red2": Color(0xFFCC0033),
+  "passionorange": Color(0xFFFF6600),
+  "orange2": Color(0xFFFF6600),
+  "madyellow": Color(0xFF999900),
+  "yellow2": Color(0xFF999900),
+  "elementalgreen": Color(0xFF00CC66),
+  "green2": Color(0xFF00CC66),
+  "marineblue": Color(0xFF3399FF),
+  "blue2": Color(0xFF3399FF),
+  "nobleviolet": Color(0xFF6633CC),
+  "purple2": Color(0xFF6633CC),
+  "black2": Color(0xFF666666),
+};
+
+const commentSize = {
+  "small": 0.55,
+  "medium": 1.0,
+  "big": 1.55,
+};
+
+enum CommentPositoinState {
+  ue,
+  shita,
+  naka,
+}
+
+const commetPositoin = {
+  "ue": CommentPositoinState.ue,
+  "shita": CommentPositoinState.shita,
+  "naka": CommentPositoinState.naka,
+};
 
 class MediaState {
   final MediaItem? mediaItem;

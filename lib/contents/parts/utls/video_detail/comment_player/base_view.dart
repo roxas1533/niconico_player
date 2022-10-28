@@ -1,3 +1,5 @@
+import 'dart:math';
+
 import 'package:flutter/material.dart';
 import 'package:niconico/constant.dart';
 
@@ -20,10 +22,7 @@ class CommentPainter extends CustomPainter {
   @override
   void paint(Canvas canvas, Size size) {
     commentList.update(t);
-    commentList.render(
-      t,
-      canvas,
-    );
+    commentList.render(t, canvas);
   }
 
   @override
@@ -35,33 +34,31 @@ class CommentObject {
   late List<Point> _points;
   late final TextPainter _tp;
   late final TextPainter _ts;
-  static double width = 0;
-  bool isDead = false;
-  double vpos;
+  static double playerWidth = 0;
+  static double playerHeight = 0;
+  late final double height;
+  final CommentDataObject commentDataObject;
+  bool isPosLock = false;
 
   // for debug
   // late String com;
 
-  CommentObject(this._x, this._y, String comment, this.vpos) {
-    // com = comment;
-    // t = time;
-    // _span =
-    _tp = TextPainter(
-      text: TextSpan(
-        text: comment,
-        style: const TextStyle(
-          fontSize: 29,
-          fontFamily: "msgothic",
-          fontWeight: FontWeight.w600,
-          color: Colors.white,
-          shadows: <Shadow>[
-            Shadow(
-              offset: Offset(1.3, -1.3),
-              color: Color.fromARGB(255, 104, 104, 104),
-            ),
-          ],
+  CommentObject(this._x, this._y, this.commentDataObject) {
+    final comment = commentDataObject.comment;
+    final ts = TextStyle(
+      fontSize: commentDataObject.fontSize,
+      fontFamily: commentDataObject.fontName,
+      fontWeight: FontWeight.w600,
+      color: commentDataObject.color,
+      shadows: const <Shadow>[
+        Shadow(
+          offset: Offset(1.3, -1.3),
+          color: Color.fromARGB(255, 104, 104, 104),
         ),
-      ),
+      ],
+    );
+    _tp = TextPainter(
+      text: TextSpan(text: comment, style: ts),
       textAlign: TextAlign.left,
       textDirection: TextDirection.ltr,
     )..layout();
@@ -69,8 +66,8 @@ class CommentObject {
       text: TextSpan(
           text: comment,
           style: TextStyle(
-            fontSize: 29,
-            fontFamily: "msgothic",
+            fontSize: commentDataObject.fontSize,
+            fontFamily: commentDataObject.fontName,
             fontWeight: FontWeight.w600,
             foreground: Paint()
               ..style = PaintingStyle.stroke
@@ -80,12 +77,21 @@ class CommentObject {
       textAlign: TextAlign.left,
       textDirection: TextDirection.ltr,
     )..layout();
+    height = _tp.height;
+    if (commentDataObject.pos == CommentPositoinState.shita) {
+      _y = playerHeight - height - 10;
+    }
+    if (playerHeight <= height) {
+      isPosLock = true;
+    }
+    final myTime =
+        (commentDataObject.pos == CommentPositoinState.naka) ? 4000 : 3000;
 
     _points = [
-      Point(width, vpos),
-      Point(width + _tp.width, vpos),
-      Point(0, vpos + 4000),
-      Point(-_tp.width, vpos + 4000),
+      Point(playerWidth, commentDataObject.vpos.toDouble()),
+      Point(playerWidth + _tp.width, commentDataObject.vpos.toDouble()),
+      Point(0, commentDataObject.vpos.toDouble() + myTime),
+      Point(-_tp.width, commentDataObject.vpos.toDouble() + myTime),
     ];
   }
 
@@ -109,32 +115,40 @@ class CommentObject {
     return false;
   }
 
-  void setPosType(int type) {
-    _y = 30 * type.toDouble();
-  }
-
-  void render(double t, Canvas canvas) {
-    _ts.paint(canvas, Offset(_x, _y));
-
-    _tp.paint(canvas, Offset(_x, _y));
+  void render(double t, Canvas canvas, int time) {
+    if (commentDataObject.pos == CommentPositoinState.naka) {
+      if (_x < playerWidth && _x + _tp.width > 0) {
+        _ts.paint(canvas, Offset(_x, _y));
+        _tp.paint(canvas, Offset(_x, _y));
+      }
+    } else if (time >= commentDataObject.vpos &&
+        time <= commentDataObject.vpos + 3000) {
+      _ts.paint(canvas, Offset(_x, _y));
+      _tp.paint(canvas, Offset(_x, _y));
+    }
   }
 
   void update(double dt, int time) {
-    // final double speed = ((width + _tp.width) / (4000)) * (dt * 1000);
-    final double speed = ((width + _tp.width) / (4000));
-    final relativeTime = vpos - time;
-    // debugPrint("$time,$relativeTime");
+    if (commentDataObject.pos == CommentPositoinState.naka) {
+      final double speed = ((playerWidth + _tp.width) / (4000));
+      final relativeTime = commentDataObject.vpos - time;
 
-    // _x -= speed;
-    _x = relativeTime * speed + width / 2;
-    if (_x + _tp.width < 0) {
-      isDead = true;
+      // _x -= speed;
+      _x = relativeTime * speed + playerWidth / 2 - _tp.width / 2;
+    } else {
+      _x = playerWidth / 2 - _tp.width / 2;
     }
   }
 }
 
 class CommentObjectList {
-  List<List<CommentObject>> list = List.generate(11, (_) => []);
+  final Map<CommentPositoinState, List<List<CommentObject>>> commentList = {
+    CommentPositoinState.naka: List.generate(11, (_) => []),
+    CommentPositoinState.ue: List.generate(11, (_) => []),
+    CommentPositoinState.shita: List.generate(11, (_) => []),
+  };
+  List<CommentObject> random = [];
+
   int time = 0;
   bool isPlaying = false;
   List<CommentDataObject> commentDataList = [];
@@ -143,53 +157,73 @@ class CommentObjectList {
     for (final thread in threads) {
       final comments = thread["comments"];
       for (final comment in comments) {
+        comment["commands"] = comment["commands"].cast<String>();
         commentDataList.add(CommentDataObject(
-            comment["body"], comment["vposMs"], comment["nicoruCount"]));
+          comment: comment["body"],
+          vpos: comment["vposMs"],
+          nicoruCount: comment["nicoruCount"],
+          color: parseCommandColor(comment["commands"]),
+          fontSize: 29 * parseCommandSize(comment["commands"]),
+          pos: parseCommandPos(comment["commands"]),
+          fontName: parseCommandFont(comment["commands"]),
+        ));
       }
     }
     commentDataList.sort((a, b) => a.vpos.compareTo(b.vpos));
   }
 
   void add(CommentObject comment) {
-    for (int i = 0; i < list.length; i++) {
-      if (list[i].isEmpty) {
-        list[i].add(comment);
-        // for debug
-        // print("${comment.com},$i,${comment._points},${comment.t}");
-        break;
-      }
-      if (comment.calcuatePos(list[i].last)) {
-        comment.setPosType(i + 1);
-        continue;
-      }
-      list[i].add(comment);
+    for (final n in commentList[comment.commentDataObject.pos]!) {
+      if (n.isEmpty || comment.isPosLock) {
+        n.add(comment);
 
-      break;
+        return;
+      }
+      if (comment.commentDataObject.pos == CommentPositoinState.naka) {
+        if (comment.calcuatePos(n.last)) {
+          comment._y = n.last._y + n.last.commentDataObject.fontSize + 10;
+          continue;
+        }
+      } else {
+        if (comment.commentDataObject.vpos <=
+            n.last.commentDataObject.vpos + 3000) {
+          var offsetY = n.last.commentDataObject.fontSize + 10;
+          if (comment.commentDataObject.pos == CommentPositoinState.shita) {
+            offsetY *= -1;
+          }
+          comment._y = n.last._y + offsetY;
+          continue;
+        }
+      }
+
+      n.add(comment);
+      return;
     }
+    comment._y =
+        Random().nextDouble() * (CommentObject.playerHeight - comment.height);
+    random.add(comment);
   }
 
   void update(double t) {
     if (isPlaying) {
       time += (t * 1000).toInt();
-      for (final List<CommentObject> commentPos in list) {
-        for (final CommentObject comment in commentPos) {
-          comment.update(t, time);
+      for (final pos in commentList.values) {
+        for (final list in pos) {
+          for (final comment in list) {
+            comment.update(t, time);
+          }
         }
       }
     }
   }
 
   void render(double t, Canvas canvas) {
-    for (final List<CommentObject> commentPos in list) {
-      for (final CommentObject comment in commentPos) {
-        comment.render(t, canvas);
+    for (final pos in commentList.values) {
+      for (final list in pos) {
+        for (final comment in list) {
+          comment.render(t, canvas, time);
+        }
       }
-    }
-  }
-
-  void removeDead() {
-    for (final List<CommentObject> commentPos in list) {
-      commentPos.removeWhere((element) => element.isDead);
     }
   }
 }
@@ -197,9 +231,21 @@ class CommentObjectList {
 class CommentDataObject {
   final String comment;
   final int vpos;
-  int nicoruCount;
+  final int nicoruCount;
+  final double fontSize;
+  final Color color;
+  final CommentPositoinState pos;
+  final String fontName;
   bool isCommented = false;
-  CommentDataObject(this.comment, this.vpos, this.nicoruCount);
+  CommentDataObject({
+    required this.comment,
+    required this.vpos,
+    required this.nicoruCount,
+    required this.fontSize,
+    required this.color,
+    required this.pos,
+    required this.fontName,
+  });
 }
 
 class _CommentPlayerState extends State<CommentPlayer>
@@ -213,44 +259,28 @@ class _CommentPlayerState extends State<CommentPlayer>
 
   @override
   Widget build(BuildContext context) {
-    CommentObject.width = widget.screenSize.height;
+    CommentObject.playerWidth = widget.screenSize.height;
+    CommentObject.playerHeight = widget.screenSize.width;
     for (final commentdata in widget.commentObjectList.commentDataList) {
       // if (!commentdata.isCommented &&
       //     commentdata.vpos <= widget.commentObjectList.time) {
       // commentdata.isCommented = true;
-      widget.commentObjectList.add(CommentObject(widget.screenSize.height, 0,
-          commentdata.comment, commentdata.vpos.toDouble()));
+      widget.commentObjectList
+          .add(CommentObject(widget.screenSize.height, 10, commentdata));
       // break;
       // }
     }
     return AnimatedBuilder(
       animation: _animation,
       builder: (BuildContext contex, Widget? child) {
-        // widget.commentObjectList.removeDead();
         final curr = currentTime;
         final dt = curr - previous;
         previous = curr;
-        // if (widget.commentObjectList.isPlaying) {
-
-        // }
         return CustomPaint(
           size: widget.screenSize,
           painter: CommentPainter(widget.commentObjectList, dt),
         );
       },
-      // ),
-      // floatingActionButton: FloatingActionButton(
-      //   onPressed: () {
-      //     setState(() {});
-      //     final newComment = CommentObject(
-      //         widget.screenSize.height,
-      //         0,
-      //         [for (int i = 0; i < Random().nextInt(26) + 1; i++) "a"].join(""),
-      //         widget.screenSize.height);
-      //     commentList.add(newComment);
-      //   },
-      //   child: const Icon(Icons.add),
-      // ),
     );
   }
 
@@ -269,4 +299,46 @@ class _CommentPlayerState extends State<CommentPlayer>
     _controller.dispose();
     super.dispose();
   }
+}
+
+Color parseCommandColor(List<String> command) {
+  for (final c in command) {
+    if (c.startsWith("#")) {
+      return Color(int.parse(c.substring(1), radix: 16));
+    }
+    final color = commentColor[c];
+    if (color != null) {
+      return color;
+    }
+  }
+  return Colors.white;
+}
+
+double parseCommandSize(List<String> command) {
+  for (final c in command) {
+    final size = commentSize[c];
+    if (size != null) {
+      return size;
+    }
+  }
+  return 1.0;
+}
+
+CommentPositoinState parseCommandPos(List<String> command) {
+  for (final c in command) {
+    final pos = commetPositoin[c];
+    if (pos != null) {
+      return pos;
+    }
+  }
+  return CommentPositoinState.naka;
+}
+
+String parseCommandFont(List<String> command) {
+  for (final c in command) {
+    if (c == "mincho" || c == "gothic") {
+      return c;
+    }
+  }
+  return "msgothic";
 }
