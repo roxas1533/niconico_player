@@ -4,7 +4,7 @@ import 'dart:convert';
 import 'package:audio_service/audio_service.dart';
 import 'package:flutter/material.dart';
 import 'package:http/http.dart' as http;
-import 'package:niconico/contents/parts/utls/video_detail/comment_player/base_view.dart';
+import 'package:niconico/contents/parts/utls/video_detail/comment_player/comment.dart';
 import 'package:video_player/video_player.dart';
 
 class VideoPlayerHandler extends BaseAudioHandler

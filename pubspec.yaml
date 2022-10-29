@@ -98,6 +98,9 @@ flutter:
         - family: gothic
           fonts:
               - asset: assets/fonts/YuGothR.ttc
+        - family: cour
+          fonts:
+              - asset: assets/fonts/cour.ttf
 
     #   - family: Trajan Pro
     #     fonts:

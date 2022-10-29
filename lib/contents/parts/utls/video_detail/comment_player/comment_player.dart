@@ -1,7 +1,6 @@
-import 'dart:math';
-
 import 'package:flutter/material.dart';
 import 'package:niconico/constant.dart';
+import 'package:niconico/contents/parts/utls/video_detail/comment_player/comment.dart';
 
 class CommentPlayer extends StatefulWidget {
   final Size screenSize;
@@ -30,7 +29,7 @@ class CommentPainter extends CustomPainter {
 }
 
 class CommentObject {
-  double _x, _y;
+  double _x, y;
   late List<Point> _points;
   late final TextPainter _tp;
   late final TextPainter _ts;
@@ -40,15 +39,18 @@ class CommentObject {
   final CommentDataObject commentDataObject;
   bool isPosLock = false;
 
-  // for debug
-  // late String com;
-
-  CommentObject(this._x, this._y, this.commentDataObject) {
+  CommentObject(this._x, this.y, this.commentDataObject) {
     final comment = commentDataObject.comment;
+    if (!commentDataObject.ender) {
+      commentDataObject.fontSize = _checkResize(commentDataObject);
+    }
+
     final ts = TextStyle(
       fontSize: commentDataObject.fontSize,
       fontFamily: commentDataObject.fontName,
+      fontFamilyFallback: const ["msgothic", "cour"],
       fontWeight: FontWeight.w600,
+      height: 1,
       color: commentDataObject.color,
       shadows: const <Shadow>[
         Shadow(
@@ -68,7 +70,9 @@ class CommentObject {
           style: TextStyle(
             fontSize: commentDataObject.fontSize,
             fontFamily: commentDataObject.fontName,
+            fontFamilyFallback: const ["msgothic", "cour"],
             fontWeight: FontWeight.w600,
+            height: 1,
             foreground: Paint()
               ..style = PaintingStyle.stroke
               ..strokeWidth = 2
@@ -79,10 +83,13 @@ class CommentObject {
     )..layout();
     height = _tp.height;
     if (commentDataObject.pos == CommentPositoinState.shita) {
-      _y = playerHeight - height - 10;
+      y = playerHeight - height - 10;
     }
     if (playerHeight <= height) {
       isPosLock = true;
+      if (commentDataObject.pos == CommentPositoinState.naka) {
+        y = playerHeight / 2 - height / 2;
+      }
     }
     final myTime =
         (commentDataObject.pos == CommentPositoinState.naka) ? 4000 : 3000;
@@ -118,13 +125,13 @@ class CommentObject {
   void render(double t, Canvas canvas, int time) {
     if (commentDataObject.pos == CommentPositoinState.naka) {
       if (_x < playerWidth && _x + _tp.width > 0) {
-        _ts.paint(canvas, Offset(_x, _y));
-        _tp.paint(canvas, Offset(_x, _y));
+        _ts.paint(canvas, Offset(_x, y));
+        _tp.paint(canvas, Offset(_x, y));
       }
     } else if (time >= commentDataObject.vpos &&
         time <= commentDataObject.vpos + 3000) {
-      _ts.paint(canvas, Offset(_x, _y));
-      _tp.paint(canvas, Offset(_x, _y));
+      _ts.paint(canvas, Offset(_x, y));
+      _tp.paint(canvas, Offset(_x, y));
     }
   }
 
@@ -139,113 +146,26 @@ class CommentObject {
       _x = playerWidth / 2 - _tp.width / 2;
     }
   }
-}
 
-class CommentObjectList {
-  final Map<CommentPositoinState, List<List<CommentObject>>> commentList = {
-    CommentPositoinState.naka: List.generate(11, (_) => []),
-    CommentPositoinState.ue: List.generate(11, (_) => []),
-    CommentPositoinState.shita: List.generate(11, (_) => []),
-  };
-  List<CommentObject> random = [];
-
-  int time = 0;
-  bool isPlaying = false;
-  List<CommentDataObject> commentDataList = [];
-  CommentObjectList(Map<String, dynamic> commnetDataMap) {
-    final threads = commnetDataMap["data"]["threads"];
-    for (final thread in threads) {
-      final comments = thread["comments"];
-      for (final comment in comments) {
-        comment["commands"] = comment["commands"].cast<String>();
-        commentDataList.add(CommentDataObject(
-          comment: comment["body"],
-          vpos: comment["vposMs"],
-          nicoruCount: comment["nicoruCount"],
-          color: parseCommandColor(comment["commands"]),
-          fontSize: 29 * parseCommandSize(comment["commands"]),
-          pos: parseCommandPos(comment["commands"]),
-          fontName: parseCommandFont(comment["commands"]),
-        ));
+  double _checkResize(CommentDataObject comment) {
+    // if (comment.fontSize != 29) {
+    //   return commentDataObject.fontSize;
+    // }
+    int counter = 0;
+    for (var i = 0; i < comment.comment.length; i++) {
+      if (comment.comment[i] == '\n') {
+        counter++;
       }
     }
-    commentDataList.sort((a, b) => a.vpos.compareTo(b.vpos));
-  }
-
-  void add(CommentObject comment) {
-    for (final n in commentList[comment.commentDataObject.pos]!) {
-      if (n.isEmpty || comment.isPosLock) {
-        n.add(comment);
-
-        return;
-      }
-      if (comment.commentDataObject.pos == CommentPositoinState.naka) {
-        if (comment.calcuatePos(n.last)) {
-          comment._y = n.last._y + n.last.commentDataObject.fontSize + 10;
-          continue;
-        }
+    if (counter >= 5) {
+      if (comment.fontSize != 29) {
+        return playerHeight / 38;
       } else {
-        if (comment.commentDataObject.vpos <=
-            n.last.commentDataObject.vpos + 3000) {
-          var offsetY = n.last.commentDataObject.fontSize + 10;
-          if (comment.commentDataObject.pos == CommentPositoinState.shita) {
-            offsetY *= -1;
-          }
-          comment._y = n.last._y + offsetY;
-          continue;
-        }
-      }
-
-      n.add(comment);
-      return;
-    }
-    comment._y =
-        Random().nextDouble() * (CommentObject.playerHeight - comment.height);
-    random.add(comment);
-  }
-
-  void update(double t) {
-    if (isPlaying) {
-      time += (t * 1000).toInt();
-      for (final pos in commentList.values) {
-        for (final list in pos) {
-          for (final comment in list) {
-            comment.update(t, time);
-          }
-        }
+        return playerHeight / 25;
       }
     }
+    return comment.fontSize;
   }
-
-  void render(double t, Canvas canvas) {
-    for (final pos in commentList.values) {
-      for (final list in pos) {
-        for (final comment in list) {
-          comment.render(t, canvas, time);
-        }
-      }
-    }
-  }
-}
-
-class CommentDataObject {
-  final String comment;
-  final int vpos;
-  final int nicoruCount;
-  final double fontSize;
-  final Color color;
-  final CommentPositoinState pos;
-  final String fontName;
-  bool isCommented = false;
-  CommentDataObject({
-    required this.comment,
-    required this.vpos,
-    required this.nicoruCount,
-    required this.fontSize,
-    required this.color,
-    required this.pos,
-    required this.fontName,
-  });
 }
 
 class _CommentPlayerState extends State<CommentPlayer>
@@ -299,46 +219,4 @@ class _CommentPlayerState extends State<CommentPlayer>
     _controller.dispose();
     super.dispose();
   }
-}
-
-Color parseCommandColor(List<String> command) {
-  for (final c in command) {
-    if (c.startsWith("#")) {
-      return Color(int.parse(c.substring(1), radix: 16));
-    }
-    final color = commentColor[c];
-    if (color != null) {
-      return color;
-    }
-  }
-  return Colors.white;
-}
-
-double parseCommandSize(List<String> command) {
-  for (final c in command) {
-    final size = commentSize[c];
-    if (size != null) {
-      return size;
-    }
-  }
-  return 1.0;
-}
-
-CommentPositoinState parseCommandPos(List<String> command) {
-  for (final c in command) {
-    final pos = commetPositoin[c];
-    if (pos != null) {
-      return pos;
-    }
-  }
-  return CommentPositoinState.naka;
-}
-
-String parseCommandFont(List<String> command) {
-  for (final c in command) {
-    if (c == "mincho" || c == "gothic") {
-      return c;
-    }
-  }
-  return "msgothic";
 }
