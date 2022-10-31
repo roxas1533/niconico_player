@@ -49,7 +49,10 @@ class _SearchState extends ConsumerState<Search>
             return Consumer(
                 builder: (context, ref, child) => FutureBuilder(
                     future: _searchClass.searchVideo(
-                        ref.watch(SearchParam.searchWord), tab, 1),
+                        ref.watch(SearchParam.searchWord),
+                        tab,
+                        1,
+                        ref.watch(SearchParam.sort)),
                     builder:
                         (BuildContext context, AsyncSnapshot<bool> snapshot) {
                       if (snapshot.hasData) {

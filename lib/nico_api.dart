@@ -75,7 +75,10 @@ Future<List<VideoInfo>> getRanking(
   return videoInfoList;
 }
 
-Future<Response> search(String word, int searchType, {int offset = 0}) async {
+Future<Response> search(String word, int searchType, int sortdesc,
+    {int offset = 0}) async {
+  final sort = SearchParam.sortKey[sortdesc]["key"];
+  final order = SearchParam.sortKey[sortdesc]["order"];
   return http.get(Uri.parse(
-      "${UrlList.mobileDomain}api/${SearchParam.searchTypeStr[searchType]}/$word?sort=h&order=d&page=$offset"));
+      "${UrlList.mobileDomain}api/${SearchParam.searchTypeStr[searchType]}/$word?sort=$sort&order=$order&page=$offset"));
 }

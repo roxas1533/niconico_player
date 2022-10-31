@@ -31,34 +31,23 @@ class _SearchHeaderState extends ConsumerState<SearchHeader> {
                 borderSide: BorderSide.none,
               ),
               prefixIcon: const Icon(Icons.search),
-              suffixIcon: GestureDetector(
-                onTap: () {
-                  FocusScope.of(context).unfocus();
-                  if (!isBanner) {
-                    isBanner = true;
-                    ScaffoldMessenger.of(context).showMaterialBanner(
-                      MaterialBanner(
-                        content: const Text('Hello, I am a Material Banner'),
-                        leading: const Icon(Icons.info),
-                        actions: [
-                          TextButton(
-                              child: const Text('完了',
-                                  style: TextStyle(color: Colors.blue)),
-                              onPressed: () {
-                                ScaffoldMessenger.of(context)
-                                    .hideCurrentMaterialBanner();
-                                isBanner = false;
-                              }),
-                        ],
-                      ),
-                    );
-                  } else {
-                    ScaffoldMessenger.of(context).hideCurrentMaterialBanner();
-                    isBanner = false;
-                  }
-                },
-                child: const Icon(Icons.sort, color: Colors.blue),
-              ),
+              suffixIcon: PopupMenuButton<int>(
+                  child: const Icon(Icons.sort, color: Colors.blue),
+                  onSelected: (int item) {
+                    ref.read(SearchParam.sort.notifier).state = item;
+                  },
+                  itemBuilder: (BuildContext context) =>
+                      SearchParam.sortKey.asMap().entries.map((e) {
+                        return PopupMenuItem<int>(
+                          value: e.key,
+                          child: Row(children: [
+                            Expanded(child: Text(e.value["display"]!)),
+                            e.key == ref.read(SearchParam.sort)
+                                ? const Icon(Icons.check, color: Colors.green)
+                                : Container()
+                          ]),
+                        );
+                      }).toList()),
             ),
             onSubmitted: (e) =>
                 ref.read(SearchParam.searchWord.notifier).state = e.trim(),

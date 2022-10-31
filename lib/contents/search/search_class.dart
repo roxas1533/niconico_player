@@ -9,12 +9,15 @@ import 'package:niconico/nico_api.dart';
 class SearchClass {
   List<VideoInfo> videoInfoList = [];
   String searchWord = "";
+  int sortdesc = 0;
   int searchType = 0;
   int page = 1;
   int maxPage = 0;
-  Future<bool> searchVideo(String searchWord, int searchType, int page) async {
+  Future<bool> searchVideo(
+      String searchWord, int searchType, int page, int sortdesc) async {
     this.searchWord = searchWord;
     this.searchType = searchType;
+    this.sortdesc = sortdesc;
     if (page == 1) {
       videoInfoList = [];
       if (searchWord.isEmpty) {
@@ -23,7 +26,12 @@ class SearchClass {
       }
     }
 
-    final resp = await search(searchWord, searchType, offset: page);
+    final resp = await search(
+      searchWord,
+      searchType,
+      sortdesc,
+      offset: page,
+    );
 
     if (resp.statusCode == 200) {
       final result = parse(resp.body);
@@ -67,7 +75,7 @@ class SearchClass {
   Future<bool> nextPage() async {
     if (page < maxPage) {
       page++;
-      return searchVideo(searchWord, searchType, page);
+      return searchVideo(searchWord, searchType, page, sortdesc);
     }
     return false;
   }

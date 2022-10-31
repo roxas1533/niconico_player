@@ -8,7 +8,6 @@ import 'contents/parts/utls/video_detail/video_player/video_player.dart';
 // import 'package:flutter/foundation.dart';
 late VideoPlayerHandler audioHandler;
 final naviSelectIndex = StateProvider((ref) => 1);
-// final rankingParam = StateProvider((ref) => RrankingParam(0, "すべて"));
 final List<String> itemLabel = ["ランキング", "検索", "視聴履歴", "ニコレポ", "その他"];
 final Map<String, String> genreMap = {
   "all": "全ジャンル",
@@ -177,19 +176,28 @@ class VideoDetailInfo extends VideoInfo {
 }
 
 abstract class SearchParam {
-  // static const sortKey = {
-  //   "hour": "毎時",
-  //   "24h": "24時間",
-  //   "week": "週間(すべてのみ)",
-  //   "month": "月間(すべてのみ)",
-  //   "total": "全期間(すべてのみ)"
-  // };
+  static const sortKey = [
+    {"key": "h", "order": "d", "display": "人気が高い順"},
+    {"key": "f", "order": "d", "display": "投稿日時が新しい順"},
+    {"key": "v", "order": "d", "display": "再生数が多い順"},
+    {"key": "likeCount", "order": "d", "display": "いいね！数が多い順"},
+    {"key": "m", "order": "d", "display": "マイリストが多い順"},
+    {"key": "n", "order": "d", "display": "コメントが新しい順"},
+    {"key": "n", "order": "a", "display": "コメントが古い順"},
+    {"key": "v", "order": "a", "display": "再生数が少ない順"},
+    {"key": "r", "order": "d", "display": "コメント数が多い順"},
+    {"key": "r", "order": "a", "display": "コメント数が少ない順"},
+    {"key": "likeCount", "order": "a", "display": "いいね！数が少ない順"},
+    {"key": "f", "order": "a", "display": "投稿日時が古い順"},
+    {"key": "l", "order": "d", "display": "再生時間が長い順"},
+    {"key": "l", "order": "a", "display": "再生時間が短い順"},
+  ];
   static const searchTypeStr = [
     "search",
     "tag",
   ];
   static final searchWord = StateProvider((ref) => "");
-  // static final term = StateProvider((ref) => "24h");
+  static final sort = StateProvider((ref) => 0);
   // static final genreId = StateProvider((ref) => 0);
 }
 
