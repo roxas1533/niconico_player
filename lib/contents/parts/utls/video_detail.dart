@@ -4,7 +4,6 @@ import 'dart:math';
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 import 'package:http/http.dart' as http;
-import 'package:intl/intl.dart';
 import 'package:niconico/constant.dart';
 import 'package:niconico/contents/parts/utls/icon_text_button.dart';
 import 'package:niconico/contents/parts/utls/video_detail/counter.dart';
@@ -12,6 +11,7 @@ import 'package:niconico/contents/parts/utls/video_detail/description.dart';
 import 'package:niconico/contents/parts/utls/video_detail/tag.dart';
 import 'package:niconico/contents/parts/utls/video_detail/title.dart';
 import 'package:niconico/contents/parts/utls/video_detail/user.dart';
+import 'package:niconico/functions.dart';
 
 class VideoDetail extends StatelessWidget {
   const VideoDetail({
@@ -79,11 +79,6 @@ class VideoDetail extends StatelessWidget {
     return "${randomString}_$randomInt";
   }
 
-  String _numberFormat(int number) {
-    final formatter = NumberFormat("#,##0");
-    return formatter.format(number);
-  }
-
   Future<VideoDetailInfo?> _getVideoDetail() async {
     const header = {"X-Frontend-Id": "6", "X-Frontend-Version": "0"};
     final actionTrackId = _actionTrackId();
@@ -119,10 +114,10 @@ class VideoDetail extends StatelessWidget {
         thumbnailUrl:
             video["thumbnail"]["middleUrl"] ?? video["thumbnail"]["url"],
         videoId: video["id"],
-        viewCount: _numberFormat(video["count"]["view"]),
-        commentCount: _numberFormat(video["count"]["comment"]),
-        mylistCount: _numberFormat(video["count"]["mylist"]),
-        goodCount: _numberFormat(video["count"]["like"]),
+        viewCount: numberFormat(video["count"]["view"]),
+        commentCount: numberFormat(video["count"]["comment"]),
+        mylistCount: numberFormat(video["count"]["mylist"]),
+        goodCount: numberFormat(video["count"]["like"]),
         lengthVideo: VideoDetailInfo.secToTime(video["duration"]),
         lengthSeconds: video["duration"],
         postedAt: video["registeredAt"],

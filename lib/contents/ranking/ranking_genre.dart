@@ -1,7 +1,8 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 
-import 'constant.dart';
+import '../../constant.dart';
+import 'ranking.dart';
 
 class Genre extends ConsumerWidget {
   const Genre({

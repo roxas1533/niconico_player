@@ -1,12 +1,12 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
+import 'package:niconico/contents/search/search.dart';
 
 import 'constant.dart';
 import 'contents/history.dart';
 import 'contents/nicorepo.dart';
 import 'contents/other.dart';
-import 'contents/ranking.dart';
-import 'contents/search.dart';
+import 'contents/ranking/ranking.dart';
 
 class Content extends ConsumerWidget {
   const Content({
@@ -17,12 +17,12 @@ class Content extends ConsumerWidget {
   Widget build(BuildContext context, WidgetRef ref) {
     return IndexedStack(
       index: ref.watch(naviSelectIndex),
-      children: <Widget>[
-        const Ranking(),
+      children: const <Widget>[
+        Ranking(),
         Search(),
-        const History(),
-        const Nicorepo(),
-        const Other(),
+        History(),
+        Nicorepo(),
+        Other(),
       ],
     );
   }

@@ -42,35 +42,34 @@ class CommentObjectList {
     final threads = commnetDataMap["data"]["threads"];
     for (final thread in threads) {
       final comments = thread["comments"];
-      if (thread["fork"] == "owner") {
-        for (final comment in comments) {
-          comment["commands"] = comment["commands"].cast<String>();
-          Color color = Colors.white;
-          double fontSize = 1.0;
-          CommentPositoinState pos = CommentPositoinState.naka;
-          String fontName = "msgothic";
-          bool ender = false;
-          for (final c in comment["commands"]) {
-            color = parseCommandColor(c) ?? color;
-            fontSize = parseCommandSize(c) ?? fontSize;
-            pos = parseCommandPos(c) ?? pos;
-            fontName = parseCommandFont(c) ?? fontName;
-            ender = c == "ender" ? true : ender;
-          }
-
-          commentDataList.add(CommentDataObject(
-            comment: comment["body"],
-            vpos: comment["vposMs"],
-            nicoruCount: comment["nicoruCount"],
-            color: color,
-            fontSize: fontSize,
-            pos: pos,
-            fontName: fontName,
-            ender: comment["ender"],
-          ));
+      for (final comment in comments) {
+        comment["commands"] = comment["commands"].cast<String>();
+        Color color = Colors.white;
+        double fontSize = 1;
+        CommentPositoinState pos = CommentPositoinState.naka;
+        String fontName = "msgothic";
+        bool ender = false;
+        for (final c in comment["commands"]) {
+          color = parseCommandColor(c) ?? color;
+          fontSize = parseCommandSize(c) ?? fontSize;
+          pos = parseCommandPos(c) ?? pos;
+          fontName = parseCommandFont(c) ?? fontName;
+          ender = c == "ender" ? true : ender;
         }
+
+        commentDataList.add(CommentDataObject(
+          comment: comment["body"],
+          vpos: comment["vposMs"],
+          nicoruCount: comment["nicoruCount"],
+          color: color,
+          fontSize: 29 * fontSize,
+          pos: pos,
+          fontName: fontName,
+          ender: ender,
+        ));
       }
     }
+
     commentDataList.sort((a, b) => a.vpos.compareTo(b.vpos));
   }
 

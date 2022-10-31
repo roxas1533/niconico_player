@@ -1,3 +1,5 @@
+import 'package:intl/intl.dart';
+
 String tf2yn(bool tf) {
   return tf ? "yes" : "no";
 }
@@ -65,4 +67,9 @@ Map<String, dynamic> makeSessionPayloads(Map<String, dynamic> session) {
   };
   payloads["priority"] = session["priority"];
   return {"session": payloads};
+}
+
+String numberFormat(int number) {
+  final formatter = NumberFormat("#,##0");
+  return formatter.format(number);
 }

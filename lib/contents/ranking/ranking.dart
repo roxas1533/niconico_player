@@ -1,10 +1,22 @@
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
-import 'package:html/parser.dart' show parse;
-import 'package:http/http.dart' as http;
 import 'package:niconico/constant.dart';
-import 'package:niconico/contents/parts/ranking/ranking_page.dart';
+import 'package:niconico/contents/ranking/ranking_body.dart';
+import 'package:niconico/nico_api.dart';
+
+class RankingParam {
+  static const termKey = {
+    "hour": "毎時",
+    "24h": "24時間",
+    "week": "週間(すべてのみ)",
+    "month": "月間(すべてのみ)",
+    "total": "全期間(すべてのみ)"
+  };
+  static final tag = StateProvider((ref) => "すべて");
+  static final term = StateProvider((ref) => "24h");
+  static final genreId = StateProvider((ref) => 0);
+}
 
 class Ranking extends ConsumerStatefulWidget {
   const Ranking({Key? key}) : super(key: key);
@@ -30,7 +42,7 @@ class RankingState extends ConsumerState<Ranking>
       color: Colors.transparent,
       height: screenSize.height,
       child: FutureBuilder(
-          future: _getPopulerTag(genreIdList[genreId]),
+          future: getPopulerTag(genreIdList[genreId]),
           builder:
               (BuildContext context, AsyncSnapshot<List<String>> snapshot) {
             if (snapshot.hasData) {
@@ -82,25 +94,5 @@ class RankingState extends ConsumerState<Ranking>
             }
           }),
     );
-  }
-
-  Future<List<String>> _getPopulerTag(String tag) async {
-    List<String> tagList = [];
-    http.Response resp = await http.get(Uri.parse(
-        'https://www.nicovideo.jp/ranking/genre/$tag?video_ranking_menu'));
-    if (resp.statusCode == 200) {
-      var document = parse(resp.body);
-      final tagListFromHTML =
-          document.getElementsByClassName("RepresentedTagsContainer");
-      if (tagListFromHTML.isNotEmpty) {
-        final tagListElement = tagListFromHTML[0].getElementsByTagName("li");
-        for (var element in tagListElement) {
-          tagList.add(element.text.trim());
-        }
-      } else {
-        tagList.add("すべて");
-      }
-    }
-    return tagList;
   }
 }

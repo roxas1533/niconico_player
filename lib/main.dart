@@ -3,12 +3,12 @@ import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:intl/date_symbol_data_local.dart';
+import 'package:niconico/header_wrapper.dart';
 
 import "constant.dart";
 import 'content_wrapper.dart';
 import 'contents/parts/utls/video_detail/video_player/video_player.dart';
 import 'footer.dart';
-import 'header.dart';
 
 Future<void> main() async {
   WidgetsFlutterBinding.ensureInitialized();

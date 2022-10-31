@@ -57,7 +57,11 @@ class VideoInfo {
     try {
       datetime = DateFormat("yyyy年MM月dd日 hh：mm：ss").parse(postedAt);
     } catch (e) {
-      datetime = DateTime.parse(postedAt);
+      try {
+        datetime = DateTime.parse(postedAt);
+      } catch (e) {
+        return postedAt;
+      }
     }
     DateTime now = DateTime.now();
     final difference = now.difference(datetime);
@@ -172,30 +176,26 @@ class VideoDetailInfo extends VideoInfo {
   }
 }
 
-class RankingParam {
-  static const termKey = {
-    "hour": "毎時",
-    "24h": "24時間",
-    "week": "週間(すべてのみ)",
-    "month": "月間(すべてのみ)",
-    "total": "全期間(すべてのみ)"
-  };
-  static final tag = StateProvider((ref) => "すべて");
-  static final term = StateProvider((ref) => "24h");
-  static final genreId = StateProvider((ref) => 0);
-}
-
-class SearchParam {
-  // static const termKey = {
+abstract class SearchParam {
+  // static const sortKey = {
   //   "hour": "毎時",
   //   "24h": "24時間",
   //   "week": "週間(すべてのみ)",
   //   "month": "月間(すべてのみ)",
   //   "total": "全期間(すべてのみ)"
   // };
+  static const searchTypeStr = [
+    "search",
+    "tag",
+  ];
   static final searchWord = StateProvider((ref) => "");
   // static final term = StateProvider((ref) => "24h");
   // static final genreId = StateProvider((ref) => 0);
+}
+
+abstract class UrlList {
+  static const pcDomain = "https://www.nicovideo.jp/";
+  static const mobileDomain = "https://sp.nicovideo.jp/";
 }
 
 class Point {

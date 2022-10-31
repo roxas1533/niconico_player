@@ -1,7 +1,8 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
-import 'package:niconico/constant.dart';
-import 'package:niconico/genre.dart';
+import 'package:niconico/contents/ranking/ranking_genre.dart';
+
+import 'ranking.dart';
 
 class RankingHeader extends ConsumerWidget {
   const RankingHeader({

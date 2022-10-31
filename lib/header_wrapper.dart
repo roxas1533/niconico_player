@@ -1,9 +1,9 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
-import 'package:niconico/contents/parts/ranking/ranking_header.dart';
+import 'package:niconico/constant.dart';
+import 'package:niconico/contents/ranking/ranking_header.dart';
 
-import 'constant.dart';
-import 'contents/parts/search/search_header.dart';
+import 'contents/search/search_header.dart';
 
 class Header extends ConsumerWidget implements PreferredSizeWidget {
   const Header({
