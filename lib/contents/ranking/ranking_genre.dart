@@ -6,8 +6,8 @@ import 'ranking.dart';
 
 class Genre extends ConsumerWidget {
   const Genre({
-    Key? key,
-  }) : super(key: key);
+    super.key,
+  });
 
   @override
   Widget build(BuildContext context, WidgetRef ref) {

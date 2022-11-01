@@ -2,12 +2,12 @@ import 'package:flutter/material.dart';
 
 class IconTextButton extends StatelessWidget {
   const IconTextButton({
-    Key? key,
+    super.key,
     this.onPressed,
     required this.icon,
     required this.text,
     this.margin = 8,
-  }) : super(key: key);
+  });
 
   final VoidCallback? onPressed;
   final Icon icon;

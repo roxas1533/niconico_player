@@ -8,8 +8,7 @@ import 'package:niconico/contents/parts/utls/common.dart';
 
 class Controller extends StatefulWidget {
   const Controller(
-      {Key? key, required this.screenSize, required this.mediaStateStream})
-      : super(key: key);
+      {super.key, required this.screenSize, required this.mediaStateStream});
   final Size screenSize;
   final Stream<MediaState> mediaStateStream;
 

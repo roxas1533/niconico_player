@@ -12,7 +12,7 @@ import 'package:niconico/functions.dart';
 import 'package:rxdart/rxdart.dart';
 
 class PlayVideo extends StatefulWidget {
-  const PlayVideo({Key? key, required this.video}) : super(key: key);
+  const PlayVideo({super.key, required this.video});
 
   final VideoDetailInfo video;
   @override
@@ -61,7 +61,7 @@ class PlayVideoState extends State<PlayVideo> {
         MediaItem(
           id: videoData["data"]["session"]["content_uri"],
           title: widget.video.title,
-          artist: widget.video.userName,
+          artist: widget.video.userInfo.name,
           duration: Duration(seconds: widget.video.lengthSeconds),
           artUri: Uri.parse(widget.video.thumbnailUrl),
         ),

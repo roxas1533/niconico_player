@@ -2,9 +2,9 @@ import 'package:flutter/material.dart';
 
 class RankingNumber extends StatelessWidget {
   const RankingNumber({
-    Key? key,
+    super.key,
     required this.rank,
-  }) : super(key: key);
+  });
   final int rank;
 
   @override

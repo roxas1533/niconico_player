@@ -3,7 +3,10 @@ import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:niconico/constant.dart';
 import 'package:niconico/contents/ranking/ranking_body.dart';
+import 'package:niconico/header_wrapper.dart';
 import 'package:niconico/nico_api.dart';
+
+import 'ranking_header.dart';
 
 class RankingParam {
   static const termKey = {
@@ -19,7 +22,7 @@ class RankingParam {
 }
 
 class Ranking extends ConsumerStatefulWidget {
-  const Ranking({Key? key}) : super(key: key);
+  const Ranking({super.key});
 
   @override
   RankingState createState() => RankingState();
@@ -38,61 +41,67 @@ class RankingState extends ConsumerState<Ranking>
   Widget build(BuildContext context) {
     final screenSize = MediaQuery.of(context).size;
     final genreId = ref.watch(RankingParam.genreId);
-    return Ink(
-      color: Colors.transparent,
-      height: screenSize.height,
-      child: FutureBuilder(
-          future: getPopulerTag(genreIdList[genreId]),
-          builder:
-              (BuildContext context, AsyncSnapshot<List<String>> snapshot) {
-            if (snapshot.hasData) {
-              final tabController =
-                  TabController(length: snapshot.data!.length, vsync: this);
-              tabController.addListener(() {
-                final tag = snapshot.data![tabController.index];
-                ref.read(RankingParam.tag.notifier).state = tag;
-                if (tag != "すべて" &&
-                    !["hour", "24h"].contains(ref.read(RankingParam.term))) {
-                  ref.read(RankingParam.term.notifier).state = "24h";
-                }
-              });
-              return Column(
-                children: [
-                  TabBar(
-                    controller: tabController,
-                    isScrollable: true,
-                    indicatorColor: Colors.blue,
-                    tabs: [
-                      for (final d in snapshot.data!)
-                        Container(
-                            alignment: Alignment.center,
-                            // height: screenSize.height * 0.085,
-                            padding: const EdgeInsets.symmetric(vertical: 15),
-                            child:
-                                Text(d, style: const TextStyle(fontSize: 14)))
+    return Scaffold(
+        appBar: const Header(
+          child: RankingHeader(),
+        ),
+        body: Ink(
+          color: Colors.transparent,
+          height: screenSize.height,
+          child: FutureBuilder(
+              future: getPopulerTag(genreIdList[genreId]),
+              builder:
+                  (BuildContext context, AsyncSnapshot<List<String>> snapshot) {
+                if (snapshot.hasData) {
+                  final tabController =
+                      TabController(length: snapshot.data!.length, vsync: this);
+                  tabController.addListener(() {
+                    final tag = snapshot.data![tabController.index];
+                    ref.read(RankingParam.tag.notifier).state = tag;
+                    if (tag != "すべて" &&
+                        !["hour", "24h"]
+                            .contains(ref.read(RankingParam.term))) {
+                      ref.read(RankingParam.term.notifier).state = "24h";
+                    }
+                  });
+                  return Column(
+                    children: [
+                      TabBar(
+                        controller: tabController,
+                        isScrollable: true,
+                        indicatorColor: Colors.blue,
+                        tabs: [
+                          for (final d in snapshot.data!)
+                            Container(
+                                alignment: Alignment.center,
+                                // height: screenSize.height * 0.085,
+                                padding:
+                                    const EdgeInsets.symmetric(vertical: 15),
+                                child: Text(d,
+                                    style: const TextStyle(fontSize: 14)))
+                        ],
+                      ),
+                      Expanded(
+                          child: TabBarView(
+                              controller: tabController,
+                              physics: const NeverScrollableScrollPhysics(),
+                              children: [
+                            for (final tag in snapshot.data!)
+                              RainkingPage(
+                                genreId: genreIdList[genreId],
+                                tag: tag,
+                              )
+                          ]))
                     ],
-                  ),
-                  Expanded(
-                      child: TabBarView(
-                          controller: tabController,
-                          physics: const NeverScrollableScrollPhysics(),
-                          children: [
-                        for (final tag in snapshot.data!)
-                          RainkingPage(
-                            genreId: genreIdList[genreId],
-                            tag: tag,
-                          )
-                      ]))
-                ],
-              );
-            } else {
-              return Container(
-                  alignment: Alignment.center,
-                  child: const CupertinoActivityIndicator(
-                    color: Colors.grey,
-                  ));
-            }
-          }),
-    );
+                  );
+                } else {
+                  return Container(
+                      alignment: Alignment.center,
+                      child: const CupertinoActivityIndicator(
+                        color: Colors.grey,
+                      ));
+                }
+              }),
+        ));
   }
 }

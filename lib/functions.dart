@@ -73,3 +73,36 @@ String numberFormat(int number) {
   final formatter = NumberFormat("#,##0");
   return formatter.format(number);
 }
+
+String? extractVideoId(String url) {
+  final re =
+      RegExp(r"(?:sm|nm|so|ca|ax|yo|nl|ig|na|cw|z[a-e]|om|sk|yk)\d{1,14}\b")
+          .firstMatch(url);
+  if (re != null) {
+    return re.group(0).toString();
+  }
+  return null;
+}
+
+String getPostedAtTime(String postedAt, bool islast24h) {
+  late DateTime datetime;
+  try {
+    datetime = DateFormat("yyyy年MM月dd日 hh：mm：ss").parse(postedAt);
+  } catch (e) {
+    try {
+      datetime = DateTime.parse(postedAt);
+    } catch (e) {
+      return postedAt;
+    }
+  }
+  DateTime now = DateTime.now();
+  final difference = now.difference(datetime);
+  final formatter = DateFormat('yyyy/MM/dd HH:mm:ss', "ja_JP");
+  var formatted = formatter.format(datetime);
+
+  if (islast24h && difference.inHours < 24) {
+    formatted = "${difference.inHours} 時間前";
+  }
+
+  return formatted;
+}

@@ -3,6 +3,7 @@ import 'dart:convert';
 import 'package:flutter/material.dart';
 import 'package:html/parser.dart';
 import 'package:niconico/constant.dart';
+import 'package:niconico/contents/search/search.dart';
 import 'package:niconico/functions.dart';
 import 'package:niconico/nico_api.dart';
 
@@ -28,8 +29,9 @@ class SearchClass {
 
     final resp = await search(
       searchWord,
-      searchType,
-      sortdesc,
+      SearchParam.searchTypeStr[searchType],
+      SearchParam.sortKey[sortdesc]["key"]!,
+      SearchParam.sortKey[sortdesc]["order"]!,
       offset: page,
     );
 

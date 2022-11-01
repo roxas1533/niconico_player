@@ -1,7 +1,8 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_html/flutter_html.dart';
 import 'package:niconico/constant.dart';
-import 'package:niconico/contents/parts/utls/video_detail.dart';
+import 'package:niconico/contents/parts/utls/video_detail/video_detail.dart';
+import 'package:niconico/functions.dart';
 
 class VideoDescription extends StatelessWidget {
   const VideoDescription({super.key, required this.video});
@@ -19,7 +20,7 @@ class VideoDescription extends StatelessWidget {
             final parsedUrl = Uri.parse(url);
             if (parsedUrl.host == "www.nicovideo.jp") {
               final videoId = parsedUrl.pathSegments.last;
-              final id = VideoInfo.extractVideoId(videoId);
+              final id = extractVideoId(videoId);
               if (id != null) {
                 Navigator.push(
                     context,

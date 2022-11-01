@@ -1,12 +1,13 @@
 import 'package:auto_size_text/auto_size_text.dart';
 import 'package:flutter/material.dart';
 import "package:niconico/constant.dart";
+import 'package:niconico/functions.dart';
 
 class VideoTitle extends StatelessWidget {
   const VideoTitle({
-    Key? key,
+    super.key,
     required this.videoInfo,
-  }) : super(key: key);
+  });
   final VideoInfo videoInfo;
 
   @override
@@ -32,7 +33,7 @@ class VideoTitle extends StatelessWidget {
               alignment: Alignment.bottomLeft,
               padding: const EdgeInsets.only(bottom: 3.0),
               child: Text(
-                videoInfo.getPostedAtTime(),
+                getPostedAtTime(videoInfo.postedAt, true),
                 style: const TextStyle(fontSize: 11.0),
               )),
         ],

@@ -8,10 +8,10 @@ import 'package:niconico/contents/ranking/ranking_number.dart';
 
 class VideoListWidget extends StatelessWidget {
   const VideoListWidget({
-    Key? key,
+    super.key,
     required this.videoInfo,
     this.rank,
-  }) : super(key: key);
+  });
   final VideoInfo videoInfo;
   final int? rank;
 

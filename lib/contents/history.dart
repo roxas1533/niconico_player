@@ -1,9 +1,7 @@
 import 'package:flutter/material.dart';
 
 class History extends StatelessWidget {
-  const History({
-    Key? key,
-  }) : super(key: key);
+  const History({super.key});
 
   @override
   Widget build(BuildContext context) {

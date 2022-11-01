@@ -1,7 +1,8 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:niconico/constant.dart';
-import 'package:niconico/contents/parts/utls/video_detail.dart';
+import 'package:niconico/contents/parts/utls/video_detail/video_detail.dart';
+import 'package:niconico/functions.dart';
 import 'package:niconico/nico_api.dart';
 
 import '../parts/utls/video_list_widget.dart';
@@ -9,10 +10,10 @@ import 'ranking.dart';
 
 class RainkingPage extends ConsumerWidget {
   RainkingPage({
-    Key? key,
+    super.key,
     required this.genreId,
     required this.tag,
-  }) : super(key: key);
+  });
   final String tag;
   final String genreId;
   final _scrollController = ScrollController();
@@ -38,7 +39,7 @@ class RainkingPage extends ConsumerWidget {
                           context,
                           MaterialPageRoute(
                               builder: (context) => VideoDetail(
-                                  videoId: VideoInfo.extractVideoId(
+                                  videoId: extractVideoId(
                                       snapshot.data![index].videoId)!)));
                     },
                     child: VideoListWidget(

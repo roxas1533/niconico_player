@@ -1,9 +1,7 @@
 import 'package:flutter/material.dart';
 
 class Nicorepo extends StatelessWidget {
-  const Nicorepo({
-    Key? key,
-  }) : super(key: key);
+  const Nicorepo({super.key});
 
   @override
   Widget build(BuildContext context) {

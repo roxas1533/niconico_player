@@ -2,10 +2,10 @@ import 'package:flutter/material.dart';
 
 class PartIcon extends StatelessWidget {
   const PartIcon({
-    Key? key,
+    super.key,
     required this.icon,
     this.size = 11.0,
-  }) : super(key: key);
+  });
   final IconData icon;
   final double size;
 

@@ -6,8 +6,8 @@ import 'ranking.dart';
 
 class RankingHeader extends ConsumerWidget {
   const RankingHeader({
-    Key? key,
-  }) : super(key: key);
+    super.key,
+  });
   @override
   Widget build(BuildContext context, WidgetRef ref) {
     final tag = ref.watch(RankingParam.tag);

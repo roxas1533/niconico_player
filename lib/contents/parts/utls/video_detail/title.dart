@@ -2,6 +2,8 @@ import 'package:auto_size_text/auto_size_text.dart';
 import 'package:flutter/material.dart';
 import 'package:niconico/constant.dart';
 import 'package:niconico/contents/parts/utls/video_detail/play_video.dart';
+import 'package:niconico/functions.dart';
+import 'package:persistent_bottom_nav_bar_v2/persistent-tab-view.dart';
 
 class VideoDetailTitle extends StatelessWidget {
   const VideoDetailTitle({super.key, required this.video});
@@ -18,13 +20,11 @@ class VideoDetailTitle extends StatelessWidget {
     // );
     return InkWell(
         onTap: () {
-          Navigator.push(
-              context,
-              MaterialPageRoute(
-                  builder: (context) => WillPopScope(
-                      //こちらを追加
-                      onWillPop: () async => true,
-                      child: PlayVideo(video: video))));
+          pushNewScreen<dynamic>(
+            context,
+            screen: PlayVideo(video: video),
+            withNavBar: false,
+          );
         },
         child: Container(
           margin: const EdgeInsets.all(8.0),
@@ -70,7 +70,7 @@ class VideoDetailTitle extends StatelessWidget {
                           Container(
                               alignment: Alignment.bottomRight,
                               child: Text(
-                                "${video.getPostedAtTime()} に投稿",
+                                "${getPostedAtTime(video.postedAt, false)} に投稿",
                                 style: const TextStyle(fontSize: 12.0),
                               )),
                         ],

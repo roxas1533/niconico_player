@@ -32,12 +32,12 @@ class SeekBar extends StatefulWidget {
   final ValueChanged<Duration>? onChangeEnd;
 
   const SeekBar({
-    Key? key,
+    super.key,
     required this.positionData,
     required this.pWidth,
     this.onChanged,
     this.onChangeEnd,
-  }) : super(key: key);
+  });
 
   @override
   SeekBarState createState() => SeekBarState();
@@ -117,17 +117,16 @@ class SeekBarState extends State<SeekBar> {
 }
 
 class SpaceBox extends SizedBox {
-  const SpaceBox({Key? key, double width = 8, double height = 8})
-      : super(key: key, width: width, height: height);
+  const SpaceBox({super.key, double width = 8, double height = 8})
+      : super(width: width, height: height);
 }
 
 class AnimatedSizeIcon extends StatefulWidget {
   const AnimatedSizeIcon(
-      {Key? key,
+      {super.key,
       required this.icon,
       required this.size,
-      required this.touchEvent})
-      : super(key: key);
+      required this.touchEvent});
   final IconData icon;
   final double size;
   final void Function() touchEvent;

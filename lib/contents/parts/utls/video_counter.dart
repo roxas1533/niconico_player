@@ -6,9 +6,9 @@ import 'common.dart';
 
 class VideoCounter extends StatelessWidget {
   const VideoCounter({
-    Key? key,
+    super.key,
     required this.videoInfo,
-  }) : super(key: key);
+  });
   final VideoInfo videoInfo;
 
   @override

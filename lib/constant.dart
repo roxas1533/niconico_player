@@ -1,14 +1,26 @@
 import 'package:audio_service/audio_service.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
-import "package:intl/intl.dart";
 
 import 'contents/parts/utls/video_detail/video_player/video_player.dart';
 
 // import 'package:flutter/foundation.dart';
 late VideoPlayerHandler audioHandler;
 final naviSelectIndex = StateProvider((ref) => 1);
-final List<String> itemLabel = ["ランキング", "検索", "視聴履歴", "ニコレポ", "その他"];
+const List<String> itemLabel = ["ランキング", "検索", "視聴履歴", "ニコレポ", "その他"];
+
+enum NaviSelectIndex {
+  ranking(0, "ランキング", Icons.emoji_events),
+  search(1, "検索", Icons.search),
+  history(2, "視聴履歴", Icons.schedule),
+  nicorepo(3, "ニコレポ", Icons.newspaper),
+  other(4, "その他", Icons.settings);
+
+  final String label;
+  final IconData icon;
+  const NaviSelectIndex(index, this.label, this.icon);
+}
+
 final Map<String, String> genreMap = {
   "all": "全ジャンル",
   "entertainment": "エンターテイメント",
@@ -51,25 +63,6 @@ class VideoInfo {
   final String goodCount;
   final String lengthVideo;
   final String postedAt;
-  String getPostedAtTime() {
-    late DateTime datetime;
-    try {
-      datetime = DateFormat("yyyy年MM月dd日 hh：mm：ss").parse(postedAt);
-    } catch (e) {
-      try {
-        datetime = DateTime.parse(postedAt);
-      } catch (e) {
-        return postedAt;
-      }
-    }
-    DateTime now = DateTime.now();
-    final difference = now.difference(datetime);
-    final formatter = DateFormat('yyyy/MM/dd HH:mm:ss', "ja_JP");
-    var formatted = formatter.format(datetime);
-    if (difference.inHours < 24) formatted = "${difference.inHours} 時間前";
-
-    return formatted;
-  }
 
   String getNextThumbnailUrl() {
     String thum = thumbnailUrl.substring(thumbnailUrl.length - 2);
@@ -78,16 +71,44 @@ class VideoInfo {
     }
     return thum;
   }
+}
 
-  static String? extractVideoId(String url) {
-    final re =
-        RegExp(r"(?:sm|nm|so|ca|ax|yo|nl|ig|na|cw|z[a-e]|om|sk|yk)\d{1,14}\b")
-            .firstMatch(url);
-    if (re != null) {
-      return re.group(0).toString();
-    }
-    return null;
-  }
+class UserInfo {
+  String id;
+  String name;
+  String icon;
+  UserInfo({required this.id, required this.name, required this.icon});
+}
+
+class NicoRepoInfo {
+  UserInfo userInfo;
+  String title;
+  String description;
+  String thumbnailUrl;
+  String updated;
+  String objectType;
+  String url;
+  NicoRepoInfo({
+    required this.userInfo,
+    required this.title,
+    required this.description,
+    required this.thumbnailUrl,
+    required this.updated,
+    required this.objectType,
+    required this.url,
+  });
+  NicoRepoInfo.fromJson(Map<String, dynamic> json)
+      : userInfo = UserInfo(
+          id: Uri.parse(json["actor"]["url"]).pathSegments.last,
+          name: json["actor"]["name"],
+          icon: json["actor"]["icon"],
+        ),
+        title = json["title"],
+        description = json["object"]["name"],
+        thumbnailUrl = json["object"]["image"],
+        updated = json["updated"],
+        objectType = json["object"]["type"],
+        url = json["object"]["url"];
 }
 
 class TagInfo {
@@ -112,21 +133,24 @@ class VideoDetailInfo extends VideoInfo {
     required super.postedAt,
     required this.lengthSeconds,
     required this.description,
-    required this.userName,
+    required userName,
     required this.isChannel,
-    required this.userId,
-    required this.userThumailUrl,
+    required userId,
+    required userThumailUrl,
     required this.tags,
     required this.session,
     required this.nvComment,
-  });
+  }) {
+    super.thumbnailUrl = super.getNextThumbnailUrl();
+    userInfo = UserInfo(id: userId, name: userName, icon: userThumailUrl);
+  }
   VideoDetailInfo.copy(
       VideoInfo videoInfo,
       this.description,
-      this.userName,
+      userName,
       this.isChannel,
-      this.userId,
-      this.userThumailUrl,
+      userId,
+      userThumailUrl,
       this.tags,
       this.session,
       this.nvComment,
@@ -141,25 +165,17 @@ class VideoDetailInfo extends VideoInfo {
           goodCount: videoInfo.goodCount,
           lengthVideo: videoInfo.lengthVideo,
           postedAt: videoInfo.postedAt,
-        );
+        ) {
+    super.thumbnailUrl = super.getNextThumbnailUrl();
+    userInfo = UserInfo(id: userId, name: userName, icon: userThumailUrl);
+  }
   final String description;
-  final String userName;
   final bool isChannel;
-  final String userId;
-  final String userThumailUrl;
   final int lengthSeconds;
+  late final UserInfo userInfo;
   final List<TagInfo> tags;
   final Map<String, dynamic> session;
   final Map<String, dynamic> nvComment;
-
-  @override
-  String getPostedAtTime() {
-    DateTime datetime = DateTime.parse(postedAt);
-    final formatter = DateFormat('yyyy/MM/dd HH:mm:ss', "ja_JP");
-    // var formatted = formatter.format(datetime);
-
-    return formatter.format(datetime);
-  }
 
   static String secToTime(int duration, [bool forceHour = false]) {
     final hour = duration ~/ 3600;
@@ -175,35 +191,13 @@ class VideoDetailInfo extends VideoInfo {
   }
 }
 
-abstract class SearchParam {
-  static const sortKey = [
-    {"key": "h", "order": "d", "display": "人気が高い順"},
-    {"key": "f", "order": "d", "display": "投稿日時が新しい順"},
-    {"key": "v", "order": "d", "display": "再生数が多い順"},
-    {"key": "likeCount", "order": "d", "display": "いいね！数が多い順"},
-    {"key": "m", "order": "d", "display": "マイリストが多い順"},
-    {"key": "n", "order": "d", "display": "コメントが新しい順"},
-    {"key": "n", "order": "a", "display": "コメントが古い順"},
-    {"key": "v", "order": "a", "display": "再生数が少ない順"},
-    {"key": "r", "order": "d", "display": "コメント数が多い順"},
-    {"key": "r", "order": "a", "display": "コメント数が少ない順"},
-    {"key": "likeCount", "order": "a", "display": "いいね！数が少ない順"},
-    {"key": "f", "order": "a", "display": "投稿日時が古い順"},
-    {"key": "l", "order": "d", "display": "再生時間が長い順"},
-    {"key": "l", "order": "a", "display": "再生時間が短い順"},
-  ];
-  static const searchTypeStr = [
-    "search",
-    "tag",
-  ];
-  static final searchWord = StateProvider((ref) => "");
-  static final sort = StateProvider((ref) => 0);
-  // static final genreId = StateProvider((ref) => 0);
-}
+enum UrlList {
+  pcDomain("https://www.nicovideo.jp/"),
+  mobileDomain("https://sp.nicovideo.jp/"),
+  publicApiDomain("https://public.api.nicovideo.jp/v1/");
 
-abstract class UrlList {
-  static const pcDomain = "https://www.nicovideo.jp/";
-  static const mobileDomain = "https://sp.nicovideo.jp/";
+  final String url;
+  const UrlList(this.url);
 }
 
 class Point {

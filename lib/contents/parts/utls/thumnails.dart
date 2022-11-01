@@ -3,12 +3,10 @@ import "package:niconico/constant.dart";
 
 class Thumbnail extends StatelessWidget {
   const Thumbnail({
-    Key? key,
+    super.key,
     required this.videoInfo,
-  }) : super(key: key);
+  });
   final VideoInfo videoInfo;
-
-  void temp() {}
 
   @override
   Widget build(BuildContext context) {

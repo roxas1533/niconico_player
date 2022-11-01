@@ -4,19 +4,20 @@ class VideoColmun extends StatelessWidget {
   const VideoColmun(
       {super.key,
       required this.text,
+      this.onTap,
       this.icon = const Icon(
         Icons.arrow_forward_ios,
-        // Icons.info_outline,
         size: 16,
         color: Colors.grey,
       )});
   final String text;
   final Icon icon;
+  final void Function(BuildContext nextContext)? onTap;
 
   @override
   Widget build(BuildContext context) {
     return InkWell(
-        onTap: () => {},
+        onTap: () => onTap!(context),
         child: Container(
             alignment: Alignment.centerLeft,
             padding: const EdgeInsets.symmetric(horizontal: 20, vertical: 15),
