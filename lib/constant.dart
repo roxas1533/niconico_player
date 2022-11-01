@@ -194,7 +194,7 @@ class VideoDetailInfo extends VideoInfo {
 enum UrlList {
   pcDomain("https://www.nicovideo.jp/"),
   mobileDomain("https://sp.nicovideo.jp/"),
-  publicApiDomain("https://public.api.nicovideo.jp/v1/");
+  publicApiDomain("public.api.nicovideo.jp");
 
   final String url;
   const UrlList(this.url);

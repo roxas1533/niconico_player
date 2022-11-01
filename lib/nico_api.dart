@@ -160,12 +160,24 @@ Future<VideoDetailInfo?> getVideoDetail(String videoId) async {
   return null;
 }
 
-Future<Map<String, dynamic>> getNicorepo(String? userId) async {
+Future<Map<String, dynamic>> getNicorepo(String? userId,
+    {String? untilId}) async {
   // if (userId == null) {
   //   return Future.value([]);
   // }
-  http.Response resp = await http.get(Uri.parse(
-      '${UrlList.publicApiDomain.url}timelines/nicorepo/last-6-months/users/$userId/pc/entries.json'));
+
+  final query = {
+    "untilId": untilId,
+  };
+  query.removeWhere((key, value) => value == null);
+  Uri uri = Uri.https(
+    UrlList.publicApiDomain.url,
+    "v1/timelines/nicorepo/last-6-months/users/$userId/pc/entries.json",
+    query,
+  );
+
+  http.Response resp = await http.get(uri);
+
   if (resp.statusCode == 200) {
     Map<String, dynamic> info = json.decode(resp.body);
     return info;

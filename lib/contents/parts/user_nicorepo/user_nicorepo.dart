@@ -8,19 +8,25 @@ import 'nicorepo_widget.dart';
 
 class NicoRepoObject {
   List<NicoRepoInfo> nicorepoList = [];
-  bool isEnd = false;
+  bool hasNext = true;
+  String id = "";
 }
 
-class UserNicoRepo extends StatelessWidget {
-  UserNicoRepo({
-    super.key,
-    required this.userId,
-  });
+class UserNicoRepo extends StatefulWidget {
+  const UserNicoRepo({super.key, required this.userId});
   final String userId;
-  final NicoRepoObject nicoRepoObject = NicoRepoObject();
 
-  Future<List<NicoRepoInfo>> getNicorepoList() async {
-    final nicorepoList = await getNicorepo(userId);
+  @override
+  State<UserNicoRepo> createState() => _UserNicoRepoState();
+}
+
+class _UserNicoRepoState extends State<UserNicoRepo> {
+  final NicoRepoObject nicoRepoObject = NicoRepoObject();
+  late Future<List<NicoRepoInfo>> nicorepoFuture;
+  Future<List<NicoRepoInfo>> getNicorepoList({next = false}) async {
+    final nicorepoList = await getNicorepo(widget.userId,
+        untilId: next ? nicoRepoObject.id : null);
+
     if (nicorepoList.isEmpty) {
       return [];
     }
@@ -29,7 +35,17 @@ class UserNicoRepo extends StatelessWidget {
       nicoRepoObject.nicorepoList.add(NicoRepoInfo.fromJson(d));
     }
 
+    nicoRepoObject.hasNext = nicorepoList["meta"]["hasNext"];
+    nicoRepoObject.id = data.last["id"];
+
     return nicoRepoObject.nicorepoList;
+  }
+
+  @override
+  void initState() {
+    super.initState();
+
+    nicorepoFuture = getNicorepoList();
   }
 
   @override
@@ -53,22 +69,33 @@ class UserNicoRepo extends StatelessWidget {
           title: const Text("ニコレポ"),
         ),
         body: FutureBuilder(
-          future: getNicorepoList(),
+          future: nicorepoFuture,
           builder: (BuildContext context,
               AsyncSnapshot<List<NicoRepoInfo>?> snapshot) {
             if (snapshot.hasData) {
-              return Scrollbar(
-                  // margin: EdgeInsets.only(top: 10),
-                  child: ListView.separated(
-                itemCount: snapshot.data!.length,
-                padding: const EdgeInsets.only(top: 10),
-                itemBuilder: (context, index) => NicorepoWidget(
-                  nicoRepoInfo: snapshot.data![index],
-                ),
-                separatorBuilder: (context, index) {
-                  return const Divider(height: 0.5);
-                },
-              ));
+              return NotificationListener<ScrollNotification>(
+                  onNotification: (notification) {
+                    if (notification is ScrollEndNotification &&
+                        notification.metrics.extentAfter == 0 &&
+                        nicoRepoObject.hasNext) {
+                      getNicorepoList(next: true).then((value) {
+                        if (value.isNotEmpty) setState(() {});
+                      });
+                      return true;
+                    }
+                    return false;
+                  },
+                  child: Scrollbar(
+                      child: ListView.separated(
+                    itemCount: snapshot.data!.length,
+                    padding: const EdgeInsets.only(top: 10),
+                    itemBuilder: (context, index) => NicorepoWidget(
+                      nicoRepoInfo: snapshot.data![index],
+                    ),
+                    separatorBuilder: (context, index) {
+                      return const Divider(height: 0.5);
+                    },
+                  )));
             } else {
               return Container(
                   alignment: Alignment.center,
