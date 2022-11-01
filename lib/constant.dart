@@ -21,6 +21,21 @@ enum NaviSelectIndex {
   const NaviSelectIndex(index, this.label, this.icon);
 }
 
+enum UserNicoRepoOrder {
+  all("すべて", null, null),
+  video("動画投稿", "video", "upload"),
+  live("生放送開始", "program", "onair"),
+  illust("イラスト投稿", "image", "add"),
+  manga("マンガ投稿", "comicStory", "add"),
+  article("記事投稿", "article", "add"),
+  game("ゲーム投稿", "game", "add");
+
+  final String label;
+  final String? objectType;
+  final String? type;
+  const UserNicoRepoOrder(this.label, this.objectType, this.type);
+}
+
 final Map<String, String> genreMap = {
   "all": "全ジャンル",
   "entertainment": "エンターテイメント",

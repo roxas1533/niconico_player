@@ -161,13 +161,15 @@ Future<VideoDetailInfo?> getVideoDetail(String videoId) async {
 }
 
 Future<Map<String, dynamic>> getNicorepo(String? userId,
-    {String? untilId}) async {
+    {String? untilId, String? objectType, String? type}) async {
   // if (userId == null) {
   //   return Future.value([]);
   // }
 
   final query = {
     "untilId": untilId,
+    "object[type]": objectType,
+    "type": type,
   };
   query.removeWhere((key, value) => value == null);
   Uri uri = Uri.https(

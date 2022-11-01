@@ -25,9 +25,9 @@ class Genre extends ConsumerWidget {
             'キャンセル',
             style: TextStyle(
               decoration: TextDecoration.underline,
-              color: Colors.blue, //文字の色を白にする
-              fontWeight: FontWeight.bold, //文字を太字する
-              fontSize: 14.0, //文字のサイズを調整する
+              color: Colors.blue,
+              fontWeight: FontWeight.bold,
+              fontSize: 14.0,
             ),
           ),
           onPressed: () => Navigator.of(context).pop(),
@@ -53,9 +53,7 @@ class Genre extends ConsumerWidget {
                   style: const TextStyle(fontSize: 18),
                 )),
           ),
-          separatorBuilder: (context, index) {
-            return const Divider(height: 0.5);
-          },
+          separatorBuilder: (context, index) => const Divider(height: 0.5),
         ),
       ),
     );

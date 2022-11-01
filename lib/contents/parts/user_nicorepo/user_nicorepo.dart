@@ -21,13 +21,16 @@ class UserNicoRepo extends StatefulWidget {
 }
 
 class _UserNicoRepoState extends State<UserNicoRepo> {
-  final NicoRepoObject nicoRepoObject = NicoRepoObject();
+  NicoRepoObject nicoRepoObject = NicoRepoObject();
   late Future<List<NicoRepoInfo>> nicorepoFuture;
+  int filter = 0;
   Future<List<NicoRepoInfo>> getNicorepoList({next = false}) async {
     final nicorepoList = await getNicorepo(widget.userId,
-        untilId: next ? nicoRepoObject.id : null);
+        untilId: next ? nicoRepoObject.id : null,
+        objectType: UserNicoRepoOrder.values[filter].objectType,
+        type: UserNicoRepoOrder.values[filter].type);
 
-    if (nicorepoList.isEmpty) {
+    if (nicorepoList["data"].isEmpty) {
       return [];
     }
     final data = nicorepoList["data"];
@@ -67,12 +70,77 @@ class _UserNicoRepoState extends State<UserNicoRepo> {
             margin: 0,
           ),
           title: const Text("ニコレポ"),
+          actions: [
+            IconButton(
+                onPressed: () => showModalBottomSheet(
+                      isScrollControlled: true,
+                      context: context,
+                      builder: (context) {
+                        return FractionallySizedBox(
+                          heightFactor: 0.8,
+                          child: Scaffold(
+                            appBar: AppBar(
+                              centerTitle: true,
+                              elevation: 0,
+                              automaticallyImplyLeading: false,
+                              title: const Text("絞り込み"),
+                              leadingWidth: 100,
+                              leading: TextButton(
+                                child: const Text(
+                                  'キャンセル',
+                                  style: TextStyle(
+                                    decoration: TextDecoration.underline,
+                                    color: Colors.blue,
+                                    fontWeight: FontWeight.bold,
+                                    fontSize: 14.0,
+                                  ),
+                                ),
+                                onPressed: () => Navigator.of(context).pop(),
+                              ),
+                            ),
+                            body: ListView.separated(
+                              itemBuilder: (BuildContext context, int index) =>
+                                  ListTile(
+                                      trailing: Visibility(
+                                          visible: filter == index,
+                                          child: const Icon(Icons.check,
+                                              color: Colors.green)),
+                                      onTap: () => {
+                                            setState(() {
+                                              filter = index;
+                                              nicoRepoObject = NicoRepoObject();
+                                              nicorepoFuture =
+                                                  getNicorepoList();
+                                            }),
+                                            Navigator.of(context).pop()
+                                          },
+                                      title: Text(
+                                        UserNicoRepoOrder.values[index].label,
+                                        style: const TextStyle(fontSize: 18),
+                                      )),
+                              itemCount: UserNicoRepoOrder.values.length,
+                              separatorBuilder:
+                                  (BuildContext context, int index) =>
+                                      const Divider(height: 0.5),
+                            ),
+                          ),
+                        );
+                      },
+                    ),
+                icon: const Icon(Icons.tune, color: Colors.blue)),
+            // SpaceBox(width: 10)
+          ],
         ),
         body: FutureBuilder(
           future: nicorepoFuture,
           builder: (BuildContext context,
               AsyncSnapshot<List<NicoRepoInfo>?> snapshot) {
             if (snapshot.hasData) {
+              if (snapshot.data!.isEmpty) {
+                return const Center(
+                  child: Text("ニコレポがありません"),
+                );
+              }
               return NotificationListener<ScrollNotification>(
                   onNotification: (notification) {
                     if (notification is ScrollEndNotification &&

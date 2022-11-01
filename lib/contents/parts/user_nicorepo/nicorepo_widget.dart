@@ -50,16 +50,15 @@ class NicorepoWidget extends StatelessWidget {
                 )),
               ])),
           InkWell(
-            onTap: () => {
-              if (nicoRepoInfo.objectType == "video")
-                {
-                  Navigator.push(
-                      context,
-                      MaterialPageRoute(
-                          builder: (context) => VideoDetail(
-                              videoId: extractVideoId(nicoRepoInfo.url)!)))
-                }
-            },
+            onTap: nicoRepoInfo.objectType == "video"
+                ? () => {
+                      Navigator.push(
+                          context,
+                          MaterialPageRoute(
+                              builder: (context) => VideoDetail(
+                                  videoId: extractVideoId(nicoRepoInfo.url)!)))
+                    }
+                : null,
             child: Container(
               margin: const EdgeInsets.only(left: 15.0),
               width: screenSize.width,
@@ -67,13 +66,13 @@ class NicorepoWidget extends StatelessWidget {
               child: Stack(
                 alignment: AlignmentDirectional.center,
                 children: [
-                  Row(
-                      mainAxisAlignment: MainAxisAlignment.end,
-                      children: const [
-                        Icon(Icons.arrow_forward_ios,
-                            size: 15.0, color: Colors.grey),
-                        SpaceBox(width: 10),
-                      ]),
+                  Row(mainAxisAlignment: MainAxisAlignment.end, children: [
+                    nicoRepoInfo.objectType == "video"
+                        ? const Icon(Icons.arrow_forward_ios,
+                            size: 15.0, color: Colors.grey)
+                        : Container(),
+                    const SpaceBox(width: 10),
+                  ]),
                   Row(
                     children: [
                       AspectRatio(

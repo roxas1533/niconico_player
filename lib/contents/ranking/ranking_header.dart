@@ -25,9 +25,9 @@ class RankingHeader extends ConsumerWidget {
           isScrollControlled: true,
           context: context,
           builder: (context) {
-            return SizedBox(
-              height: MediaQuery.of(context).size.height * 0.9,
-              child: const Genre(),
+            return const FractionallySizedBox(
+              heightFactor: 0.8,
+              child: Genre(),
             );
           },
         ),
