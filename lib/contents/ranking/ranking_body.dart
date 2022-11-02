@@ -1,8 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:niconico/constant.dart';
-import 'package:niconico/contents/parts/utls/video_detail/video_detail.dart';
-import 'package:niconico/functions.dart';
 import 'package:niconico/nico_api.dart';
 
 import '../parts/utls/video_list_widget.dart';
@@ -26,27 +24,23 @@ class RainkingPage extends ConsumerWidget {
             (BuildContext context, AsyncSnapshot<List<VideoInfo>> snapshot) {
           if (snapshot.hasData) {
             return Scrollbar(
-                child: ListView.builder(
+                child: ListView.separated(
               controller: _scrollController,
               primary: false,
               shrinkWrap: true,
               padding: const EdgeInsets.only(top: 5),
               itemCount: snapshot.data!.length,
               itemBuilder: (BuildContext context, int index) {
-                return InkWell(
-                    onTap: () {
-                      Navigator.push(
-                          context,
-                          MaterialPageRoute(
-                              builder: (context) => VideoDetail(
-                                  videoId: extractVideoId(
-                                      snapshot.data![index].videoId)!)));
-                    },
-                    child: VideoListWidget(
-                      videoInfo: snapshot.data![index],
-                      rank: index + 1,
-                    ));
+                return VideoListWidget(
+                  videoInfo: snapshot.data![index],
+                  rank: index + 1,
+                );
               },
+              separatorBuilder: (BuildContext context, int index) =>
+                  const Divider(
+                height: 1,
+                thickness: 1,
+              ),
             ));
           } else {
             return Container(

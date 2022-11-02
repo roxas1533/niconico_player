@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart';
 import "package:niconico/constant.dart";
 import 'package:niconico/contents/parts/utls/parts_icon.dart';
+import 'package:niconico/functions.dart';
 
 import 'common.dart';
 
@@ -25,7 +26,7 @@ class VideoCounter extends StatelessWidget {
             children: [
               const PartIcon(icon: Icons.play_circle_fill_sharp),
               const SpaceBox(width: spaceWidth),
-              Text(videoInfo.viewCount,
+              Text(numberFormat(videoInfo.viewCount),
                   style: const TextStyle(fontSize: iconSize)),
             ],
           ),
@@ -33,7 +34,7 @@ class VideoCounter extends StatelessWidget {
             children: [
               const PartIcon(icon: Icons.chat),
               const SpaceBox(width: spaceWidth),
-              Text(videoInfo.commentCount,
+              Text(numberFormat(videoInfo.commentCount),
                   style: const TextStyle(fontSize: iconSize)),
             ],
           ),
@@ -41,7 +42,7 @@ class VideoCounter extends StatelessWidget {
             children: [
               const PartIcon(icon: Icons.folder),
               const SpaceBox(width: spaceWidth),
-              Text(videoInfo.mylistCount,
+              Text(numberFormat(videoInfo.mylistCount),
                   style: const TextStyle(fontSize: iconSize)),
             ],
           ),
@@ -49,7 +50,7 @@ class VideoCounter extends StatelessWidget {
             children: [
               const PartIcon(icon: Icons.favorite),
               const SpaceBox(width: spaceWidth),
-              Text(videoInfo.goodCount,
+              Text(numberFormat(videoInfo.goodCount),
                   style: const TextStyle(fontSize: iconSize)),
             ],
           ),

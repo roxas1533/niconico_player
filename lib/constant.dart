@@ -4,7 +4,6 @@ import 'package:flutter_riverpod/flutter_riverpod.dart';
 
 import 'contents/parts/utls/video_detail/video_player/video_player.dart';
 
-// import 'package:flutter/foundation.dart';
 late VideoPlayerHandler audioHandler;
 final naviSelectIndex = StateProvider((ref) => 1);
 const List<String> itemLabel = ["ランキング", "検索", "視聴履歴", "ニコレポ", "その他"];
@@ -72,10 +71,10 @@ class VideoInfo {
   final String title;
   String thumbnailUrl;
   final String videoId;
-  final String viewCount;
-  final String commentCount;
-  final String mylistCount;
-  final String goodCount;
+  final int viewCount;
+  final int commentCount;
+  final int mylistCount;
+  final int goodCount;
   final String lengthVideo;
   final String postedAt;
 
@@ -89,20 +88,20 @@ class VideoInfo {
 }
 
 class UserInfo {
-  String id;
-  String name;
-  String icon;
+  final String id;
+  final String name;
+  final String icon;
   UserInfo({required this.id, required this.name, required this.icon});
 }
 
 class NicoRepoInfo {
-  UserInfo userInfo;
-  String title;
-  String description;
-  String thumbnailUrl;
-  String updated;
-  String objectType;
-  String url;
+  final UserInfo userInfo;
+  final String title;
+  final String description;
+  final String thumbnailUrl;
+  final String updated;
+  final String objectType;
+  final String url;
   NicoRepoInfo({
     required this.userInfo,
     required this.title,
@@ -124,6 +123,71 @@ class NicoRepoInfo {
         updated = json["updated"],
         objectType = json["object"]["type"],
         url = json["object"]["url"];
+}
+
+class MylistInfo {
+  final UserInfo userInfo;
+  final String name;
+  final String description;
+  final String decoratedDescriptionHtml;
+  final int id;
+  final bool isPublic;
+  MylistInfo({
+    required this.userInfo,
+    required this.name,
+    required this.description,
+    required this.decoratedDescriptionHtml,
+    required this.id,
+    required this.isPublic,
+  });
+  MylistInfo.fromJson(Map<String, dynamic> json)
+      : userInfo = UserInfo(
+          id: json["owner"]["id"],
+          name: json["owner"]["name"],
+          icon: json["owner"]["iconUrl"],
+        ),
+        name = json["name"],
+        description = json["description"],
+        decoratedDescriptionHtml = json["decoratedDescriptionHtml"],
+        id = json["id"],
+        isPublic = json["isPublic"];
+}
+
+class MylistVideoInfo extends VideoInfo {
+  final String description;
+  MylistVideoInfo(Map<String, dynamic> json)
+      : description = json["decoratedDescriptionHtml"],
+        super(
+          title: json["video"]["title"],
+          thumbnailUrl: json["video"]["thumbnail"]["middleUrl"] ??
+              json["video"]["thumbnail"]["url"],
+          videoId: json["video"]["id"],
+          viewCount: json["video"]["count"]["view"],
+          commentCount: json["video"]["count"]["comment"],
+          mylistCount: json["video"]["count"]["mylist"],
+          goodCount: json["video"]["count"]["like"],
+          lengthVideo: json["video"]["duration"].toString(),
+          postedAt: json["video"]["registeredAt"],
+        );
+}
+
+class MylistDetailInfo extends MylistInfo {
+  bool hasNext;
+  final int totalItemCount;
+  MylistDetailInfo({
+    required super.userInfo,
+    required super.name,
+    required super.description,
+    required super.decoratedDescriptionHtml,
+    required super.id,
+    required super.isPublic,
+    required this.hasNext,
+    required this.totalItemCount,
+  });
+  MylistDetailInfo.fromJson(Map<String, dynamic> json)
+      : hasNext = json["hasNext"],
+        totalItemCount = json["totalItemCount"],
+        super.fromJson(json);
 }
 
 class TagInfo {
@@ -156,7 +220,6 @@ class VideoDetailInfo extends VideoInfo {
     required this.session,
     required this.nvComment,
   }) {
-    super.thumbnailUrl = super.getNextThumbnailUrl();
     userInfo = UserInfo(id: userId, name: userName, icon: userThumailUrl);
   }
   VideoDetailInfo.copy(
@@ -209,11 +272,14 @@ class VideoDetailInfo extends VideoInfo {
 enum UrlList {
   pcDomain("https://www.nicovideo.jp/"),
   mobileDomain("https://sp.nicovideo.jp/"),
-  publicApiDomain("public.api.nicovideo.jp");
+  publicApiDomain("public.api.nicovideo.jp"),
+  nvApiDomain("nvapi.nicovideo.jp");
 
   final String url;
   const UrlList(this.url);
 }
+
+const apiHeader = {"X-Frontend-Id": "6", "X-Frontend-Version": "0"};
 
 class Point {
   double x;
@@ -292,4 +358,66 @@ class MediaState {
   final Duration position;
 
   MediaState(this.mediaItem, this.position);
+}
+
+enum MylistSort {
+  mylistNew("addedAt", "desc", "マイリスト登録が新しい順"),
+  mylistOld("addedAt", "asc", "マイリスト登録が古い順"),
+  titleD("title", "asc", "タイトル昇順"),
+  titleA("title", "desc", "タイトル降順"),
+  memoA("mylistComment", "asc", "メモ昇順"),
+  memoD("mylistComment", "desc", "メモ降順"),
+  registeredAtD("registeredAt", "desc", "投稿日時が新しい順"),
+  registeredAtA("registeredAt", "asc", "投稿日時が古い順"),
+  viewCountD("viewCount", "desc", "再生数が多い順"),
+  viewCountA("viewCount", "asc", "再生数が少ない順"),
+  lastCommentTimeD("lastCommentTime", "desc", "コメントが新しい順"),
+  lastCommentTimeA("lastCommentTime", "asc", "コメントが古い順"),
+
+  mylistCountD("mylistCount", "desc", "マイリスト数が多い順"),
+  mylistCountA("mylistCount", "asc", "マイリスト数が少ない順"),
+  likeCountD("likeCount", "desc", "いいね！数が多い順"),
+  likeCountA("likeCount", "asc", "いいね!数が少ない順"),
+
+  commentCountD("commentCount", "desc", "コメント数が多い順"),
+  commentCountA("commentCount", "asc", "コメント数が少ない順"),
+  durationD("duration", "desc", "再生時間が長い順"),
+  durationA("duration", "asc", "再生時間が短い順");
+
+  final String key;
+  final String order;
+  final String label;
+
+  const MylistSort(this.key, this.order, this.label);
+}
+
+enum SortKey {
+  popular("h", "d", "人気が高い順"),
+  mylistD("m", "d", "マイリストが多い順"),
+  mylistA("m", "a", "マイリストが少ない順"),
+  commentqD("r", "d", "コメント数が多い順"),
+  commentqA("r", "a", "コメント数が少ない順"),
+  commenttD("n", "d", "コメントが新しい順"),
+  commenttA("n", "a", "コメントが古い順"),
+  viewD("v", "d", "再生数が多い順"),
+  viewA("v", "a", "再生数が少ない順"),
+  lengthD("l", "d", "再生時間が長い順"),
+  lengthA("l", "a", "再生時間が短い順"),
+  dateD("f", "d", "投稿日時が新しい順"),
+  dateA("f", "a", "投稿日時が古い順"),
+  likeD("likeCount", "d", "いいね！数が多い順"),
+  likeA("likeCount", "a", "いいね！数が少ない順");
+
+  final String key;
+  final String order;
+  final String display;
+  const SortKey(this.key, this.order, this.display);
+}
+
+enum SearchType {
+  word("search"),
+  tag("tag");
+
+  final String type;
+  const SearchType(this.type);
 }

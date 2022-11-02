@@ -3,19 +3,17 @@ import 'dart:convert';
 import 'package:flutter/material.dart';
 import 'package:html/parser.dart';
 import 'package:niconico/constant.dart';
-import 'package:niconico/contents/search/search.dart';
-import 'package:niconico/functions.dart';
 import 'package:niconico/nico_api.dart';
 
 class SearchClass {
   List<VideoInfo> videoInfoList = [];
   String searchWord = "";
-  int sortdesc = 0;
-  int searchType = 0;
+  SortKey sortdesc = SortKey.popular;
+  SearchType searchType = SearchType.word;
   int page = 1;
   int maxPage = 0;
-  Future<bool> searchVideo(
-      String searchWord, int searchType, int page, int sortdesc) async {
+  Future<bool> searchVideo(String searchWord, SearchType searchType, int page,
+      SortKey sortdesc) async {
     this.searchWord = searchWord;
     this.searchType = searchType;
     this.sortdesc = sortdesc;
@@ -29,9 +27,9 @@ class SearchClass {
 
     final resp = await search(
       searchWord,
-      SearchParam.searchTypeStr[searchType],
-      SearchParam.sortKey[sortdesc]["key"]!,
-      SearchParam.sortKey[sortdesc]["order"]!,
+      searchType.type,
+      sortdesc.key,
+      sortdesc.order,
       offset: page,
     );
 
@@ -44,17 +42,13 @@ class SearchClass {
           videoInfoList.add(VideoInfo(
             title: d.attributes["data-title"]!,
             videoId: d.attributes["data-video_id"]!,
-            viewCount:
-                numberFormat(int.parse(d.attributes["data-view_counter"]!)),
+            viewCount: int.parse(d.attributes["data-view_counter"]!),
             thumbnailUrl: d
                 .getElementsByClassName("video-item-thumbnail")[0]
                 .attributes["data-original"]!,
-            commentCount:
-                numberFormat(int.parse(d.attributes["data-comment_counter"]!)),
-            mylistCount:
-                numberFormat(int.parse(d.attributes["data-mylist_counter"]!)),
-            goodCount:
-                numberFormat(int.parse(d.attributes["data-like_counter"]!)),
+            commentCount: int.parse(d.attributes["data-comment_counter"]!),
+            mylistCount: int.parse(d.attributes["data-mylist_counter"]!),
+            goodCount: int.parse(d.attributes["data-like_counter"]!),
             lengthVideo: VideoDetailInfo.secToTime(
                 int.parse(d.attributes["data-video_length"]!)),
             postedAt: d.getElementsByClassName("video-item-date")[0].text,

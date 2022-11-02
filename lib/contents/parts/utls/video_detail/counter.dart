@@ -1,11 +1,12 @@
 import 'package:flutter/material.dart';
 import 'package:niconico/constant.dart';
+import 'package:niconico/functions.dart';
 
 class VideoDetailCounter extends StatelessWidget {
   const VideoDetailCounter({super.key, required this.video});
   final VideoDetailInfo video;
 
-  Expanded counterItem(String text, String detail) {
+  Expanded counterItem(int text, String detail) {
     const style = TextStyle(fontSize: 15.3, fontWeight: FontWeight.bold);
 
     return Expanded(
@@ -14,7 +15,7 @@ class VideoDetailCounter extends StatelessWidget {
                 const EdgeInsets.symmetric(vertical: 7.0, horizontal: 15.0),
             child:
                 Column(crossAxisAlignment: CrossAxisAlignment.start, children: [
-              Text(text, style: style),
+              Text(numberFormat(text), style: style),
               Text(detail, style: const TextStyle(fontSize: 11.0)),
             ])));
   }

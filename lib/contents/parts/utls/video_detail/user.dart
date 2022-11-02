@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:niconico/constant.dart';
+import 'package:niconico/contents/parts/mylist/mylist_list.dart';
 import 'package:niconico/contents/parts/user_nicorepo/user_nicorepo.dart';
 import 'package:niconico/contents/parts/utls/video_detail/spliter.dart';
 import 'package:niconico/contents/parts/utls/video_detail/video_colmun.dart';
@@ -34,15 +35,24 @@ class User extends StatelessWidget {
               children: [
                 VideoColmun(
                   text: "ニコレポ",
-                  onTap: (BuildContext nextContext) => {
+                  onTap: (context) => {
                     Navigator.push(
-                        nextContext,
+                        context,
                         MaterialPageRoute(
-                            builder: (nextContext) =>
+                            builder: (_) =>
                                 UserNicoRepo(userId: video.userInfo.id)))
                   },
                 ),
-                VideoColmun(text: "マイリスト"),
+                VideoColmun(
+                  text: "マイリスト",
+                  onTap: (context) => {
+                    Navigator.push(
+                        context,
+                        MaterialPageRoute(
+                            builder: (_) =>
+                                MylistList(userInfo: video.userInfo)))
+                  },
+                ),
                 VideoColmun(text: "投稿動画"),
                 VideoColmun(text: "シリーズ"),
               ],

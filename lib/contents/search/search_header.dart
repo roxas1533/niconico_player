@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
+import 'package:niconico/constant.dart';
 import 'package:niconico/contents/search/search.dart';
 
 class SearchHeader extends ConsumerStatefulWidget {
@@ -34,15 +35,16 @@ class _SearchHeaderState extends ConsumerState<SearchHeader> {
               suffixIcon: PopupMenuButton<int>(
                   child: const Icon(Icons.sort, color: Colors.blue),
                   onSelected: (int item) {
-                    ref.read(SearchParam.sort.notifier).state = item;
+                    ref.read(SearchParam.sort.notifier).state =
+                        SortKey.values[item];
                   },
                   itemBuilder: (BuildContext context) =>
-                      SearchParam.sortKey.asMap().entries.map((e) {
+                      SortKey.values.asMap().entries.map((e) {
                         return PopupMenuItem<int>(
                           value: e.key,
                           child: Row(children: [
-                            Expanded(child: Text(e.value["display"]!)),
-                            e.key == ref.read(SearchParam.sort)
+                            Expanded(child: Text(e.value.display)),
+                            e.key == ref.read(SearchParam.sort).index
                                 ? const Icon(Icons.check, color: Colors.green)
                                 : Container()
                           ]),

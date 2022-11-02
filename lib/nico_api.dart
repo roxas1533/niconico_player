@@ -6,7 +6,6 @@ import 'package:html/dom.dart' as html;
 import 'package:html/parser.dart' show parse;
 import 'package:http/http.dart' as http;
 import 'package:http/http.dart';
-import 'package:niconico/functions.dart';
 import 'package:webfeed/webfeed.dart';
 
 import 'constant.dart';
@@ -38,25 +37,27 @@ Future<List<String>> getPopulerTag(String tag) async {
 Future<List<VideoInfo>> getRanking(
     String tag, String term, String genreId) async {
   VideoInfo makeVideoInfo(RssItem item) {
-    String getStringFromClass(String className, html.Document document) {
+    String getTextFromClass(String className, html.Document document) {
       var elements = document.getElementsByClassName(className);
       if (elements.length != 1) {
         return "unknown";
       }
-      return elements[0].text;
+
+      return elements[0].text.replaceAll(',', '');
     }
 
     final desc = parse(item.description);
+
     final videoInfo = VideoInfo(
       title: desc.querySelector('img')!.attributes['alt']!,
       thumbnailUrl: "${desc.querySelector('img')!.attributes['src']!}.M",
       videoId: item.link!,
-      viewCount: getStringFromClass('nico-info-total-view', desc),
-      commentCount: getStringFromClass('nico-info-total-res', desc),
-      mylistCount: getStringFromClass('nico-info-total-mylist', desc),
-      goodCount: getStringFromClass('nico-info-total-like', desc),
-      lengthVideo: getStringFromClass('nico-info-length', desc),
-      postedAt: getStringFromClass('nico-info-date', desc),
+      viewCount: int.parse(getTextFromClass('nico-info-total-view', desc)),
+      commentCount: int.parse(getTextFromClass('nico-info-total-res', desc)),
+      mylistCount: int.parse(getTextFromClass('nico-info-total-mylist', desc)),
+      goodCount: int.parse(getTextFromClass('nico-info-total-like', desc)),
+      lengthVideo: getTextFromClass('nico-info-length', desc),
+      postedAt: getTextFromClass('nico-info-date', desc),
     );
     return videoInfo;
   }
@@ -99,12 +100,11 @@ Future<VideoDetailInfo?> getVideoDetail(String videoId) async {
     return "${randomString}_$randomInt";
   }
 
-  const header = {"X-Frontend-Id": "6", "X-Frontend-Version": "0"};
   final actionTrackId = makeActionTrackId();
   http.Response resp = await http.get(
       Uri.parse(
           '${UrlList.pcDomain.url}api/watch/v3_guest/$videoId?actionTrackId=$actionTrackId'),
-      headers: header);
+      headers: apiHeader);
   if (resp.statusCode == 200) {
     Map<String, dynamic> info = json.decode(resp.body);
     final video = info["data"]["video"];
@@ -126,16 +126,16 @@ Future<VideoDetailInfo?> getVideoDetail(String videoId) async {
       userIconUrl = user["iconUrl"];
       isChannel = false;
     }
-
+    final thumnailUrl =
+        video["thumbnail"]["middleUrl"] ?? video["thumbnail"]["url"];
     final VideoDetailInfo videoDetailInfo = VideoDetailInfo(
       title: video["title"],
-      thumbnailUrl:
-          video["thumbnail"]["middleUrl"] ?? video["thumbnail"]["url"],
+      thumbnailUrl: thumnailUrl,
       videoId: video["id"],
-      viewCount: numberFormat(video["count"]["view"]),
-      commentCount: numberFormat(video["count"]["comment"]),
-      mylistCount: numberFormat(video["count"]["mylist"]),
-      goodCount: numberFormat(video["count"]["like"]),
+      viewCount: video["count"]["view"],
+      commentCount: video["count"]["comment"],
+      mylistCount: video["count"]["mylist"],
+      goodCount: video["count"]["like"],
       lengthVideo: VideoDetailInfo.secToTime(video["duration"]),
       lengthSeconds: video["duration"],
       postedAt: video["registeredAt"],
@@ -153,6 +153,7 @@ Future<VideoDetailInfo?> getVideoDetail(String videoId) async {
       session: info["data"]["media"]["delivery"]["movie"]["session"],
       nvComment: info["data"]["comment"]["nvComment"],
     );
+
     return videoDetailInfo;
   } else {
     debugPrint(resp.statusCode.toString());
@@ -170,8 +171,7 @@ Future<Map<String, dynamic>> getNicorepo(String? userId,
     "untilId": untilId,
     "object[type]": objectType,
     "type": type,
-  };
-  query.removeWhere((key, value) => value == null);
+  }..removeWhere((_, value) => value == null);
   Uri uri = Uri.https(
     UrlList.publicApiDomain.url,
     "v1/timelines/nicorepo/last-6-months/users/$userId/pc/entries.json",
@@ -179,6 +179,53 @@ Future<Map<String, dynamic>> getNicorepo(String? userId,
   );
 
   http.Response resp = await http.get(uri);
+
+  if (resp.statusCode == 200) {
+    Map<String, dynamic> info = json.decode(resp.body);
+    return info;
+  } else {
+    debugPrint(resp.body.toString());
+  }
+  return {};
+}
+
+Future<Map<String, dynamic>> getMylist(
+  String? userId,
+) async {
+  // if (userId == null) {
+  //   return Future.value([]);
+  // }
+  Uri uri = Uri.https(
+    UrlList.nvApiDomain.url,
+    "v1/users/$userId/mylists",
+    {"sampleItemCount": "3"},
+  );
+
+  http.Response resp = await http.get(uri, headers: apiHeader);
+
+  if (resp.statusCode == 200) {
+    Map<String, dynamic> info = json.decode(resp.body);
+    return info;
+  } else {
+    debugPrint(resp.body.toString());
+  }
+  return {};
+}
+
+Future<Map<String, dynamic>> getMylistDetail(String? mylistId,
+    {int page = 1, String? sortKey, String? sortOrder}) async {
+  final query = {
+    "sortKey": sortKey,
+    "sortOrder": sortOrder,
+    "pageSize": "100",
+    "page": "$page"
+  }..removeWhere((_, value) => value == null);
+  Uri uri = Uri.https(
+    UrlList.nvApiDomain.url,
+    "v2/mylists/$mylistId",
+    query,
+  );
+  http.Response resp = await http.get(uri, headers: apiHeader);
 
   if (resp.statusCode == 200) {
     Map<String, dynamic> info = json.decode(resp.body);
