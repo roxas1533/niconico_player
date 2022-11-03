@@ -6,10 +6,11 @@ import 'package:flutter/services.dart';
 import 'package:http/http.dart' as http;
 import 'package:niconico/constant.dart';
 import 'package:niconico/contents/parts/utls/video_detail/comment_player/comment.dart';
-import 'package:niconico/contents/parts/utls/video_detail/comment_player/comment_player.dart';
-import 'package:niconico/contents/parts/utls/video_detail/video_player/controller.dart';
 import 'package:niconico/functions.dart';
 import 'package:rxdart/rxdart.dart';
+
+import 'comment_player/comment_player.dart';
+import 'video_player/controller.dart';
 
 class PlayVideo extends StatefulWidget {
   const PlayVideo({super.key, required this.video});
@@ -76,7 +77,7 @@ class PlayVideoState extends State<PlayVideo> {
   void initState() {
     super.initState();
     SystemChrome.setEnabledSystemUIMode(
-      SystemUiMode.leanBack,
+      SystemUiMode.immersive,
     );
     _futureVideoViewController = _getVideoController();
   }
@@ -84,6 +85,9 @@ class PlayVideoState extends State<PlayVideo> {
   @override
   void dispose() async {
     audioHandler.stop();
+    SystemChrome.setEnabledSystemUIMode(
+      SystemUiMode.edgeToEdge,
+    );
     super.dispose();
   }
 
@@ -92,49 +96,50 @@ class PlayVideoState extends State<PlayVideo> {
     final screenSize = MediaQuery.of(context).size;
     final width = screenSize.height;
     final height = screenSize.width;
-    return FutureBuilder(
-        future: _futureVideoViewController,
-        builder: (context, snapshot) {
-          if (snapshot.hasData) {
-            return SizedBox(
-              width: width,
-              height: height,
-              child: RotatedBox(
-                quarterTurns: 1, //or 2
-                child: Stack(alignment: Alignment.center, children: [
-                  StreamBuilder<MediaState>(
-                      stream: _mediaStateStream,
-                      builder: (__, _) {
-                        return SizedBox(
-                          width: height < width ? null : width,
-                          height: height < width ? height : null,
-                          child: audioHandler.getPlayer(),
-                        );
-                      }),
-                  SizedBox(
-                      width: width,
-                      height: height,
-                      child: CommentPlayer(
-                        screenSize: screenSize,
-                        commentObjectList: _commentObjectList,
-                      )),
-                  SizedBox(
-                    width: width,
-                    height: height,
-                    child: Controller(
-                        mediaStateStream: _mediaStateStream,
-                        screenSize: screenSize),
-                  )
-                ]),
-              ),
-            );
-          } else {
-            return Container(
-                alignment: Alignment.center,
-                child: const CircularProgressIndicator(
-                  color: Colors.grey,
-                ));
-          }
-        });
+    return SizedBox(
+      width: width,
+      height: height,
+      child: RotatedBox(
+        quarterTurns: 1, //or 2
+        child: Stack(alignment: Alignment.center, children: [
+          FutureBuilder(
+              future: _futureVideoViewController,
+              builder: (context, snapshot) {
+                if (snapshot.hasData) {
+                  return Stack(alignment: Alignment.center, children: [
+                    StreamBuilder<MediaState>(
+                        stream: _mediaStateStream,
+                        builder: (__, _) {
+                          return SizedBox(
+                            width: height < width ? null : width,
+                            height: height < width ? height : null,
+                            child: audioHandler.getPlayer(),
+                          );
+                        }),
+                    SizedBox(
+                        width: width,
+                        height: height,
+                        child: CommentPlayer(
+                          screenSize: screenSize,
+                          commentObjectList: _commentObjectList,
+                        )),
+                  ]);
+                } else {
+                  return Container(
+                      alignment: Alignment.center,
+                      child: const CircularProgressIndicator(
+                        color: Colors.grey,
+                      ));
+                }
+              }),
+          SizedBox(
+            width: width,
+            height: height,
+            child: Controller(
+                mediaStateStream: _mediaStateStream, screenSize: screenSize),
+          )
+        ]),
+      ),
+    );
   }
 }

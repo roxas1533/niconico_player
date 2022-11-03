@@ -3,6 +3,7 @@ import 'package:flutter_html/flutter_html.dart';
 import 'package:niconico/constant.dart';
 import 'package:niconico/contents/parts/utls/video_detail/video_detail.dart';
 import 'package:niconico/functions.dart';
+import 'package:persistent_bottom_nav_bar_v2/persistent-tab-view.dart';
 
 class VideoDescription extends StatelessWidget {
   const VideoDescription({super.key, required this.video});
@@ -22,10 +23,10 @@ class VideoDescription extends StatelessWidget {
               final videoId = parsedUrl.pathSegments.last;
               final id = extractVideoId(videoId);
               if (id != null) {
-                Navigator.push(
-                    context,
-                    MaterialPageRoute(
-                        builder: (context) => VideoDetail(videoId: id)));
+                pushNewScreen<dynamic>(
+                  context,
+                  screen: VideoDetail(videoId: id),
+                );
               }
             }
           }

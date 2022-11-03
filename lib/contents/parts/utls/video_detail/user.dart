@@ -4,6 +4,7 @@ import 'package:niconico/contents/parts/mylist/mylist_list.dart';
 import 'package:niconico/contents/parts/user_nicorepo/user_nicorepo.dart';
 import 'package:niconico/contents/parts/utls/video_detail/spliter.dart';
 import 'package:niconico/contents/parts/utls/video_detail/video_colmun.dart';
+import 'package:persistent_bottom_nav_bar_v2/persistent-tab-view.dart';
 
 class User extends StatelessWidget {
   const User({super.key, required this.video});
@@ -36,21 +37,19 @@ class User extends StatelessWidget {
                 VideoColmun(
                   text: "ニコレポ",
                   onTap: (context) => {
-                    Navigator.push(
-                        context,
-                        MaterialPageRoute(
-                            builder: (_) =>
-                                UserNicoRepo(userId: video.userInfo.id)))
+                    pushNewScreen<dynamic>(
+                      context,
+                      screen: UserNicoRepo(userId: video.userInfo.id),
+                    )
                   },
                 ),
                 VideoColmun(
                   text: "マイリスト",
                   onTap: (context) => {
-                    Navigator.push(
-                        context,
-                        MaterialPageRoute(
-                            builder: (_) =>
-                                MylistList(userInfo: video.userInfo)))
+                    pushNewScreen<dynamic>(
+                      context,
+                      screen: MylistList(userInfo: video.userInfo),
+                    )
                   },
                 ),
                 VideoColmun(text: "投稿動画"),

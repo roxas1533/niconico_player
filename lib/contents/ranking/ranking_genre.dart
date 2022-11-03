@@ -11,8 +11,6 @@ class Genre extends ConsumerWidget {
 
   @override
   Widget build(BuildContext context, WidgetRef ref) {
-    final genreList = genreMap.entries.map((e) => e.value).toList();
-
     return Scaffold(
       appBar: AppBar(
         centerTitle: true,
@@ -35,21 +33,25 @@ class Genre extends ConsumerWidget {
       ),
       body: Scrollbar(
         child: ListView.separated(
-          itemCount: genreList.length,
+          itemCount: GenreKey.values.length,
           itemBuilder: (context2, index) => InkWell(
             // padding: const EdgeInsets.all(11.0),
             // color: Colors.orange,
             splashColor: Colors.orange,
             child: ListTile(
                 trailing: Visibility(
-                    visible: ref.watch(RankingParam.genreId) == index,
+                    visible: ref.watch(RankingParam.genreId) ==
+                        GenreKey.values[index],
                     child: const Icon(Icons.check, color: Colors.green)),
                 onTap: () => {
-                      ref.watch(RankingParam.genreId.notifier).state = index,
+                      ref.watch(RankingParam.genreId.notifier).state =
+                          GenreKey.values[index],
+                      // ref.watch(RankingParam.popularTagFuture).state =
+                      //     getPopulerTag(GenreKey.values[index].key),
                       Navigator.of(context).pop()
                     },
                 title: Text(
-                  genreList[index],
+                  GenreKey.values[index].label,
                   style: const TextStyle(fontSize: 18),
                 )),
           ),

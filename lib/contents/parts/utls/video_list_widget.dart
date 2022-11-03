@@ -7,6 +7,7 @@ import 'package:niconico/contents/parts/utls/video_counter.dart';
 import 'package:niconico/contents/parts/utls/video_title.dart';
 import 'package:niconico/contents/ranking/ranking_number.dart';
 import 'package:niconico/functions.dart';
+import 'package:persistent_bottom_nav_bar_v2/persistent-tab-view.dart';
 
 import 'video_detail/video_detail.dart';
 
@@ -24,11 +25,10 @@ class VideoListWidget extends StatelessWidget {
     return Column(children: [
       InkWell(
           onTap: () {
-            Navigator.push(
-                context,
-                MaterialPageRoute(
-                    builder: (context) => VideoDetail(
-                        videoId: extractVideoId(videoInfo.videoId)!)));
+            pushNewScreen<dynamic>(
+              context,
+              screen: VideoDetail(videoId: extractVideoId(videoInfo.videoId)!),
+            );
           },
           child: Container(
               padding: const EdgeInsets.symmetric(vertical: 7),

@@ -157,6 +157,7 @@ Future<VideoDetailInfo?> getVideoDetail(String videoId) async {
     return videoDetailInfo;
   } else {
     debugPrint(resp.statusCode.toString());
+    debugPrint(resp.body.toString());
   }
   return null;
 }
@@ -235,3 +236,5 @@ Future<Map<String, dynamic>> getMylistDetail(String? mylistId,
   }
   return {};
 }
+
+// https://nvapi.nicovideo.jp/v3/users/21514289/videos?sortKey=registeredAt&sortOrder=desc&sensitiveContents=mask&pageSize=100&page=1

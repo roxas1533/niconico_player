@@ -2,6 +2,7 @@ import 'package:flutter/material.dart';
 import "package:niconico/constant.dart";
 import 'package:niconico/contents/parts/utls/common.dart';
 import 'package:niconico/functions.dart';
+import 'package:persistent_bottom_nav_bar_v2/persistent-tab-view.dart';
 
 import 'mylist.dart';
 
@@ -18,10 +19,10 @@ class MylistListWidget extends StatelessWidget {
 
     return InkWell(
       onTap: () => {
-        Navigator.push(
-            context,
-            MaterialPageRoute(
-                builder: (context) => Mylist(mylist: mylistInfto)))
+        pushNewScreen<dynamic>(
+          context,
+          screen: Mylist(mylist: mylistInfto),
+        )
       },
       child: Container(
         margin: const EdgeInsets.only(left: 15.0),

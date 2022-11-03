@@ -35,12 +35,7 @@ class _ControllerState extends State<Controller> {
                 Container(
                     padding: const EdgeInsets.only(left: 15, right: 10),
                     child: AnimatedSizeIcon(
-                      touchEvent: () {
-                        SystemChrome.setEnabledSystemUIMode(
-                          SystemUiMode.edgeToEdge,
-                        );
-                        Navigator.pop(context);
-                      },
+                      touchEvent: () => Navigator.pop(context),
                       icon: Icons.clear_rounded,
                       size: 24,
                     )),

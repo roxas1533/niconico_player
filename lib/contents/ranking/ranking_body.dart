@@ -9,17 +9,17 @@ import 'ranking.dart';
 class RainkingPage extends ConsumerWidget {
   RainkingPage({
     super.key,
-    required this.genreId,
+    required this.genre,
     required this.tag,
   });
   final String tag;
-  final String genreId;
+  final String genre;
   final _scrollController = ScrollController();
 
   @override
   Widget build(BuildContext context, WidgetRef ref) {
     return FutureBuilder(
-        future: getRanking(tag, ref.watch(RankingParam.term), genreId),
+        future: getRanking(tag, ref.watch(RankingParam.term), genre),
         builder:
             (BuildContext context, AsyncSnapshot<List<VideoInfo>> snapshot) {
           if (snapshot.hasData) {

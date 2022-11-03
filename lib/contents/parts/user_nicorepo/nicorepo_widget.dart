@@ -4,6 +4,7 @@ import 'package:flutter_html/flutter_html.dart';
 import "package:niconico/constant.dart";
 import 'package:niconico/contents/parts/utls/common.dart';
 import 'package:niconico/functions.dart';
+import 'package:persistent_bottom_nav_bar_v2/persistent-tab-view.dart';
 
 import '../utls/video_detail/video_detail.dart';
 
@@ -52,11 +53,11 @@ class NicorepoWidget extends StatelessWidget {
           InkWell(
             onTap: nicoRepoInfo.objectType == "video"
                 ? () => {
-                      Navigator.push(
-                          context,
-                          MaterialPageRoute(
-                              builder: (context) => VideoDetail(
-                                  videoId: extractVideoId(nicoRepoInfo.url)!)))
+                      pushNewScreen<dynamic>(
+                        context,
+                        screen: VideoDetail(
+                            videoId: extractVideoId(nicoRepoInfo.url)!),
+                      )
                     }
                 : null,
             child: Container(

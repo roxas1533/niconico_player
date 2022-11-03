@@ -35,26 +35,29 @@ enum UserNicoRepoOrder {
   const UserNicoRepoOrder(this.label, this.objectType, this.type);
 }
 
-final Map<String, String> genreMap = {
-  "all": "全ジャンル",
-  "entertainment": "エンターテイメント",
-  "radio": "ラジオ",
-  "music_sound": "音楽・サウンド",
-  "dance": "ダンス",
-  "animal": "動物",
-  "nature": "自然",
-  "cooking": "料理",
-  "traveling_outdoor": "旅行・アウトドア",
-  "vehicle": "乗り物",
-  "sports": "スポーツ",
-  "society_politics_news": "社会・政治・時事",
-  "technology_craft": "技術・工作",
-  "commentary_lecture": "解説・講座",
-  "anime": "アニメ",
-  "game": "ゲーム",
-  "other": "その他",
-  "r18": "R-18",
-};
+enum GenreKey {
+  all("all", "全ジャンル"),
+  entertainment("entertainment", "エンターテイメント"),
+  radio("radio", "ラジオ"),
+  musicSound("music_sound", "音楽・サウンド"),
+  dance("dance", "ダンス"),
+  animal("animal", "動物"),
+  nature("nature", "自然"),
+  cooking("cooking", "料理"),
+  travelingOutdoor("traveling_outdoor", "旅行・アウトドア"),
+  sports("sports", "スポーツ"),
+  societyPoliticsNews("society_politics_news", "社会・政治・時事"),
+  technologyCraft("technology_craft", "技術・工作"),
+  commentaryLecture("commentary_lecture", "解説・講座"),
+  anime("anime", "アニメ"),
+  game("game", "ゲーム"),
+  other("other", "その他"),
+  r18("r18", "R-18");
+
+  final String label;
+  final String key;
+  const GenreKey(this.key, this.label);
+}
 
 class VideoInfo {
   VideoInfo({

@@ -16,6 +16,8 @@ class VideoDetailTitle extends StatelessWidget {
         onTap: () {
           pushNewScreen<dynamic>(
             context,
+            // screen: WillPopScope(
+            //     onWillPop: () async => false, child: PlayVideo(video: video)),
             screen: PlayVideo(video: video),
             withNavBar: false,
           );
