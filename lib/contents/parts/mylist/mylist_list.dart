@@ -88,7 +88,7 @@ class _MylistListState extends State<MylistList> {
                         border: Border.symmetric(
                       horizontal: BorderSide(
                         color: Colors.grey,
-                        width: 1,
+                        width: 0.5,
                       ),
                     )),
                     child: Text("${snapshot.data!.length}件")),

@@ -71,6 +71,18 @@ class VideoInfo {
     required this.lengthVideo,
     required this.postedAt,
   });
+  VideoInfo.fromJson(Map<String, dynamic> json)
+      : title = json["title"],
+        thumbnailUrl =
+            json["thumbnail"]["middleUrl"] ?? json["thumbnail"]["url"],
+        videoId = json["id"],
+        viewCount = json["count"]["view"],
+        commentCount = json["count"]["comment"],
+        mylistCount = json["count"]["mylist"],
+        goodCount = json["count"]["like"],
+        lengthVideo = VideoDetailInfo.secToTime(json["duration"]),
+        postedAt = json["registeredAt"];
+
   final String title;
   String thumbnailUrl;
   final String videoId;
@@ -169,7 +181,7 @@ class MylistVideoInfo extends VideoInfo {
           commentCount: json["video"]["count"]["comment"],
           mylistCount: json["video"]["count"]["mylist"],
           goodCount: json["video"]["count"]["like"],
-          lengthVideo: json["video"]["duration"].toString(),
+          lengthVideo: VideoDetailInfo.secToTime(json["video"]["duration"]),
           postedAt: json["video"]["registeredAt"],
         );
 }
@@ -225,31 +237,30 @@ class VideoDetailInfo extends VideoInfo {
   }) {
     userInfo = UserInfo(id: userId, name: userName, icon: userThumailUrl);
   }
-  VideoDetailInfo.copy(
-      VideoInfo videoInfo,
-      this.description,
-      userName,
-      this.isChannel,
-      userId,
-      userThumailUrl,
-      this.tags,
-      this.session,
-      this.nvComment,
-      this.lengthSeconds)
-      : super(
-          title: videoInfo.title,
-          thumbnailUrl: videoInfo.thumbnailUrl,
-          videoId: videoInfo.videoId,
-          viewCount: videoInfo.viewCount,
-          commentCount: videoInfo.commentCount,
-          mylistCount: videoInfo.mylistCount,
-          goodCount: videoInfo.goodCount,
-          lengthVideo: videoInfo.lengthVideo,
-          postedAt: videoInfo.postedAt,
-        ) {
-    super.thumbnailUrl = super.getNextThumbnailUrl();
-    userInfo = UserInfo(id: userId, name: userName, icon: userThumailUrl);
-  }
+  VideoDetailInfo.fromJson(Map<String, dynamic> json)
+      : userInfo = UserInfo(
+            id: (json["data"]["channel"] != null
+                    ? json["data"]["channel"]["id"]
+                    : json["data"]["owner"]["id"])
+                .toString(),
+            name: json["data"]["channel"] != null
+                ? json["data"]["channel"]["name"]
+                : json["data"]["owner"]["nickname"],
+            icon: json["data"]["channel"] != null
+                ? json["data"]["channel"]["thumbnail"]["url"]
+                : json["data"]["owner"]["iconUrl"]),
+        lengthSeconds = json["data"]["video"]["duration"],
+        description = json["data"]["video"]["description"],
+        isChannel = json["data"]["channel"] != null,
+        tags = [
+          for (var tag in json["data"]["tag"]["items"])
+            TagInfo(
+                name: tag["name"],
+                isNicodicArticleExists: tag["isNicodicArticleExists"])
+        ],
+        session = json["data"]["media"]["delivery"]["movie"]["session"],
+        nvComment = json["data"]["comment"]["nvComment"],
+        super.fromJson(json["data"]["video"]);
   final String description;
   final bool isChannel;
   final int lengthSeconds;
@@ -376,12 +387,10 @@ enum MylistSort {
   viewCountA("viewCount", "asc", "再生数が少ない順"),
   lastCommentTimeD("lastCommentTime", "desc", "コメントが新しい順"),
   lastCommentTimeA("lastCommentTime", "asc", "コメントが古い順"),
-
   mylistCountD("mylistCount", "desc", "マイリスト数が多い順"),
   mylistCountA("mylistCount", "asc", "マイリスト数が少ない順"),
   likeCountD("likeCount", "desc", "いいね！数が多い順"),
   likeCountA("likeCount", "asc", "いいね!数が少ない順"),
-
   commentCountD("commentCount", "desc", "コメント数が多い順"),
   commentCountA("commentCount", "asc", "コメント数が少ない順"),
   durationD("duration", "desc", "再生時間が長い順"),
@@ -392,6 +401,29 @@ enum MylistSort {
   final String label;
 
   const MylistSort(this.key, this.order, this.label);
+}
+
+enum AllVideoListSort {
+  registeredAtD("registeredAt", "desc", "投稿日時が新しい順"),
+  registeredAtA("registeredAt", "asc", "投稿日時が古い順"),
+  viewCountD("viewCount", "desc", "再生数が多い順"),
+  viewCountA("viewCount", "asc", "再生数が少ない順"),
+  lastCommentTimeD("lastCommentTime", "desc", "コメントが新しい順"),
+  lastCommentTimeA("lastCommentTime", "asc", "コメントが古い順"),
+  commentCountD("commentCount", "desc", "コメント数が多い順"),
+  commentCountA("commentCount", "asc", "コメント数が少ない順"),
+  likeCountD("likeCount", "desc", "いいね！数が多い順"),
+  likeCountA("likeCount", "asc", "いいね!数が少ない順"),
+  mylistCountD("mylistCount", "desc", "マイリスト数が多い順"),
+  mylistCountA("mylistCount", "asc", "マイリスト数が少ない順"),
+  durationD("duration", "desc", "再生時間が長い順"),
+  durationA("duration", "asc", "再生時間が短い順");
+
+  final String key;
+  final String order;
+  final String label;
+
+  const AllVideoListSort(this.key, this.order, this.label);
 }
 
 enum SortKey {

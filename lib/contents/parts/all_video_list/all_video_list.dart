@@ -1,41 +1,42 @@
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
-import 'package:flutter_html/flutter_html.dart';
 import 'package:niconico/constant.dart';
 import 'package:niconico/contents/parts/utls/icon_text_button.dart';
 import 'package:niconico/nico_api.dart';
 
 import '../utls/video_list_widget.dart';
 
-class Mylist extends StatefulWidget {
-  const Mylist({super.key, required this.mylist});
-  final MylistInfo mylist;
+class AllVideoList extends StatefulWidget {
+  const AllVideoList({super.key, required this.userInfo});
+  final UserInfo userInfo;
 
   @override
-  State<Mylist> createState() => _MylistState();
+  State<AllVideoList> createState() => _AllVideoListState();
 }
 
-class _MylistState extends State<Mylist> {
-  late MylistDetailInfo mylistDetailObject;
-  late Future<List<MylistVideoInfo>> videoListFuture;
+class _AllVideoListState extends State<AllVideoList> {
+  late int maxPage;
+  late Future<List<VideoInfo>> videoListFuture;
   int page = 1;
-  MylistSort filter = MylistSort.mylistNew;
-  Future<List<MylistVideoInfo>> getMylist({next = false}) async {
+  int totalCount = 0;
+  AllVideoListSort filter = AllVideoListSort.registeredAtD;
+  Future<List<VideoInfo>> getAllVideolist({next = false}) async {
     if (next) page++;
-    final nicorepoList = await getMylistDetail(widget.mylist.id.toString(),
+    final nicorepoList = await getUserVideoList(widget.userInfo.id.toString(),
         page: page, sortKey: filter.key, sortOrder: filter.order);
 
-    if (nicorepoList["data"]["mylist"]["items"].isEmpty) {
+    if (nicorepoList["data"]["items"].isEmpty) {
       return [];
     }
 
-    final List<MylistVideoInfo> videoList = [];
-    final data = nicorepoList["data"]["mylist"];
+    final List<VideoInfo> videoList = [];
 
-    mylistDetailObject = MylistDetailInfo.fromJson(data);
+    final data = nicorepoList["data"];
+    totalCount = data["totalCount"];
 
+    maxPage = (totalCount / 100).round();
     for (final d in data["items"]) {
-      videoList.add(MylistVideoInfo(d));
+      videoList.add(VideoInfo.fromJson(d["essential"]));
     }
 
     return videoList;
@@ -44,7 +45,7 @@ class _MylistState extends State<Mylist> {
   @override
   void initState() {
     super.initState();
-    videoListFuture = getMylist();
+    videoListFuture = getAllVideolist();
   }
 
   @override
@@ -65,7 +66,7 @@ class _MylistState extends State<Mylist> {
             onPressed: () => Navigator.pop(context),
             margin: 0,
           ),
-          title: Text(widget.mylist.name),
+          title: const Text("投稿動画一覧"),
           actions: [
             IconButton(
                 onPressed: () => showModalBottomSheet(
@@ -104,16 +105,18 @@ class _MylistState extends State<Mylist> {
                                               color: Colors.green)),
                                       onTap: () => {
                                             setState(() {
-                                              filter = MylistSort.values[index];
-                                              videoListFuture = getMylist();
+                                              filter = AllVideoListSort
+                                                  .values[index];
+                                              videoListFuture =
+                                                  getAllVideolist();
                                             }),
                                             Navigator.of(context).pop()
                                           },
                                       title: Text(
-                                        MylistSort.values[index].label,
+                                        AllVideoListSort.values[index].label,
                                         style: const TextStyle(fontSize: 18),
                                       )),
-                              itemCount: MylistSort.values.length,
+                              itemCount: AllVideoListSort.values.length,
                               separatorBuilder:
                                   (BuildContext context, int index) =>
                                       const Divider(height: 0.5),
@@ -127,8 +130,8 @@ class _MylistState extends State<Mylist> {
         ),
         body: FutureBuilder(
           future: videoListFuture,
-          builder: (BuildContext context,
-              AsyncSnapshot<List<MylistVideoInfo>?> snapshot) {
+          builder:
+              (BuildContext context, AsyncSnapshot<List<VideoInfo>?> snapshot) {
             if (snapshot.hasData) {
               final videoList = snapshot.data!;
               if (videoList.isEmpty) {
@@ -142,8 +145,8 @@ class _MylistState extends State<Mylist> {
                   onNotification: (notification) {
                     if (notification is ScrollEndNotification &&
                         notification.metrics.extentAfter == 0 &&
-                        mylistDetailObject.hasNext) {
-                      getMylist(next: true).then((value) {
+                        maxPage > page) {
+                      getAllVideolist(next: true).then((value) {
                         if (value.isNotEmpty) {
                           setState(() {
                             videoList.addAll(value);
@@ -163,7 +166,7 @@ class _MylistState extends State<Mylist> {
                         child: Row(
                           children: [
                             Image.network(
-                              widget.mylist.userInfo.icon,
+                              widget.userInfo.icon,
                               alignment: Alignment.center,
                               width: size.height * 0.045,
                               fit: BoxFit.fitWidth,
@@ -171,12 +174,9 @@ class _MylistState extends State<Mylist> {
                             Container(
                                 padding: const EdgeInsets.only(left: 10),
                                 alignment: Alignment.centerLeft,
-                                child: Text(widget.mylist.userInfo.name)),
+                                child: Text(widget.userInfo.name)),
                           ],
                         )),
-                    Html(
-                      data: widget.mylist.decoratedDescriptionHtml,
-                    ),
                     Container(
                         padding: const EdgeInsets.only(left: 10),
                         alignment: Alignment.centerLeft,
@@ -188,7 +188,7 @@ class _MylistState extends State<Mylist> {
                             width: 0.5,
                           ),
                         )),
-                        child: Text("${mylistDetailObject.totalItemCount}件")),
+                        child: Text("$totalCount件")),
                     ListView.separated(
                       primary: false,
                       shrinkWrap: true,
@@ -196,10 +196,8 @@ class _MylistState extends State<Mylist> {
                       itemCount: videoList.length,
                       padding: const EdgeInsets.only(top: 10),
                       itemBuilder: (context, index) {
-                        final desc = videoList[index].description;
                         return VideoListWidget(
                           videoInfo: videoList[index],
-                          description: desc.isEmpty ? null : desc,
                         );
                       },
                       separatorBuilder: (BuildContext context, int index) =>

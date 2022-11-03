@@ -107,52 +107,7 @@ Future<VideoDetailInfo?> getVideoDetail(String videoId) async {
       headers: apiHeader);
   if (resp.statusCode == 200) {
     Map<String, dynamic> info = json.decode(resp.body);
-    final video = info["data"]["video"];
-    String userName;
-    String userId;
-    String userIconUrl;
-    bool isChannel;
-
-    if (info["data"]["channel"] != null) {
-      final channel = info["data"]["channel"];
-      userName = channel["name"];
-      userId = channel["id"].toString();
-      userIconUrl = channel["thumbnail"]["url"];
-      isChannel = true;
-    } else {
-      final user = info["data"]["owner"];
-      userName = user["nickname"];
-      userId = user["id"].toString();
-      userIconUrl = user["iconUrl"];
-      isChannel = false;
-    }
-    final thumnailUrl =
-        video["thumbnail"]["middleUrl"] ?? video["thumbnail"]["url"];
-    final VideoDetailInfo videoDetailInfo = VideoDetailInfo(
-      title: video["title"],
-      thumbnailUrl: thumnailUrl,
-      videoId: video["id"],
-      viewCount: video["count"]["view"],
-      commentCount: video["count"]["comment"],
-      mylistCount: video["count"]["mylist"],
-      goodCount: video["count"]["like"],
-      lengthVideo: VideoDetailInfo.secToTime(video["duration"]),
-      lengthSeconds: video["duration"],
-      postedAt: video["registeredAt"],
-      description: video["description"],
-      userName: userName,
-      userThumailUrl: userIconUrl,
-      userId: userId,
-      isChannel: isChannel,
-      tags: [
-        for (var tag in info["data"]["tag"]["items"])
-          TagInfo(
-              name: tag["name"],
-              isNicodicArticleExists: tag["isNicodicArticleExists"])
-      ],
-      session: info["data"]["media"]["delivery"]["movie"]["session"],
-      nvComment: info["data"]["comment"]["nvComment"],
-    );
+    final VideoDetailInfo videoDetailInfo = VideoDetailInfo.fromJson(info);
 
     return videoDetailInfo;
   } else {
@@ -237,4 +192,27 @@ Future<Map<String, dynamic>> getMylistDetail(String? mylistId,
   return {};
 }
 
-// https://nvapi.nicovideo.jp/v3/users/21514289/videos?sortKey=registeredAt&sortOrder=desc&sensitiveContents=mask&pageSize=100&page=1
+Future<Map<String, dynamic>> getUserVideoList(String? useId,
+    {int page = 1, String? sortKey, String? sortOrder}) async {
+  final query = {
+    "sortKey": sortKey,
+    "sortOrder": sortOrder,
+    // "sensitiveContents": "mask",
+    "pageSize": "100",
+    "page": "$page"
+  }..removeWhere((_, value) => value == null);
+  Uri uri = Uri.https(
+    UrlList.nvApiDomain.url,
+    "v3/users/$useId/videos",
+    query,
+  );
+  http.Response resp = await http.get(uri, headers: apiHeader);
+
+  if (resp.statusCode == 200) {
+    Map<String, dynamic> info = json.decode(resp.body);
+    return info;
+  } else {
+    debugPrint(resp.body.toString());
+  }
+  return {};
+}
