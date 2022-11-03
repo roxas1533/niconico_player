@@ -122,7 +122,6 @@ class _MylistState extends State<Mylist> {
                       },
                     ),
                 icon: const Icon(Icons.tune, color: Colors.blue)),
-            // SpaceBox(width: 10)
           ],
         ),
         body: FutureBuilder(
@@ -133,7 +132,7 @@ class _MylistState extends State<Mylist> {
               final videoList = snapshot.data!;
               if (videoList.isEmpty) {
                 return const Center(
-                  child: Text("マイリストに動画がありません"),
+                  child: Text("動画がありません"),
                 );
               }
               return NotificationListener<ScrollNotification>(

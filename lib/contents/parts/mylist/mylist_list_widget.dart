@@ -1,7 +1,6 @@
 import 'package:flutter/material.dart';
 import "package:niconico/constant.dart";
 import 'package:niconico/contents/parts/utls/common.dart';
-import 'package:niconico/functions.dart';
 import 'package:persistent_bottom_nav_bar_v2/persistent-tab-view.dart';
 
 import 'mylist.dart';
@@ -16,7 +15,6 @@ class MylistListWidget extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     final screenSize = MediaQuery.of(context).size;
-
     return InkWell(
       onTap: () => {
         pushNewScreen<dynamic>(
@@ -52,8 +50,7 @@ class MylistListWidget extends StatelessWidget {
                       ),
                       Container(
                           alignment: Alignment.centerLeft,
-                          child: Text(
-                              getPostedAtTime(mylistInfto.description, true),
+                          child: Text(mylistInfto.description,
                               style: const TextStyle(
                                   fontSize: 11.0, color: Colors.grey),
                               maxLines: 1,

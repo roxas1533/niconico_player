@@ -81,8 +81,10 @@ class NicorepoWidget extends StatelessWidget {
                           child: Image.network(
                             nicoRepoInfo.thumbnailUrl,
                             alignment: Alignment.center,
-                            width: screenSize.height * 0.19,
-                            fit: BoxFit.fitWidth,
+                            fit: BoxFit.contain,
+                            errorBuilder: (context, error, stackTrace) =>
+                                Image.asset(
+                                    'assets/alternative_image/non-community.png'),
                           )),
                       Container(
                         padding: const EdgeInsets.symmetric(horizontal: 10),
@@ -117,9 +119,7 @@ class NicorepoWidget extends StatelessWidget {
             ),
           )
         ]),
-
-        // VideoCounter(videoInfo: videoInfo),
-        // const SpaceBox(height: 5)
+        const SpaceBox(height: 5)
       ],
     );
   }

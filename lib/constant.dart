@@ -175,7 +175,7 @@ class MylistVideoInfo extends VideoInfo {
 }
 
 class MylistDetailInfo extends MylistInfo {
-  bool hasNext;
+  final bool hasNext;
   final int totalItemCount;
   MylistDetailInfo({
     required super.userInfo,

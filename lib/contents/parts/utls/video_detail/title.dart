@@ -71,7 +71,6 @@ class VideoDetailTitle extends StatelessWidget {
                               )),
                         ],
                       ))),
-              // VideoTitle(videoInfo: videoInfo),
             ],
           ),
         ));

@@ -18,7 +18,6 @@ class VideoListWidget extends StatelessWidget {
   final int? rank;
   final String? description;
 
-  // This widget is the root of your application.
   @override
   Widget build(BuildContext context) {
     final screenSize = MediaQuery.of(context).size;
