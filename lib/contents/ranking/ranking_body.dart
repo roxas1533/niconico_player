@@ -1,3 +1,4 @@
+import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:niconico/constant.dart';
@@ -45,7 +46,7 @@ class RainkingPage extends ConsumerWidget {
           } else {
             return Container(
                 alignment: Alignment.center,
-                child: const CircularProgressIndicator(
+                child: const CupertinoActivityIndicator(
                   color: Colors.grey,
                 ));
           }

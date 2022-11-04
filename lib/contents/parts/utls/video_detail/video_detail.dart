@@ -4,6 +4,7 @@ import 'package:niconico/constant.dart';
 import 'package:niconico/contents/parts/utls/icon_text_button.dart';
 import 'package:niconico/contents/parts/utls/video_detail/counter.dart';
 import 'package:niconico/contents/parts/utls/video_detail/description.dart';
+import 'package:niconico/contents/parts/utls/video_detail/series.dart';
 import 'package:niconico/contents/parts/utls/video_detail/tag.dart';
 import 'package:niconico/contents/parts/utls/video_detail/title.dart';
 import 'package:niconico/contents/parts/utls/video_detail/user.dart';
@@ -48,6 +49,7 @@ class VideoDetail extends StatelessWidget {
                   VideoDetailTitle(video: video),
                   VideoDetailCounter(video: video),
                   VideoDescription(video: video),
+                  VideoDetailSeries(video: video),
                   User(video: video),
                   Tag(video: video),
                 ],

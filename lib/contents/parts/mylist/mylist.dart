@@ -8,8 +8,8 @@ import 'package:niconico/nico_api.dart';
 import '../utls/video_list_widget.dart';
 
 class Mylist extends StatefulWidget {
-  const Mylist({super.key, required this.mylist});
-  final MylistInfo mylist;
+  const Mylist({super.key, required this.mylistId});
+  final int mylistId;
 
   @override
   State<Mylist> createState() => _MylistState();
@@ -22,7 +22,7 @@ class _MylistState extends State<Mylist> {
   MylistSort filter = MylistSort.mylistNew;
   Future<List<MylistVideoInfo>> getMylist({next = false}) async {
     if (next) page++;
-    final mylistList = await getMylistDetail(widget.mylist.id.toString(),
+    final mylistList = await getMylistDetail(widget.mylistId.toString(),
         page: page, sortKey: filter.key, sortOrder: filter.order);
 
     if (mylistList["data"]["mylist"]["items"].isEmpty) {
@@ -65,7 +65,7 @@ class _MylistState extends State<Mylist> {
             onPressed: () => Navigator.pop(context),
             margin: 0,
           ),
-          title: Text(widget.mylist.name),
+          title: const Text("マイリスト"),
           actions: [
             IconButton(
                 onPressed: () => showModalBottomSheet(
@@ -158,12 +158,18 @@ class _MylistState extends State<Mylist> {
                       child: SingleChildScrollView(
                           child: Column(children: [
                     Container(
+                        padding: const EdgeInsets.only(left: 10),
+                        alignment: Alignment.centerLeft,
+                        child: Text(mylistDetailObject.name,
+                            style: const TextStyle(
+                                fontSize: 16, fontWeight: FontWeight.bold))),
+                    Container(
                         padding: const EdgeInsets.symmetric(
                             horizontal: 10, vertical: 15),
                         child: Row(
                           children: [
                             Image.network(
-                              widget.mylist.userInfo.icon,
+                              mylistDetailObject.userInfo.icon,
                               alignment: Alignment.center,
                               width: size.height * 0.045,
                               fit: BoxFit.fitWidth,
@@ -171,11 +177,11 @@ class _MylistState extends State<Mylist> {
                             Container(
                                 padding: const EdgeInsets.only(left: 10),
                                 alignment: Alignment.centerLeft,
-                                child: Text(widget.mylist.userInfo.name)),
+                                child: Text(mylistDetailObject.userInfo.name)),
                           ],
                         )),
                     Html(
-                      data: widget.mylist.decoratedDescriptionHtml,
+                      data: mylistDetailObject.decoratedDescriptionHtml,
                     ),
                     Container(
                         padding: const EdgeInsets.only(left: 10),

@@ -95,9 +95,7 @@ Future<VideoDetailInfo?> getVideoDetail(String videoId) async {
         .attributes['data-api-data']!;
 
     Map<String, dynamic> info = json.decode(rawData);
-    print(info);
     final VideoDetailInfo videoDetailInfo = VideoDetailInfo.fromJson(info);
-
     return videoDetailInfo;
   } else {
     debugPrint(resp.statusCode.toString());

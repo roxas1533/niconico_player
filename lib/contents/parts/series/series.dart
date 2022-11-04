@@ -8,8 +8,8 @@ import 'package:niconico/nico_api.dart';
 import '../utls/video_list_widget.dart';
 
 class Series extends StatefulWidget {
-  const Series({super.key, required this.seriesInfo});
-  final SeriesInfo seriesInfo;
+  const Series({super.key, required this.seriesId});
+  final int seriesId;
 
   @override
   State<Series> createState() => _SeriesState();
@@ -22,9 +22,10 @@ class _SeriesState extends State<Series> {
   int page = 1;
   int totalCount = 0;
   late String decoratedDescriptionHtml;
+  late String title;
   Future<List<VideoInfo>> getSeriesVideo({next = false}) async {
     if (next) page++;
-    final seriesVideoData = await getSeriesDetail(widget.seriesInfo.id, page);
+    final seriesVideoData = await getSeriesDetail(widget.seriesId, page);
 
     if (seriesVideoData["data"]["items"].isEmpty) {
       return [];
@@ -43,6 +44,7 @@ class _SeriesState extends State<Series> {
         icon: data["detail"]["owner"]["user"]["icons"]["small"],
         name: data["detail"]["owner"]["user"]["nickname"],
         id: data["detail"]["owner"]["id"]);
+    title = data["detail"]["title"];
     decoratedDescriptionHtml = data["detail"]["decoratedDescriptionHtml"];
 
     return videoList;
@@ -115,9 +117,9 @@ class _SeriesState extends State<Series> {
                             Container(
                                 padding: const EdgeInsets.only(left: 10),
                                 alignment: Alignment.centerLeft,
-                                child: Text(widget.seriesInfo.title,
+                                child: Text(title,
                                     style: const TextStyle(
-                                        fontSize: 20,
+                                        fontSize: 16,
                                         fontWeight: FontWeight.bold))),
                           ],
                         )),

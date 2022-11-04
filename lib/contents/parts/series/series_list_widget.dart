@@ -18,9 +18,7 @@ class SeriesListWidget extends StatelessWidget {
       onTap: () => {
         pushNewScreen<dynamic>(
           context,
-          screen: Series(
-            seriesInfo: seriesInfto,
-          ),
+          screen: Series(seriesId: seriesInfto.id),
         )
       },
       child: Container(

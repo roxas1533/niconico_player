@@ -19,7 +19,7 @@ class MylistListWidget extends StatelessWidget {
       onTap: () => {
         pushNewScreen<dynamic>(
           context,
-          screen: Mylist(mylist: mylistInfto),
+          screen: Mylist(mylistId: mylistInfto.id),
         )
       },
       child: Container(

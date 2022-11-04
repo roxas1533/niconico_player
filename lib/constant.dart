@@ -189,6 +189,7 @@ class MylistVideoInfo extends VideoInfo {
 class MylistDetailInfo extends MylistInfo {
   final bool hasNext;
   final int totalItemCount;
+  final UserInfo owner;
   MylistDetailInfo({
     required super.userInfo,
     required super.name,
@@ -198,10 +199,16 @@ class MylistDetailInfo extends MylistInfo {
     required super.isPublic,
     required this.hasNext,
     required this.totalItemCount,
+    required this.owner,
   });
   MylistDetailInfo.fromJson(Map<String, dynamic> json)
       : hasNext = json["hasNext"],
         totalItemCount = json["totalItemCount"],
+        owner = UserInfo(
+          id: json["owner"]["id"],
+          name: json["owner"]["name"],
+          icon: json["owner"]["iconUrl"],
+        ),
         super.fromJson(json);
 }
 
@@ -248,6 +255,7 @@ class VideoDetailInfo extends VideoInfo {
     required this.tags,
     required this.session,
     required this.nvComment,
+    required this.series,
   }) {
     userInfo = UserInfo(id: userId, name: userName, icon: userThumailUrl);
   }
@@ -274,6 +282,7 @@ class VideoDetailInfo extends VideoInfo {
         ],
         session = json["media"]["delivery"]["movie"]["session"],
         nvComment = json["comment"]["nvComment"],
+        series = json["series"],
         super.fromJson(json["video"]);
   final String description;
   final bool isChannel;
@@ -282,6 +291,7 @@ class VideoDetailInfo extends VideoInfo {
   final List<TagInfo> tags;
   final Map<String, dynamic> session;
   final Map<String, dynamic> nvComment;
+  final Map<String, dynamic>? series;
 
   static String secToTime(int duration, [bool forceHour = false]) {
     final hour = duration ~/ 3600;
