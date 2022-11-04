@@ -2,6 +2,7 @@ import 'package:flutter/material.dart';
 import 'package:niconico/constant.dart';
 import 'package:niconico/contents/parts/all_video_list/all_video_list.dart';
 import 'package:niconico/contents/parts/mylist/mylist_list.dart';
+import 'package:niconico/contents/parts/series/series_list.dart';
 import 'package:niconico/contents/parts/user_nicorepo/user_nicorepo.dart';
 import 'package:niconico/contents/parts/utls/video_detail/spliter.dart';
 import 'package:niconico/contents/parts/utls/video_detail/video_colmun.dart';
@@ -62,7 +63,15 @@ class User extends StatelessWidget {
                     )
                   },
                 ),
-                VideoColmun(text: "シリーズ"),
+                VideoColmun(
+                  text: "シリーズ",
+                  onTap: (context) => {
+                    pushNewScreen<dynamic>(
+                      context,
+                      screen: SeriesList(userInfo: video.userInfo),
+                    )
+                  },
+                ),
               ],
             ),
     ]);

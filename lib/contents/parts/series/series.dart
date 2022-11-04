@@ -1,43 +1,49 @@
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
+import 'package:flutter_html/flutter_html.dart';
 import 'package:niconico/constant.dart';
 import 'package:niconico/contents/parts/utls/icon_text_button.dart';
 import 'package:niconico/nico_api.dart';
 
 import '../utls/video_list_widget.dart';
 
-class AllVideoList extends StatefulWidget {
-  const AllVideoList({super.key, required this.userInfo});
-  final UserInfo userInfo;
+class Series extends StatefulWidget {
+  const Series({super.key, required this.seriesInfo});
+  final SeriesInfo seriesInfo;
 
   @override
-  State<AllVideoList> createState() => _AllVideoListState();
+  State<Series> createState() => _SeriesState();
 }
 
-class _AllVideoListState extends State<AllVideoList> {
+class _SeriesState extends State<Series> {
   late int maxPage;
   late Future<List<VideoInfo>> videoListFuture;
+  late UserInfo owner;
   int page = 1;
   int totalCount = 0;
-  AllVideoListSort filter = AllVideoListSort.registeredAtD;
-  Future<List<VideoInfo>> getAllVideolist({next = false}) async {
+  late String decoratedDescriptionHtml;
+  Future<List<VideoInfo>> getSeriesVideo({next = false}) async {
     if (next) page++;
-    final allVideoList = await getUserVideoList(widget.userInfo.id.toString(),
-        page: page, sortKey: filter.key, sortOrder: filter.order);
+    final seriesVideoData = await getSeriesDetail(widget.seriesInfo.id, page);
 
-    if (allVideoList["data"]["items"].isEmpty) {
+    if (seriesVideoData["data"]["items"].isEmpty) {
       return [];
     }
 
     final List<VideoInfo> videoList = [];
 
-    final data = allVideoList["data"];
+    final data = seriesVideoData["data"];
     totalCount = data["totalCount"];
 
     maxPage = (totalCount / 100).round();
     for (final d in data["items"]) {
-      videoList.add(VideoInfo.fromJson(d["essential"]));
+      videoList.add(VideoInfo.fromJson(d["video"]));
     }
+    owner = UserInfo(
+        icon: data["detail"]["owner"]["user"]["icons"]["small"],
+        name: data["detail"]["owner"]["user"]["nickname"],
+        id: data["detail"]["owner"]["id"]);
+    decoratedDescriptionHtml = data["detail"]["decoratedDescriptionHtml"];
 
     return videoList;
   }
@@ -45,7 +51,7 @@ class _AllVideoListState extends State<AllVideoList> {
   @override
   void initState() {
     super.initState();
-    videoListFuture = getAllVideolist();
+    videoListFuture = getSeriesVideo();
   }
 
   @override
@@ -66,67 +72,7 @@ class _AllVideoListState extends State<AllVideoList> {
             onPressed: () => Navigator.pop(context),
             margin: 0,
           ),
-          title: const Text("投稿動画一覧"),
-          actions: [
-            IconButton(
-                onPressed: () => showModalBottomSheet(
-                      isScrollControlled: true,
-                      context: context,
-                      builder: (context) {
-                        return FractionallySizedBox(
-                          heightFactor: 0.8,
-                          child: Scaffold(
-                            appBar: AppBar(
-                              centerTitle: true,
-                              elevation: 0,
-                              automaticallyImplyLeading: false,
-                              title: const Text("絞り込み"),
-                              leadingWidth: 100,
-                              leading: TextButton(
-                                child: const Text(
-                                  'キャンセル',
-                                  style: TextStyle(
-                                    decoration: TextDecoration.underline,
-                                    color: Colors.blue,
-                                    fontWeight: FontWeight.bold,
-                                    fontSize: 14.0,
-                                  ),
-                                ),
-                                onPressed: () => Navigator.of(context).pop(),
-                              ),
-                            ),
-                            body: Scrollbar(
-                                child: ListView.separated(
-                              itemBuilder: (BuildContext context, int index) =>
-                                  ListTile(
-                                      trailing: Visibility(
-                                          visible: filter.index == index,
-                                          child: const Icon(Icons.check,
-                                              color: Colors.green)),
-                                      onTap: () => {
-                                            setState(() {
-                                              filter = AllVideoListSort
-                                                  .values[index];
-                                              videoListFuture =
-                                                  getAllVideolist();
-                                            }),
-                                            Navigator.of(context).pop()
-                                          },
-                                      title: Text(
-                                        AllVideoListSort.values[index].label,
-                                        style: const TextStyle(fontSize: 18),
-                                      )),
-                              itemCount: AllVideoListSort.values.length,
-                              separatorBuilder:
-                                  (BuildContext context, int index) =>
-                                      const Divider(height: 0.5),
-                            )),
-                          ),
-                        );
-                      },
-                    ),
-                icon: const Icon(Icons.tune, color: Colors.blue)),
-          ],
+          title: const Text("シリーズ"),
         ),
         body: FutureBuilder(
           future: videoListFuture,
@@ -146,7 +92,7 @@ class _AllVideoListState extends State<AllVideoList> {
                     if (notification is ScrollEndNotification &&
                         notification.metrics.extentAfter == 0 &&
                         maxPage > page) {
-                      getAllVideolist(next: true).then((value) {
+                      getSeriesVideo(next: true).then((value) {
                         if (value.isNotEmpty) {
                           setState(() {
                             videoList.addAll(value);
@@ -165,8 +111,23 @@ class _AllVideoListState extends State<AllVideoList> {
                             horizontal: 10, vertical: 15),
                         child: Row(
                           children: [
+                            const Icon(Icons.video_library, size: 30),
+                            Container(
+                                padding: const EdgeInsets.only(left: 10),
+                                alignment: Alignment.centerLeft,
+                                child: Text(widget.seriesInfo.title,
+                                    style: const TextStyle(
+                                        fontSize: 20,
+                                        fontWeight: FontWeight.bold))),
+                          ],
+                        )),
+                    Container(
+                        padding: const EdgeInsets.symmetric(
+                            horizontal: 10, vertical: 15),
+                        child: Row(
+                          children: [
                             Image.network(
-                              widget.userInfo.icon,
+                              owner.icon,
                               alignment: Alignment.center,
                               width: size.height * 0.045,
                               fit: BoxFit.fitWidth,
@@ -174,9 +135,12 @@ class _AllVideoListState extends State<AllVideoList> {
                             Container(
                                 padding: const EdgeInsets.only(left: 10),
                                 alignment: Alignment.centerLeft,
-                                child: Text(widget.userInfo.name)),
+                                child: Text(owner.name)),
                           ],
                         )),
+                    Html(
+                      data: decoratedDescriptionHtml,
+                    ),
                     Container(
                         padding: const EdgeInsets.only(left: 10),
                         alignment: Alignment.centerLeft,
@@ -188,7 +152,7 @@ class _AllVideoListState extends State<AllVideoList> {
                             width: 0.5,
                           ),
                         )),
-                        child: Text("$totalCount 件")),
+                        child: Text("$totalCount 動画")),
                     ListView.separated(
                       primary: false,
                       shrinkWrap: true,

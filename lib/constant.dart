@@ -205,6 +205,20 @@ class MylistDetailInfo extends MylistInfo {
         super.fromJson(json);
 }
 
+class SeriesInfo {
+  int id;
+  String title;
+  String thumbnailUrl;
+  String description;
+  int itemsCount;
+  SeriesInfo(Map<String, dynamic> json)
+      : id = json["id"],
+        title = json["title"],
+        thumbnailUrl = json["thumbnailUrl"],
+        description = json["description"],
+        itemsCount = json["itemsCount"];
+}
+
 class TagInfo {
   TagInfo({
     required this.name,
@@ -239,28 +253,28 @@ class VideoDetailInfo extends VideoInfo {
   }
   VideoDetailInfo.fromJson(Map<String, dynamic> json)
       : userInfo = UserInfo(
-            id: (json["data"]["channel"] != null
-                    ? json["data"]["channel"]["id"]
-                    : json["data"]["owner"]["id"])
+            id: (json["channel"] != null
+                    ? json["channel"]["id"]
+                    : json["owner"]["id"])
                 .toString(),
-            name: json["data"]["channel"] != null
-                ? json["data"]["channel"]["name"]
-                : json["data"]["owner"]["nickname"],
-            icon: json["data"]["channel"] != null
-                ? json["data"]["channel"]["thumbnail"]["url"]
-                : json["data"]["owner"]["iconUrl"]),
-        lengthSeconds = json["data"]["video"]["duration"],
-        description = json["data"]["video"]["description"],
-        isChannel = json["data"]["channel"] != null,
+            name: json["channel"] != null
+                ? json["channel"]["name"]
+                : json["owner"]["nickname"],
+            icon: json["channel"] != null
+                ? json["channel"]["thumbnail"]["url"]
+                : json["owner"]["iconUrl"]),
+        lengthSeconds = json["video"]["duration"],
+        description = json["video"]["description"],
+        isChannel = json["channel"] != null,
         tags = [
-          for (var tag in json["data"]["tag"]["items"])
+          for (var tag in json["tag"]["items"])
             TagInfo(
                 name: tag["name"],
                 isNicodicArticleExists: tag["isNicodicArticleExists"])
         ],
-        session = json["data"]["media"]["delivery"]["movie"]["session"],
-        nvComment = json["data"]["comment"]["nvComment"],
-        super.fromJson(json["data"]["video"]);
+        session = json["media"]["delivery"]["movie"]["session"],
+        nvComment = json["comment"]["nvComment"],
+        super.fromJson(json["video"]);
   final String description;
   final bool isChannel;
   final int lengthSeconds;

@@ -1,5 +1,4 @@
 import 'dart:convert';
-import 'dart:math';
 
 import 'package:flutter/cupertino.dart';
 import 'package:html/dom.dart' as html;
@@ -88,25 +87,15 @@ Future<Response> search(
 }
 
 Future<VideoDetailInfo?> getVideoDetail(String videoId) async {
-  String makeActionTrackId() {
-    const alphabetsList =
-        "ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz";
-    const numList = "0123456789";
-    final randomString = [
-      for (int i = 0; i < 10; i++) alphabetsList[Random().nextInt(26 * 2)]
-    ].join("");
-    final randomInt =
-        [for (int i = 0; i < 13; i++) numList[Random().nextInt(10)]].join("");
-    return "${randomString}_$randomInt";
-  }
-
-  final actionTrackId = makeActionTrackId();
-  http.Response resp = await http.get(
-      Uri.parse(
-          '${UrlList.pcDomain.url}api/watch/v3_guest/$videoId?actionTrackId=$actionTrackId'),
-      headers: apiHeader);
+  http.Response resp =
+      await http.get(Uri.parse('${UrlList.pcDomain.url}watch/$videoId'));
   if (resp.statusCode == 200) {
-    Map<String, dynamic> info = json.decode(resp.body);
+    final rawData = parse(resp.body)
+        .querySelector("#js-initial-watch-data")!
+        .attributes['data-api-data']!;
+
+    Map<String, dynamic> info = json.decode(rawData);
+    print(info);
     final VideoDetailInfo videoDetailInfo = VideoDetailInfo.fromJson(info);
 
     return videoDetailInfo;
@@ -206,6 +195,47 @@ Future<Map<String, dynamic>> getUserVideoList(String? useId,
     "v3/users/$useId/videos",
     query,
   );
+  http.Response resp = await http.get(uri, headers: apiHeader);
+
+  if (resp.statusCode == 200) {
+    Map<String, dynamic> info = json.decode(resp.body);
+    return info;
+  } else {
+    debugPrint(resp.body.toString());
+  }
+  return {};
+}
+
+Future<Map<String, dynamic>> getSeries(
+  String? userId,
+) async {
+  Uri uri = Uri.https(
+    UrlList.nvApiDomain.url,
+    "v1/users/$userId/series",
+    {"page": "1", "pageSize": "100"},
+  );
+
+  http.Response resp = await http.get(uri, headers: apiHeader);
+
+  if (resp.statusCode == 200) {
+    Map<String, dynamic> info = json.decode(resp.body);
+    return info;
+  } else {
+    debugPrint(resp.body.toString());
+  }
+  return {};
+}
+
+Future<Map<String, dynamic>> getSeriesDetail(
+  int seriesId,
+  int page,
+) async {
+  Uri uri = Uri.https(
+    UrlList.nvApiDomain.url,
+    "v2/series/$seriesId",
+    {"page": "$page", "pageSize": "100"},
+  );
+
   http.Response resp = await http.get(uri, headers: apiHeader);
 
   if (resp.statusCode == 200) {

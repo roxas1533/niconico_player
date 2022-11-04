@@ -22,15 +22,15 @@ class _MylistState extends State<Mylist> {
   MylistSort filter = MylistSort.mylistNew;
   Future<List<MylistVideoInfo>> getMylist({next = false}) async {
     if (next) page++;
-    final nicorepoList = await getMylistDetail(widget.mylist.id.toString(),
+    final mylistList = await getMylistDetail(widget.mylist.id.toString(),
         page: page, sortKey: filter.key, sortOrder: filter.order);
 
-    if (nicorepoList["data"]["mylist"]["items"].isEmpty) {
+    if (mylistList["data"]["mylist"]["items"].isEmpty) {
       return [];
     }
 
     final List<MylistVideoInfo> videoList = [];
-    final data = nicorepoList["data"]["mylist"];
+    final data = mylistList["data"]["mylist"];
 
     mylistDetailObject = MylistDetailInfo.fromJson(data);
 
@@ -188,7 +188,7 @@ class _MylistState extends State<Mylist> {
                             width: 0.5,
                           ),
                         )),
-                        child: Text("${mylistDetailObject.totalItemCount}件")),
+                        child: Text("${mylistDetailObject.totalItemCount} 件")),
                     ListView.separated(
                       primary: false,
                       shrinkWrap: true,

@@ -1,32 +1,37 @@
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 import 'package:niconico/constant.dart';
-import 'package:niconico/contents/parts/mylist/mylist_list_widget.dart';
 import 'package:niconico/contents/parts/utls/icon_text_button.dart';
 import 'package:niconico/nico_api.dart';
 
-class MylistList extends StatefulWidget {
-  const MylistList({super.key, required this.userInfo});
+import 'series_list_widget.dart';
+
+class SeriesList extends StatefulWidget {
+  const SeriesList({super.key, required this.userInfo});
   final UserInfo userInfo;
 
   @override
-  State<MylistList> createState() => _MylistListState();
+  State<SeriesList> createState() => _SeriesListState();
 }
 
-class _MylistListState extends State<MylistList> {
-  Future<List<MylistInfo>> getMylistList() async {
-    final mylist = await getMylist(widget.userInfo.id);
-    if (mylist["data"].isEmpty) {
+class _SeriesListState extends State<SeriesList> {
+  late int totalCount;
+  Future<List<SeriesInfo>> getSeriesList() async {
+    final sereisRes = await getSeries(widget.userInfo.id);
+    if (sereisRes["data"]["items"].isEmpty) {
       return [];
     }
-    final List<MylistInfo> mylistList = [];
 
-    final data = mylist["data"]["mylists"];
+    final List<SeriesInfo> seriesList = [];
+
+    final data = sereisRes["data"]["items"];
+    totalCount = sereisRes["data"]["totalCount"];
+
     for (final d in data) {
-      mylistList.add(MylistInfo.fromJson(d));
+      seriesList.add(SeriesInfo(d));
     }
 
-    return mylistList;
+    return seriesList;
   }
 
   @override
@@ -47,16 +52,16 @@ class _MylistListState extends State<MylistList> {
             onPressed: () => Navigator.pop(context),
             margin: 0,
           ),
-          title: const Text("マイリスト一覧"),
+          title: const Text("シリーズ一覧"),
         ),
         body: FutureBuilder(
-          future: getMylistList(),
+          future: getSeriesList(),
           builder: (BuildContext context,
-              AsyncSnapshot<List<MylistInfo>?> snapshot) {
+              AsyncSnapshot<List<SeriesInfo>?> snapshot) {
             if (snapshot.hasData) {
               if (snapshot.data!.isEmpty) {
                 return const Center(
-                  child: Text("公開マイリストがありません"),
+                  child: Text("シリーズがありません"),
                 );
               }
               final size = MediaQuery.of(context).size;
@@ -91,14 +96,14 @@ class _MylistListState extends State<MylistList> {
                         width: 0.5,
                       ),
                     )),
-                    child: Text("${snapshot.data!.length} 件")),
+                    child: Text("$totalCount 件")),
                 ListView.separated(
                   primary: false,
                   shrinkWrap: true,
                   physics: const NeverScrollableScrollPhysics(),
                   itemCount: snapshot.data!.length,
-                  itemBuilder: (context, index) => MylistListWidget(
-                    mylistInfto: snapshot.data![index],
+                  itemBuilder: (context, index) => SeriesListWidget(
+                    seriesInfto: snapshot.data![index],
                   ),
                   separatorBuilder: (context, index) {
                     return const Divider(
