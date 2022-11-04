@@ -1,4 +1,11 @@
+import 'package:flutter/cupertino.dart';
+import 'package:flutter_html/html_parser.dart';
+import 'package:html/dom.dart' as dom;
 import 'package:intl/intl.dart';
+import 'package:niconico/contents/parts/mylist/mylist.dart';
+import 'package:niconico/contents/parts/series/series.dart';
+import 'package:niconico/contents/parts/utls/video_detail/video_detail.dart';
+import 'package:persistent_bottom_nav_bar_v2/persistent-tab-view.dart';
 
 String tf2yn(bool tf) {
   return tf ? "yes" : "no";
@@ -105,4 +112,36 @@ String getPostedAtTime(String postedAt, bool islast24h) {
   }
 
   return formatted;
+}
+
+void onLinkTap(
+  String? url,
+  RenderContext rContext,
+  Map<String, String> attributes,
+  dom.Element? element,
+  BuildContext context,
+) {
+  if (url != null) {
+    final parsedUrl = Uri.parse(url);
+    if (parsedUrl.host == "www.nicovideo.jp") {
+      if (parsedUrl.pathSegments.length == 2) {
+        switch (parsedUrl.pathSegments[0]) {
+          case "watch":
+            pushNewScreen<dynamic>(
+              context,
+              screen: VideoDetail(videoId: parsedUrl.pathSegments[1]),
+            );
+            break;
+          case "mylist":
+            pushNewScreen<dynamic>(context,
+                screen: Mylist(mylistId: int.parse(parsedUrl.pathSegments[1])));
+            break;
+          case "series":
+            pushNewScreen<dynamic>(context,
+                screen: Series(seriesId: int.parse(parsedUrl.pathSegments[1])));
+            break;
+        }
+      }
+    }
+  }
 }

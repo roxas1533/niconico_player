@@ -3,6 +3,7 @@ import 'package:flutter/material.dart';
 import 'package:flutter_html/flutter_html.dart';
 import 'package:niconico/constant.dart';
 import 'package:niconico/contents/parts/utls/icon_text_button.dart';
+import 'package:niconico/functions.dart';
 import 'package:niconico/nico_api.dart';
 
 import '../utls/video_list_widget.dart';
@@ -148,6 +149,9 @@ class _SeriesState extends State<Series> {
                         )),
                     Html(
                       data: decoratedDescriptionHtml,
+                      onLinkTap: (url, rContext, attributes, element) =>
+                          onLinkTap(
+                              url, rContext, attributes, element, context),
                     ),
                     Container(
                         padding: const EdgeInsets.only(left: 10),
