@@ -238,6 +238,7 @@ Future<Map<String, dynamic>> getSeriesDetail(
 
   if (resp.statusCode == 200) {
     Map<String, dynamic> info = json.decode(resp.body);
+
     return info;
   } else {
     debugPrint(resp.body.toString());

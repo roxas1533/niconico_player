@@ -40,13 +40,19 @@ class _SeriesState extends State<Series> {
     for (final d in data["items"]) {
       videoList.add(VideoInfo.fromJson(d["video"]));
     }
-    owner = UserInfo(
-        icon: data["detail"]["owner"]["user"]["icons"]["small"],
-        name: data["detail"]["owner"]["user"]["nickname"],
-        id: data["detail"]["owner"]["id"]);
+    if (data["detail"]["owner"]["type"] == "user") {
+      owner = UserInfo(
+          icon: data["detail"]["owner"]["user"]["icons"]["small"],
+          name: data["detail"]["owner"]["user"]["nickname"],
+          id: data["detail"]["owner"]["id"]);
+    } else {
+      owner = UserInfo(
+          icon: data["detail"]["owner"]["channel"]["thumbnailSmallUrl"],
+          name: data["detail"]["owner"]["channel"]["name"],
+          id: data["detail"]["owner"]["channel"]["id"]);
+    }
     title = data["detail"]["title"];
     decoratedDescriptionHtml = data["detail"]["decoratedDescriptionHtml"];
-
     return videoList;
   }
 
