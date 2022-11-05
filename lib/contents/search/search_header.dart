@@ -1,7 +1,8 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:niconico/constant.dart';
-import 'package:niconico/contents/search/search.dart';
+
+import 'search.dart';
 
 class SearchHeader extends ConsumerStatefulWidget {
   const SearchHeader({super.key});
