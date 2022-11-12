@@ -92,7 +92,12 @@ class WholeWidget extends ConsumerWidget {
             return LoginPage(
               loginProcess: ((context) => {
                     Navigator.of(context).push(CupertinoPageRoute(
-                      builder: (context) => const MainPage(),
+                      builder: (context) => WillPopScope(
+                          onWillPop: () async {
+                            print("aaa");
+                            return false;
+                          },
+                          child: const MainPage()),
                     ))
                   }),
               loginState: snapshot.data!,

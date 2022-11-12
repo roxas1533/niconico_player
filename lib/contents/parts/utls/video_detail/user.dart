@@ -51,14 +51,16 @@ class User extends StatelessWidget {
                 ),
                 VideoColmun(
                     text: "投稿動画",
-                    onTap: (context) => CupertinoPageRoute(
-                        builder: (context) =>
-                            AllVideoList(userInfo: video.userInfo))),
+                    onTap: (context) => Navigator.of(context).push(
+                        CupertinoPageRoute(
+                            builder: (context) =>
+                                AllVideoList(userInfo: video.userInfo)))),
                 VideoColmun(
                   text: "シリーズ",
-                  onTap: (context) => CupertinoPageRoute(
-                      builder: (context) =>
-                          SeriesList(userInfo: video.userInfo)),
+                  onTap: (context) => Navigator.of(context).push(
+                      CupertinoPageRoute(
+                          builder: (context) =>
+                              SeriesList(userInfo: video.userInfo))),
                 ),
               ],
             ),
