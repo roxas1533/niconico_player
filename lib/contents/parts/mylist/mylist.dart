@@ -2,7 +2,7 @@ import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_html/flutter_html.dart';
 import 'package:niconico/constant.dart';
-import 'package:niconico/contents/parts/utls/icon_text_button.dart';
+import 'package:niconico/contents/parts/utls/common.dart';
 import 'package:niconico/functions.dart';
 import 'package:niconico/nico_api.dart';
 
@@ -51,80 +51,49 @@ class _MylistState extends State<Mylist> {
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-        appBar: AppBar(
-          centerTitle: true,
-          elevation: 0,
-          leadingWidth: 80,
-          automaticallyImplyLeading: false,
-          leading: IconTextButton(
-            text: const Text("戻る",
-                style: TextStyle(color: Colors.blue, fontSize: 19)),
-            icon: const Icon(
-              Icons.arrow_back_ios_new,
-              color: Colors.blue,
-            ),
-            onPressed: () => Navigator.pop(context),
-            margin: 0,
-          ),
-          title: const Text("マイリスト"),
-          actions: [
-            IconButton(
-                onPressed: () => showModalBottomSheet(
-                      isScrollControlled: true,
-                      context: context,
-                      builder: (context) {
-                        return FractionallySizedBox(
-                          heightFactor: 0.8,
-                          child: Scaffold(
-                            appBar: AppBar(
-                              centerTitle: true,
-                              elevation: 0,
-                              automaticallyImplyLeading: false,
-                              title: const Text("絞り込み"),
-                              leadingWidth: 100,
-                              leading: TextButton(
-                                child: const Text(
-                                  'キャンセル',
-                                  style: TextStyle(
-                                    decoration: TextDecoration.underline,
-                                    color: Colors.blue,
-                                    fontWeight: FontWeight.bold,
-                                    fontSize: 14.0,
-                                  ),
-                                ),
-                                onPressed: () => Navigator.of(context).pop(),
-                              ),
-                            ),
-                            body: Scrollbar(
-                                child: ListView.separated(
-                              itemBuilder: (BuildContext context, int index) =>
-                                  ListTile(
-                                      trailing: Visibility(
-                                          visible: filter.index == index,
-                                          child: const Icon(Icons.check,
-                                              color: Colors.green)),
-                                      onTap: () => {
-                                            setState(() {
-                                              filter = MylistSort.values[index];
-                                              videoListFuture = getMylist();
-                                            }),
-                                            Navigator.of(context).pop()
-                                          },
-                                      title: Text(
-                                        MylistSort.values[index].label,
-                                        style: const TextStyle(fontSize: 18),
-                                      )),
-                              itemCount: MylistSort.values.length,
-                              separatorBuilder:
-                                  (BuildContext context, int index) =>
-                                      const Divider(height: 0.5),
-                            )),
+        appBar: topNaviBar(
+          "マイリスト",
+          trailing: CupertinoButton(
+              onPressed: () => showModalBottomSheet(
+                    isScrollControlled: true,
+                    context: context,
+                    builder: (context) {
+                      return FractionallySizedBox(
+                        heightFactor: 0.8,
+                        child: Scaffold(
+                          appBar: topNaviBar(
+                            "絞り込み",
+                            leading: topBackButton(context),
                           ),
-                        );
-                      },
-                    ),
-                icon: const Icon(Icons.tune, color: Colors.blue)),
-          ],
+                          body: Scrollbar(
+                              child: ListView.separated(
+                            itemBuilder: (BuildContext context, int index) =>
+                                ListTile(
+                                    trailing: Visibility(
+                                        visible: filter.index == index,
+                                        child: const Icon(Icons.check,
+                                            color: Colors.green)),
+                                    onTap: () => {
+                                          setState(() {
+                                            filter = MylistSort.values[index];
+                                            videoListFuture = getMylist();
+                                          }),
+                                          Navigator.of(context).pop()
+                                        },
+                                    title: Text(
+                                      MylistSort.values[index].label,
+                                      style: const TextStyle(fontSize: 18),
+                                    )),
+                            itemCount: MylistSort.values.length,
+                            separatorBuilder:
+                                (BuildContext context, int index) =>
+                                    const Divider(height: 0.5),
+                          )),
+                        ),
+                      );
+                    },
+                  ),
+              child: const Icon(Icons.tune, color: Colors.blue)),
         ),
         body: FutureBuilder(
           future: videoListFuture,

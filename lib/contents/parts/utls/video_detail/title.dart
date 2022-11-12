@@ -1,9 +1,9 @@
 import 'package:auto_size_text/auto_size_text.dart';
+import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 import 'package:niconico/constant.dart';
 import 'package:niconico/contents/parts/utls/video_detail/play_video.dart';
 import 'package:niconico/functions.dart';
-import 'package:persistent_bottom_nav_bar_v2/persistent-tab-view.dart';
 
 class VideoDetailTitle extends StatelessWidget {
   const VideoDetailTitle({super.key, required this.video});
@@ -13,15 +13,11 @@ class VideoDetailTitle extends StatelessWidget {
   Widget build(BuildContext context) {
     final screenSize = MediaQuery.of(context).size;
     return InkWell(
-        onTap: () {
-          pushNewScreen<dynamic>(
-            context,
-            // screen: WillPopScope(
-            //     onWillPop: () async => false, child: PlayVideo(video: video)),
-            screen: PlayVideo(video: video),
-            withNavBar: false,
-          );
-        },
+        onTap: () => Navigator.of(context, rootNavigator: true).push(
+            CupertinoPageRoute(
+                builder: (context) => WillPopScope(
+                    onWillPop: () async => false,
+                    child: PlayVideo(video: video)))),
         child: Container(
           margin: const EdgeInsets.all(8.0),
           width: screenSize.width,

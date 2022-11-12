@@ -1,17 +1,19 @@
 import 'package:audio_service/audio_service.dart';
+import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
+import 'package:flutter_localizations/flutter_localizations.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
-import 'package:intl/date_symbol_data_local.dart';
 import 'package:niconico/contents/history.dart';
 import 'package:niconico/contents/nicorepo.dart';
 import 'package:niconico/contents/other.dart';
 import 'package:niconico/contents/ranking/ranking.dart';
-import 'package:niconico/contents/search/search.dart';
-import 'package:persistent_bottom_nav_bar_v2/persistent-tab-view.dart';
+import 'package:shared_preferences/shared_preferences.dart';
 
 import "constant.dart";
 import 'contents/parts/utls/video_detail/video_player/video_player.dart';
+import 'contents/search/search.dart';
+import 'login.dart';
 
 Future<void> main() async {
   WidgetsFlutterBinding.ensureInitialized();
@@ -30,27 +32,83 @@ Future<void> main() async {
   runApp(const ProviderScope(child: MyApp()));
 }
 
+const CupertinoThemeData cupertinoDark = CupertinoThemeData(
+  brightness: Brightness.dark,
+  textTheme: CupertinoTextThemeData(
+    dateTimePickerTextStyle: TextStyle(
+      color: Colors.white,
+      // fontSize: 16,
+    ),
+  ),
+);
+
 class MyApp extends StatelessWidget {
   const MyApp({super.key});
 
   // This widget is the root of your application.
   @override
   Widget build(BuildContext context) {
-    initializeDateFormatting("ja_JP");
-    return MaterialApp(
+    return MediaQuery.fromWindow(
+        child: MaterialApp(
+      useInheritedMediaQuery: true,
+      localizationsDelegates: const [
+        GlobalMaterialLocalizations.delegate,
+        GlobalWidgetsLocalizations.delegate,
+        GlobalCupertinoLocalizations.delegate,
+      ],
+      supportedLocales: const [
+        Locale('ja', ''), //日本語
+        Locale('en', ''), //英語
+      ],
       title: 'SmilePlayer3',
+      // theme: ,
       darkTheme: ThemeData(
-        brightness: Brightness.dark,
-        primarySwatch: Colors.grey,
-        fontFamily: 'NotoSansCJKJp',
-      ),
+          brightness: Brightness.dark,
+          scaffoldBackgroundColor: const Color.fromARGB(255, 22, 22, 22),
+          canvasColor: CupertinoColors.black,
+          cupertinoOverrideTheme: const CupertinoThemeData(
+              brightness: Brightness.dark,
+              primaryColor: CupertinoColors.systemBlue,
+              textTheme: CupertinoTextThemeData(),
+              barBackgroundColor: CupertinoColors.systemBackground)),
       home: const WholeWidget(),
-    );
+    ));
   }
 }
 
 class WholeWidget extends ConsumerWidget {
   const WholeWidget({super.key});
+
+  @override
+  Widget build(BuildContext context, WidgetRef ref) {
+    return CupertinoPageScaffold(
+        child: FutureBuilder<SharedPreferences>(
+      builder: (context, snapshot) {
+        if (snapshot.hasData) {
+          if (snapshot.data!.getString("session") != null) {
+            nicoSession.parseCookies(snapshot.data!.getString("session")!);
+            return const MainPage();
+          } else {
+            return LoginPage(
+              loginProcess: ((context) => {
+                    Navigator.of(context).push(CupertinoPageRoute(
+                      builder: (context) => const MainPage(),
+                    ))
+                  }),
+              loginState: snapshot.data!,
+            );
+          }
+        } else {
+          return const Center(child: CircularProgressIndicator());
+        }
+      },
+      future: SharedPreferences.getInstance(),
+    ));
+  }
+}
+
+class MainPage extends StatelessWidget {
+  const MainPage({super.key});
   final pages = const [
     Ranking(),
     Search(),
@@ -58,28 +116,25 @@ class WholeWidget extends ConsumerWidget {
     Nicorepo(),
     Other(),
   ];
-
   @override
-  Widget build(BuildContext context, WidgetRef ref) {
-    return Scaffold(
-      // appBar: Header(),
-      body: PersistentTabView(
-        context,
-        screens: pages,
-        navBarStyle: NavBarStyle.simple,
-        backgroundColor: Theme.of(context).scaffoldBackgroundColor,
+  Widget build(BuildContext context) {
+    return CupertinoTabScaffold(
+      // backgroundColor: CupertinoTheme.of(context).barBackgroundColor,
+      tabBar: CupertinoTabBar(
         items: NaviSelectIndex.values
-            .map((e) => PersistentBottomNavBarItem(
+            .map((e) => BottomNavigationBarItem(
                   icon: Icon(
                     e.icon,
                     size: 30,
                   ),
-                  title: (e.label),
-                  activeColorPrimary: Colors.blue,
-                  inactiveColorPrimary: Colors.grey,
+                  label: (e.label),
+                  // activeColorPrimary: Colors.blue,
+                  // inactiveColorPrimary: Colors.grey,
                 ))
             .toList(),
       ),
+      tabBuilder: (context, index) =>
+          CupertinoTabView(builder: (context) => pages[index]),
     );
   }
 }

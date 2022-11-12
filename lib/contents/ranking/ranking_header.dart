@@ -1,3 +1,4 @@
+import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:niconico/contents/ranking/ranking_genre.dart';
@@ -11,31 +12,29 @@ class RankingHeader extends ConsumerWidget {
   @override
   Widget build(BuildContext context, WidgetRef ref) {
     final tag = ref.watch(RankingParam.tag);
-    return AppBar(
-      centerTitle: true,
-      elevation: 0,
-      automaticallyImplyLeading: false,
-      title: const Text("ランキング"),
-      leading: IconButton(
-        icon: const Icon(
-          Icons.menu,
-          color: Colors.blue,
+    return CupertinoNavigationBar(
+        automaticallyImplyLeading: false,
+        middle: const Text("ランキング"),
+        leading: CupertinoButton(
+          child: const Icon(
+            Icons.menu,
+            color: Colors.blue,
+          ),
+          onPressed: () => showModalBottomSheet(
+            isScrollControlled: true,
+            context: context,
+            builder: (context) {
+              return const FractionallySizedBox(
+                heightFactor: 0.8,
+                child: Genre(),
+              );
+            },
+          ),
         ),
-        onPressed: () => showModalBottomSheet(
-          isScrollControlled: true,
-          context: context,
-          builder: (context) {
-            return const FractionallySizedBox(
-              heightFactor: 0.8,
-              child: Genre(),
-            );
-          },
-        ),
-      ),
-      actions: <Widget>[
-        SizedBox(
+        trailing: SizedBox(
           width: 120,
-          child: DropdownButton(
+          child: Material(
+              child: DropdownButton(
             style: const TextStyle(fontSize: 11),
             isExpanded: true,
             itemHeight: 48.0,
@@ -53,9 +52,7 @@ class RankingHeader extends ConsumerWidget {
               ref.read(RankingParam.term.notifier).state = value!;
             },
             value: ref.watch(RankingParam.term),
-          ),
-        )
-      ],
-    );
+          )),
+        ));
   }
 }

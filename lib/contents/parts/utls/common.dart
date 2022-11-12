@@ -1,5 +1,6 @@
 import 'dart:math';
 
+import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 import 'package:niconico/constant.dart';
 
@@ -170,4 +171,30 @@ class _AnimatedSizeIconState extends State<AnimatedSizeIcon> {
               ),
             )));
   }
+}
+
+CupertinoNavigationBar topNaviBar(String middle,
+    {Widget? trailing, Widget? leading, bool autoBack = true}) {
+  return CupertinoNavigationBar(
+    automaticallyImplyLeading: autoBack,
+    leading: leading,
+    previousPageTitle: "戻る",
+    trailing: trailing,
+    middle: Text(middle),
+  );
+}
+
+CupertinoButton topBackButton(BuildContext context) {
+  return CupertinoButton(
+    padding: const EdgeInsets.all(0.0),
+    child: const Text(
+      'キャンセル',
+      style: TextStyle(
+        decoration: TextDecoration.underline,
+        fontWeight: FontWeight.bold,
+        fontSize: 14.0,
+      ),
+    ),
+    onPressed: () => Navigator.of(context).pop(),
+  );
 }

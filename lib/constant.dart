@@ -1,11 +1,11 @@
 import 'package:audio_service/audio_service.dart';
 import 'package:flutter/material.dart';
-import 'package:flutter_riverpod/flutter_riverpod.dart';
 
 import 'contents/parts/utls/video_detail/video_player/video_player.dart';
+import 'nico_api.dart';
 
 late VideoPlayerHandler audioHandler;
-final naviSelectIndex = StateProvider((ref) => 1);
+final nicoSession = NicoSession();
 const List<String> itemLabel = ["ランキング", "検索", "視聴履歴", "ニコレポ", "その他"];
 
 enum NaviSelectIndex {

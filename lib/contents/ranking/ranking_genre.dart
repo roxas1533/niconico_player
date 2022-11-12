@@ -1,5 +1,7 @@
+import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
+import 'package:niconico/contents/parts/utls/common.dart';
 
 import '../../constant.dart';
 import 'ranking.dart';
@@ -11,27 +13,12 @@ class Genre extends ConsumerWidget {
 
   @override
   Widget build(BuildContext context, WidgetRef ref) {
-    return Scaffold(
-      appBar: AppBar(
-        centerTitle: true,
-        elevation: 0,
-        automaticallyImplyLeading: false,
-        title: const Text("カテゴリ"),
-        leadingWidth: 100,
-        leading: TextButton(
-          child: const Text(
-            'キャンセル',
-            style: TextStyle(
-              decoration: TextDecoration.underline,
-              color: Colors.blue,
-              fontWeight: FontWeight.bold,
-              fontSize: 14.0,
-            ),
-          ),
-          onPressed: () => Navigator.of(context).pop(),
-        ),
+    return CupertinoPageScaffold(
+      navigationBar: topNaviBar(
+        "カテゴリ",
+        leading: topBackButton(context),
       ),
-      body: Scrollbar(
+      child: Scrollbar(
         child: ListView.separated(
           itemCount: GenreKey.values.length,
           itemBuilder: (context2, index) => InkWell(

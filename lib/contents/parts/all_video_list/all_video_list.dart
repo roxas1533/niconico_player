@@ -1,7 +1,7 @@
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 import 'package:niconico/constant.dart';
-import 'package:niconico/contents/parts/utls/icon_text_button.dart';
+import 'package:niconico/contents/parts/utls/common.dart';
 import 'package:niconico/nico_api.dart';
 
 import '../utls/video_list_widget.dart';
@@ -51,170 +51,153 @@ class _AllVideoListState extends State<AllVideoList> {
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-        appBar: AppBar(
-          centerTitle: true,
-          elevation: 0,
-          leadingWidth: 80,
-          automaticallyImplyLeading: false,
-          leading: IconTextButton(
-            text: const Text("戻る",
-                style: TextStyle(color: Colors.blue, fontSize: 19)),
-            icon: const Icon(
-              Icons.arrow_back_ios_new,
-              color: Colors.blue,
-            ),
-            onPressed: () => Navigator.pop(context),
-            margin: 0,
-          ),
-          title: const Text("投稿動画一覧"),
-          actions: [
-            IconButton(
-                onPressed: () => showModalBottomSheet(
-                      isScrollControlled: true,
-                      context: context,
-                      builder: (context) {
-                        return FractionallySizedBox(
-                          heightFactor: 0.8,
-                          child: Scaffold(
-                            appBar: AppBar(
-                              centerTitle: true,
-                              elevation: 0,
-                              automaticallyImplyLeading: false,
-                              title: const Text("絞り込み"),
-                              leadingWidth: 100,
-                              leading: TextButton(
-                                child: const Text(
-                                  'キャンセル',
-                                  style: TextStyle(
-                                    decoration: TextDecoration.underline,
-                                    color: Colors.blue,
-                                    fontWeight: FontWeight.bold,
-                                    fontSize: 14.0,
-                                  ),
-                                ),
-                                onPressed: () => Navigator.of(context).pop(),
+      appBar: topNaviBar(
+        "投稿動画一覧",
+        trailing: CupertinoButton(
+            onPressed: () => showModalBottomSheet(
+                  isScrollControlled: true,
+                  context: context,
+                  builder: (context) {
+                    return FractionallySizedBox(
+                      heightFactor: 0.8,
+                      child: Scaffold(
+                        appBar: AppBar(
+                          centerTitle: true,
+                          elevation: 0,
+                          automaticallyImplyLeading: false,
+                          title: const Text("絞り込み"),
+                          leadingWidth: 100,
+                          leading: TextButton(
+                            child: const Text(
+                              'キャンセル',
+                              style: TextStyle(
+                                decoration: TextDecoration.underline,
+                                color: Colors.blue,
+                                fontWeight: FontWeight.bold,
+                                fontSize: 14.0,
                               ),
                             ),
-                            body: Scrollbar(
-                                child: ListView.separated(
-                              itemBuilder: (BuildContext context, int index) =>
-                                  ListTile(
-                                      trailing: Visibility(
-                                          visible: filter.index == index,
-                                          child: const Icon(Icons.check,
-                                              color: Colors.green)),
-                                      onTap: () => {
-                                            setState(() {
-                                              filter = AllVideoListSort
-                                                  .values[index];
-                                              videoListFuture =
-                                                  getAllVideolist();
-                                            }),
-                                            Navigator.of(context).pop()
-                                          },
-                                      title: Text(
-                                        AllVideoListSort.values[index].label,
-                                        style: const TextStyle(fontSize: 18),
-                                      )),
-                              itemCount: AllVideoListSort.values.length,
-                              separatorBuilder:
-                                  (BuildContext context, int index) =>
-                                      const Divider(height: 0.5),
-                            )),
+                            onPressed: () => Navigator.of(context).pop(),
                           ),
-                        );
-                      },
-                    ),
-                icon: const Icon(Icons.tune, color: Colors.blue)),
-          ],
-        ),
-        body: FutureBuilder(
-          future: videoListFuture,
-          builder:
-              (BuildContext context, AsyncSnapshot<List<VideoInfo>?> snapshot) {
-            if (snapshot.hasData) {
-              final videoList = snapshot.data!;
-              if (videoList.isEmpty) {
-                return const Center(
-                  child: Text("動画がありません"),
-                );
-              }
-              final size = MediaQuery.of(context).size;
-
-              return NotificationListener<ScrollNotification>(
-                  onNotification: (notification) {
-                    if (notification is ScrollEndNotification &&
-                        notification.metrics.extentAfter == 0 &&
-                        maxPage > page) {
-                      getAllVideolist(next: true).then((value) {
-                        if (value.isNotEmpty) {
-                          setState(() {
-                            videoList.addAll(value);
-                          });
-                        }
-                      });
-                      return true;
-                    }
-                    return false;
-                  },
-                  child: Scrollbar(
-                      child: SingleChildScrollView(
-                          child: Column(children: [
-                    Container(
-                        padding: const EdgeInsets.symmetric(
-                            horizontal: 10, vertical: 15),
-                        child: Row(
-                          children: [
-                            Image.network(
-                              widget.userInfo.icon,
-                              alignment: Alignment.center,
-                              width: size.height * 0.045,
-                              fit: BoxFit.fitWidth,
-                            ),
-                            Container(
-                                padding: const EdgeInsets.only(left: 10),
-                                alignment: Alignment.centerLeft,
-                                child: Text(widget.userInfo.name)),
-                          ],
+                        ),
+                        body: Scrollbar(
+                            child: ListView.separated(
+                          itemBuilder: (BuildContext context, int index) =>
+                              ListTile(
+                                  trailing: Visibility(
+                                      visible: filter.index == index,
+                                      child: const Icon(Icons.check,
+                                          color: Colors.green)),
+                                  onTap: () => {
+                                        setState(() {
+                                          filter =
+                                              AllVideoListSort.values[index];
+                                          videoListFuture = getAllVideolist();
+                                        }),
+                                        Navigator.of(context).pop()
+                                      },
+                                  title: Text(
+                                    AllVideoListSort.values[index].label,
+                                    style: const TextStyle(fontSize: 18),
+                                  )),
+                          itemCount: AllVideoListSort.values.length,
+                          separatorBuilder: (BuildContext context, int index) =>
+                              const Divider(height: 0.5),
                         )),
-                    Container(
-                        padding: const EdgeInsets.only(left: 10),
-                        alignment: Alignment.centerLeft,
-                        height: size.height * 0.05,
-                        decoration: const BoxDecoration(
-                            border: Border.symmetric(
-                          horizontal: BorderSide(
-                            color: Colors.grey,
-                            width: 0.5,
-                          ),
-                        )),
-                        child: Text("$totalCount 件")),
-                    ListView.separated(
-                      primary: false,
-                      shrinkWrap: true,
-                      physics: const NeverScrollableScrollPhysics(),
-                      itemCount: videoList.length,
-                      padding: const EdgeInsets.only(top: 10),
-                      itemBuilder: (context, index) {
-                        return VideoListWidget(
-                          videoInfo: videoList[index],
-                        );
-                      },
-                      separatorBuilder: (BuildContext context, int index) =>
-                          const Divider(
-                        height: 1,
-                        thickness: 1,
                       ),
-                    )
-                  ]))));
-            } else {
-              return Container(
-                  alignment: Alignment.center,
-                  child: const CupertinoActivityIndicator(
-                    color: Colors.grey,
-                  ));
+                    );
+                  },
+                ),
+            child: const Icon(Icons.tune, color: Colors.blue)),
+      ),
+      body: FutureBuilder(
+        future: videoListFuture,
+        builder:
+            (BuildContext context, AsyncSnapshot<List<VideoInfo>?> snapshot) {
+          if (snapshot.hasData) {
+            final videoList = snapshot.data!;
+            if (videoList.isEmpty) {
+              return const Center(
+                child: Text("動画がありません"),
+              );
             }
-          },
-        ));
+            final size = MediaQuery.of(context).size;
+
+            return NotificationListener<ScrollNotification>(
+                onNotification: (notification) {
+                  if (notification is ScrollEndNotification &&
+                      notification.metrics.extentAfter == 0 &&
+                      maxPage > page) {
+                    getAllVideolist(next: true).then((value) {
+                      if (value.isNotEmpty) {
+                        setState(() {
+                          videoList.addAll(value);
+                        });
+                      }
+                    });
+                    return true;
+                  }
+                  return false;
+                },
+                child: Scrollbar(
+                    child: SingleChildScrollView(
+                        child: Column(children: [
+                  Container(
+                      padding: const EdgeInsets.symmetric(
+                          horizontal: 10, vertical: 15),
+                      child: Row(
+                        children: [
+                          Image.network(
+                            widget.userInfo.icon,
+                            alignment: Alignment.center,
+                            width: size.height * 0.045,
+                            fit: BoxFit.fitWidth,
+                          ),
+                          Container(
+                              padding: const EdgeInsets.only(left: 10),
+                              alignment: Alignment.centerLeft,
+                              child: Text(widget.userInfo.name)),
+                        ],
+                      )),
+                  Container(
+                      padding: const EdgeInsets.only(left: 10),
+                      alignment: Alignment.centerLeft,
+                      height: size.height * 0.05,
+                      decoration: const BoxDecoration(
+                          border: Border.symmetric(
+                        horizontal: BorderSide(
+                          color: Colors.grey,
+                          width: 0.5,
+                        ),
+                      )),
+                      child: Text("$totalCount 件")),
+                  ListView.separated(
+                    primary: false,
+                    shrinkWrap: true,
+                    physics: const NeverScrollableScrollPhysics(),
+                    itemCount: videoList.length,
+                    padding: const EdgeInsets.only(top: 10),
+                    itemBuilder: (context, index) {
+                      return VideoListWidget(
+                        videoInfo: videoList[index],
+                      );
+                    },
+                    separatorBuilder: (BuildContext context, int index) =>
+                        const Divider(
+                      height: 1,
+                      thickness: 1,
+                    ),
+                  )
+                ]))));
+          } else {
+            return Container(
+                alignment: Alignment.center,
+                child: const CupertinoActivityIndicator(
+                  color: Colors.grey,
+                ));
+          }
+        },
+      ),
+    );
   }
 }

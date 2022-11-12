@@ -1,9 +1,9 @@
+import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 import 'package:niconico/constant.dart';
 import 'package:niconico/contents/parts/utls/video_detail/spliter.dart';
 import 'package:niconico/contents/parts/utls/video_detail/video_colmun.dart';
 import 'package:niconico/contents/search/search_core.dart';
-import 'package:persistent_bottom_nav_bar_v2/persistent-tab-view.dart';
 
 import '../icon_text_button.dart';
 
@@ -33,14 +33,9 @@ class Tag extends StatelessWidget {
                       size: 16,
                       color: Colors.grey,
                     ),
-              onTap: (context) => {
-                pushNewScreen<dynamic>(
-                  context,
-                  screen: SearchForVideoDetail(
-                    searchWord: tag.name,
-                  ),
-                )
-              },
+              onTap: (context) => Navigator.of(context).push(CupertinoPageRoute(
+                  builder: (context) =>
+                      SearchForVideoDetail(searchWord: tag.name))),
             ),
         ],
       ),

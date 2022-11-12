@@ -39,16 +39,15 @@ class RankingState extends ConsumerState<Ranking>
 
   @override
   Widget build(BuildContext context) {
-    final screenSize = MediaQuery.of(context).size;
     final getPopularTag = ref.watch(RankingParam.popularTagFuture);
     return Scaffold(
-        appBar: const Header(
-          child: RankingHeader(),
-        ),
-        body: Ink(
-          color: Colors.transparent,
-          height: screenSize.height,
-          child: getPopularTag.when(
+      appBar: const Header(child: RankingHeader()),
+      body:
+          //  Ink(
+          //   color: Colors.transparent,
+          //   height: screenSize.height,
+          //   child:
+          getPopularTag.when(
               loading: () => Container(
                   alignment: Alignment.center,
                   child: const CupertinoActivityIndicator(
@@ -60,6 +59,6 @@ class RankingState extends ConsumerState<Ranking>
                     tagList: snapshot,
                     genreId: ref.watch(RankingParam.genreId));
               }),
-        ));
+    );
   }
 }

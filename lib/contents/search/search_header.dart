@@ -1,3 +1,4 @@
+import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:niconico/constant.dart';
@@ -15,10 +16,9 @@ class _SearchHeaderState extends ConsumerState<SearchHeader> {
   bool isBanner = false;
   @override
   Widget build(BuildContext context) {
-    return AppBar(
-      elevation: 0,
-      title: SizedBox(
-          height: kToolbarHeight - 25,
+    return CupertinoNavigationBar(
+      middle: SizedBox(
+          height: kMinInteractiveDimensionCupertino - 10,
           child: TextField(
             decoration: InputDecoration(
               fillColor: const Color.fromARGB(255, 53, 53, 53),

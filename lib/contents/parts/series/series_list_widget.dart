@@ -1,8 +1,8 @@
+import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 import "package:niconico/constant.dart";
 import 'package:niconico/contents/parts/series/series.dart';
 import 'package:niconico/contents/parts/utls/common.dart';
-import 'package:persistent_bottom_nav_bar_v2/persistent-tab-view.dart';
 
 class SeriesListWidget extends StatelessWidget {
   const SeriesListWidget({
@@ -15,12 +15,8 @@ class SeriesListWidget extends StatelessWidget {
   Widget build(BuildContext context) {
     final screenSize = MediaQuery.of(context).size;
     return InkWell(
-      onTap: () => {
-        pushNewScreen<dynamic>(
-          context,
-          screen: Series(seriesId: seriesInfto.id),
-        )
-      },
+      onTap: () => Navigator.of(context).push(CupertinoPageRoute(
+          builder: (context) => Series(seriesId: seriesInfto.id))),
       child: Container(
         margin: const EdgeInsets.symmetric(vertical: 5, horizontal: 10),
         width: screenSize.width,
@@ -50,7 +46,7 @@ class SeriesListWidget extends StatelessWidget {
                                     fit: BoxFit.fitWidth,
                                   ),
                                   Opacity(
-                                      opacity: 0.9,
+                                      opacity: 0.85,
                                       child: Container(
                                           alignment: Alignment.center,
                                           color: Colors.black,
