@@ -105,13 +105,16 @@ class _SeriesState extends State<Series> {
                         child: Row(
                           children: [
                             const Icon(Icons.video_library, size: 30),
-                            Container(
-                                padding: const EdgeInsets.only(left: 10),
-                                alignment: Alignment.centerLeft,
-                                child: Text(title,
-                                    style: const TextStyle(
-                                        fontSize: 16,
-                                        fontWeight: FontWeight.bold))),
+                            Expanded(
+                              child: Container(
+                                  padding: const EdgeInsets.only(left: 10),
+                                  alignment: Alignment.centerLeft,
+                                  child: Text(title,
+                                      maxLines: 2,
+                                      style: const TextStyle(
+                                          fontSize: 16,
+                                          fontWeight: FontWeight.bold))),
+                            )
                           ],
                         )),
                     Container(

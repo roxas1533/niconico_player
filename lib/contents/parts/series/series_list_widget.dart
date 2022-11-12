@@ -20,7 +20,7 @@ class SeriesListWidget extends StatelessWidget {
       child: Container(
         margin: const EdgeInsets.symmetric(vertical: 5, horizontal: 10),
         width: screenSize.width,
-        height: screenSize.height * 0.08,
+        height: screenSize.height * 0.1,
         child: Stack(
           alignment: AlignmentDirectional.center,
           children: [
@@ -35,37 +35,43 @@ class SeriesListWidget extends StatelessWidget {
                     child: ClipRRect(
                         borderRadius: BorderRadius.circular(5.0),
                         child: SizedBox(
-                            width: screenSize.height * 0.1477,
+                            height: screenSize.height * 0.1,
                             child: Stack(
-                                alignment: AlignmentDirectional.centerEnd,
+                                alignment: AlignmentDirectional.centerStart,
                                 children: [
                                   Image.network(
                                     seriesInfto.thumbnailUrl,
-                                    alignment: Alignment.center,
-                                    width: screenSize.height * 0.1477,
+                                    alignment: Alignment.centerLeft,
+                                    height: screenSize.height * 0.1,
                                     fit: BoxFit.fitWidth,
                                   ),
-                                  Opacity(
-                                      opacity: 0.85,
-                                      child: Container(
-                                          alignment: Alignment.center,
-                                          color: Colors.black,
-                                          width: screenSize.height * 0.1477 / 3,
-                                          child: Column(
-                                              mainAxisSize: MainAxisSize.min,
-                                              children: [
-                                                Text(
-                                                    "${seriesInfto.itemsCount} 件",
-                                                    style: const TextStyle(
-                                                        fontSize: 10)),
-                                                const Icon(Icons.video_library,
-                                                    size: 15.0),
-                                              ]))),
+                                  Row(children: [
+                                    Expanded(
+                                      child: Container(),
+                                    ),
+                                    Opacity(
+                                        opacity: 0.85,
+                                        child: Container(
+                                            alignment: Alignment.center,
+                                            color: Colors.black,
+                                            width:
+                                                screenSize.height * 0.1477 / 3,
+                                            child: Column(
+                                                mainAxisSize: MainAxisSize.min,
+                                                children: [
+                                                  Text(
+                                                      "${seriesInfto.itemsCount} 件",
+                                                      style: const TextStyle(
+                                                          fontSize: 10)),
+                                                  const Icon(
+                                                      Icons.video_library,
+                                                      size: 15.0),
+                                                ])))
+                                  ]),
                                 ])))),
                 Expanded(
                     child: Container(
                   padding: const EdgeInsets.symmetric(horizontal: 10),
-                  width: screenSize.width * 0.85,
                   child: Column(
                     mainAxisAlignment: MainAxisAlignment.center,
                     children: [
