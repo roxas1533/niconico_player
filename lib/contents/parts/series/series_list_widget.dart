@@ -50,12 +50,13 @@ class SeriesListWidget extends StatelessWidget {
                                       child: Container(),
                                     ),
                                     Opacity(
-                                        opacity: 0.85,
+                                        opacity: 0.8,
                                         child: Container(
                                             alignment: Alignment.center,
                                             color: Colors.black,
-                                            width:
-                                                screenSize.height * 0.1477 / 3,
+                                            width: screenSize.height *
+                                                0.1477 *
+                                                0.4,
                                             child: Column(
                                                 mainAxisSize: MainAxisSize.min,
                                                 children: [
@@ -79,7 +80,7 @@ class SeriesListWidget extends StatelessWidget {
                         alignment: Alignment.centerLeft,
                         child: Text(seriesInfto.title,
                             style: const TextStyle(fontSize: 14.0),
-                            maxLines: 3,
+                            maxLines: 2,
                             overflow: TextOverflow.ellipsis),
                       ),
                       Container(

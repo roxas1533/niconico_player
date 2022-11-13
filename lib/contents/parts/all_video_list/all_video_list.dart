@@ -61,12 +61,8 @@ class _AllVideoListState extends State<AllVideoList> {
                     return FractionallySizedBox(
                       heightFactor: 0.8,
                       child: Scaffold(
-                        appBar: AppBar(
-                          centerTitle: true,
-                          elevation: 0,
-                          automaticallyImplyLeading: false,
-                          title: const Text("絞り込み"),
-                          leadingWidth: 100,
+                        appBar: topNaviBar(
+                          "絞り込み",
                           leading: TextButton(
                             child: const Text(
                               'キャンセル',
