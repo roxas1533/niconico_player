@@ -26,7 +26,7 @@ class RainkingPage extends ConsumerWidget {
           if (snapshot.hasData) {
             return Scrollbar(
                 child: ListView.separated(
-              controller: _scrollController,
+              controller: PrimaryScrollController.of(context),
               primary: false,
               shrinkWrap: true,
               padding: const EdgeInsets.only(top: 5),
