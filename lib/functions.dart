@@ -107,7 +107,13 @@ String getPostedAtTime(String postedAt, bool islast24h) {
   var formatted = formatter.format(datetime);
 
   if (islast24h && difference.inHours < 24) {
-    formatted = "${difference.inHours} 時間前";
+    if (difference.inMinutes < 1) {
+      formatted = "1分以内";
+    } else if (difference.inMinutes < 60) {
+      formatted = "${difference.inMinutes} 分前";
+    } else {
+      formatted = "${difference.inHours} 時間前";
+    }
   }
 
   return formatted;

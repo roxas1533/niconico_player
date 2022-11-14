@@ -13,10 +13,15 @@ import 'video_detail/video_detail.dart';
 
 class VideoListWidget extends StatelessWidget {
   const VideoListWidget(
-      {super.key, required this.videoInfo, this.rank, this.description});
+      {super.key,
+      required this.videoInfo,
+      this.rank,
+      this.description,
+      this.views});
   final VideoInfo videoInfo;
   final int? rank;
   final String? description;
+  final int? views;
 
   @override
   Widget build(BuildContext context) {
@@ -53,7 +58,7 @@ class VideoListWidget extends StatelessWidget {
                         Row(
                           children: [
                             Thumbnail(videoInfo: videoInfo),
-                            VideoTitle(videoInfo: videoInfo),
+                            VideoTitle(videoInfo: videoInfo, views: views),
                           ],
                         ),
                       ],

@@ -252,6 +252,33 @@ class NicoSession {
     return {};
   }
 
+  Future<Map<String, dynamic>> getHistory(int type,
+      {int page = 1, int pageSize = 100}) async {
+    final query = {
+      "page": "$page",
+      "pageSize": "$pageSize",
+    };
+    final typeUrl = type == 0 ? "watch/history" : "likes";
+    final headers = {
+      "Cookie": _toSetCookieHeader(),
+      "Connection": "keep-alive",
+    }..addAll(apiHeader);
+    Uri uri = Uri.https(
+      UrlList.nvApiDomain.url,
+      "v1/users/me/$typeUrl",
+      query,
+    );
+    http.Response resp = await http.get(uri, headers: headers);
+
+    if (resp.statusCode == 200) {
+      Map<String, dynamic> info = json.decode(resp.body);
+      return info;
+    } else {
+      debugPrint(resp.body.toString());
+    }
+    return {};
+  }
+
   Future<String?> login(String id, String password) async {
     Uri uri = Uri.https(
       "secure.nicovideo.jp",
@@ -283,6 +310,14 @@ class NicoSession {
   }
 
   String _toSetCookieHeader() {
+    const necessaryCookie = ["user_session", "user_session_secure", "nicosid"];
+    _cookies.removeWhere((element) => !necessaryCookie.contains(element.name));
+    _cookies.removeWhere((cookie) {
+      if (cookie.expires != null) {
+        return cookie.expires!.isBefore(DateTime.now());
+      }
+      return false;
+    });
     return _cookies.map((e) => e.toString()).join('; ');
   }
 
@@ -293,4 +328,6 @@ class NicoSession {
       _cookies.add(cookie);
     }
   }
+
+  get cookies => _cookies;
 }

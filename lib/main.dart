@@ -94,7 +94,6 @@ class WholeWidget extends ConsumerWidget {
                     Navigator.of(context).push(CupertinoPageRoute(
                       builder: (context) => WillPopScope(
                           onWillPop: () async {
-                            print("aaa");
                             return false;
                           },
                           child: const MainPage()),

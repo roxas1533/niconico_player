@@ -3,6 +3,7 @@ import 'package:flutter/material.dart';
 import 'package:niconico/constant.dart';
 import 'package:niconico/contents/parts/utls/common.dart';
 import 'package:niconico/header_wrapper.dart';
+import 'package:shared_preferences/shared_preferences.dart';
 
 import 'nicorepo_widget.dart';
 
@@ -23,8 +24,12 @@ class NicorepoPage extends StatefulWidget {
 class NicorepoPageState extends State<NicorepoPage> {
   NicoRepoObject nicoRepoObject = NicoRepoObject();
   late Future<List<NicoRepoInfo>> nicorepoFuture;
-  int filter = 0;
+  late SharedPreferences prefs;
+
+  late int filter;
   Future<List<NicoRepoInfo>> getNicorepoList({next = false}) async {
+    prefs = await SharedPreferences.getInstance();
+    filter = prefs.getInt("NicoRepoFilter") ?? 0;
     final nicorepoList = await nicoSession.getNicorepo(widget.userId,
         untilId: next ? nicoRepoObject.id : null,
         objectType: UserNicoRepoOrder.values[filter].objectType,
@@ -47,7 +52,6 @@ class NicorepoPageState extends State<NicorepoPage> {
   @override
   void initState() {
     super.initState();
-
     nicorepoFuture = getNicorepoList();
   }
 
@@ -80,6 +84,8 @@ class NicorepoPageState extends State<NicorepoPage> {
                                     onTap: () => {
                                           setState(() {
                                             filter = index;
+                                            prefs.setInt(
+                                                "NicoRepoFilter", filter);
                                             nicoRepoObject = NicoRepoObject();
                                             nicorepoFuture = getNicorepoList();
                                           }),

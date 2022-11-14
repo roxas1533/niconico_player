@@ -102,11 +102,27 @@ class VideoInfo {
   }
 }
 
+class VideoHistoryInfo extends VideoInfo {
+  int views;
+  int playbackPosition;
+  VideoHistoryInfo(Map<String, dynamic> json)
+      : views = json["views"],
+        playbackPosition = json["playbackPosition"],
+        super.fromJson(json["video"]);
+}
+
 class UserInfo {
   final String id;
   final String name;
   final String icon;
   UserInfo({required this.id, required this.name, required this.icon});
+}
+
+class LikeHistoryInfo extends VideoInfo {
+  String? thanksMessage;
+  LikeHistoryInfo(Map<String, dynamic> json)
+      : thanksMessage = json["thanksMessage"],
+        super.fromJson(json["video"]);
 }
 
 class NicoRepoInfo {
