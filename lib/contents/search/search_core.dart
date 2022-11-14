@@ -118,7 +118,7 @@ class _ResultState extends State<_Result> {
           return false;
         },
         child: Scrollbar(
-            controller: _scrollController,
+            controller: PrimaryScrollController.of(context),
             child: ListView.builder(
               padding: const EdgeInsets.only(top: 5),
               itemCount: searchClass.videoInfoList.length,
