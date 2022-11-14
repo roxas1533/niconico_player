@@ -8,15 +8,14 @@ import '../parts/utls/video_list_widget.dart';
 import 'ranking.dart';
 
 class RainkingPage extends ConsumerWidget {
-  const RainkingPage({
+  RainkingPage({
     super.key,
     required this.genre,
     required this.tag,
-    required this.controller,
   });
   final String tag;
   final String genre;
-  final ScrollController controller;
+  final _scrollController = ScrollController();
 
   @override
   Widget build(BuildContext context, WidgetRef ref) {
@@ -27,7 +26,7 @@ class RainkingPage extends ConsumerWidget {
           if (snapshot.hasData) {
             return Scrollbar(
                 child: ListView.separated(
-              controller: controller,
+              controller: _scrollController,
               primary: false,
               shrinkWrap: true,
               padding: const EdgeInsets.only(top: 5),

@@ -24,8 +24,7 @@ class RankingParam {
 }
 
 class Ranking extends ConsumerStatefulWidget {
-  const Ranking({super.key, required this.controller});
-  final ScrollController controller;
+  const Ranking({super.key});
 
   @override
   RankingState createState() => RankingState();
@@ -52,9 +51,7 @@ class RankingState extends ConsumerState<Ranking>
           error: (err, stack) => Text('Error: $err'),
           data: (snapshot) {
             return RankigBodyWrapper(
-                tagList: snapshot,
-                genreId: ref.watch(RankingParam.genreId),
-                controller: widget.controller);
+                tagList: snapshot, genreId: ref.watch(RankingParam.genreId));
           }),
     );
   }
