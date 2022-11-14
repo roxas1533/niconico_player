@@ -96,7 +96,6 @@ class _Result extends StatefulWidget {
 }
 
 class _ResultState extends State<_Result> {
-  final ScrollController _scrollController = ScrollController();
   late SearchClass searchClass;
   @override
   void initState() {
