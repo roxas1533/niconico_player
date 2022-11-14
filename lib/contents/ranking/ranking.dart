@@ -24,7 +24,8 @@ class RankingParam {
 }
 
 class Ranking extends ConsumerStatefulWidget {
-  const Ranking({super.key});
+  const Ranking({super.key, required this.controller});
+  final ScrollController controller;
 
   @override
   RankingState createState() => RankingState();
@@ -42,23 +43,19 @@ class RankingState extends ConsumerState<Ranking>
     final getPopularTag = ref.watch(RankingParam.popularTagFuture);
     return Scaffold(
       appBar: const Header(child: RankingHeader()),
-      body:
-          //  Ink(
-          //   color: Colors.transparent,
-          //   height: screenSize.height,
-          //   child:
-          getPopularTag.when(
-              loading: () => Container(
-                  alignment: Alignment.center,
-                  child: const CupertinoActivityIndicator(
-                    color: Colors.grey,
-                  )),
-              error: (err, stack) => Text('Error: $err'),
-              data: (snapshot) {
-                return RankigBodyWrapper(
-                    tagList: snapshot,
-                    genreId: ref.watch(RankingParam.genreId));
-              }),
+      body: getPopularTag.when(
+          loading: () => Container(
+              alignment: Alignment.center,
+              child: const CupertinoActivityIndicator(
+                color: Colors.grey,
+              )),
+          error: (err, stack) => Text('Error: $err'),
+          data: (snapshot) {
+            return RankigBodyWrapper(
+                tagList: snapshot,
+                genreId: ref.watch(RankingParam.genreId),
+                controller: widget.controller);
+          }),
     );
   }
 }

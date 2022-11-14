@@ -7,9 +7,14 @@ import 'ranking_body.dart';
 
 class RankigBodyWrapper extends ConsumerStatefulWidget {
   const RankigBodyWrapper(
-      {super.key, required this.tagList, required this.genreId});
+      {super.key,
+      required this.tagList,
+      required this.genreId,
+      required this.controller});
   final List<String> tagList;
   final GenreKey genreId;
+  final ScrollController controller;
+
   @override
   ConsumerState<RankigBodyWrapper> createState() => _RankigBodyWrapperState();
 }
@@ -62,6 +67,7 @@ class _RankigBodyWrapperState extends ConsumerState<RankigBodyWrapper>
                 RainkingPage(
                   genre: widget.genreId.key,
                   tag: tag,
+                  controller: widget.controller,
                 )
             ]))
       ],

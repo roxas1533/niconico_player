@@ -4,15 +4,11 @@ import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 import 'package:flutter_localizations/flutter_localizations.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
-import 'package:niconico/contents/history.dart';
-import 'package:niconico/contents/nicorepo.dart';
-import 'package:niconico/contents/other.dart';
 import 'package:niconico/contents/ranking/ranking.dart';
 import 'package:shared_preferences/shared_preferences.dart';
 
 import "constant.dart";
 import 'contents/parts/utls/video_detail/video_player/video_player.dart';
-import 'contents/search/search.dart';
 import 'login.dart';
 
 Future<void> main() async {
@@ -113,15 +109,16 @@ class WholeWidget extends ConsumerWidget {
 
 class MainPage extends StatelessWidget {
   const MainPage({super.key});
-  final pages = const [
-    Ranking(),
-    Search(),
-    History(),
-    Nicorepo(),
-    Other(),
-  ];
+  // final pages =(BuildContext context)=> const [
+  //   Ranking(),
+  //   Search(),
+  //   History(),
+  //   Nicorepo(),
+  //   Other(),
+  // ];
   @override
   Widget build(BuildContext context) {
+    final controller = PrimaryScrollController.of(context)!;
     return CupertinoTabScaffold(
       // backgroundColor: CupertinoTheme.of(context).barBackgroundColor,
       tabBar: CupertinoTabBar(
@@ -137,8 +134,10 @@ class MainPage extends StatelessWidget {
                 ))
             .toList(),
       ),
-      tabBuilder: (context, index) =>
-          CupertinoTabView(builder: (context) => pages[index]),
+      tabBuilder: (context, index) => CupertinoTabView(
+          builder: (context) => Ranking(
+                controller: controller,
+              )),
     );
   }
 }

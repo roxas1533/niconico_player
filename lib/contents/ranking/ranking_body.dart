@@ -12,9 +12,11 @@ class RainkingPage extends ConsumerWidget {
     super.key,
     required this.genre,
     required this.tag,
+    required this.controller,
   });
   final String tag;
   final String genre;
+  final ScrollController controller;
 
   @override
   Widget build(BuildContext context, WidgetRef ref) {
@@ -25,8 +27,7 @@ class RainkingPage extends ConsumerWidget {
           if (snapshot.hasData) {
             return Scrollbar(
                 child: ListView.separated(
-              controller: PrimaryScrollController.of(
-                  Navigator.of(context, rootNavigator: true).context),
+              controller: controller,
               primary: false,
               shrinkWrap: true,
               padding: const EdgeInsets.only(top: 5),
