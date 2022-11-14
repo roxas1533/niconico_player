@@ -79,6 +79,28 @@ class MyApp extends StatelessWidget {
 class WholeWidget extends ConsumerWidget {
   const WholeWidget({super.key});
 
+  Future<SharedPreferences> _checkCookie() async {
+    final pref = await SharedPreferences.getInstance();
+    if (pref.getString("session") == null) {
+      return pref;
+    }
+    final result = await nicoSession.getHistory(0, pageSize: 1);
+    if (result.isEmpty) {
+      pref.remove("session");
+    }
+    return pref;
+  }
+
+  void loginPorcess(context) => {
+        Navigator.of(context).push(CupertinoPageRoute(
+          builder: (context) => WillPopScope(
+              onWillPop: () async {
+                return false;
+              },
+              child: const MainPage()),
+        ))
+      };
+
   @override
   Widget build(BuildContext context, WidgetRef ref) {
     return CupertinoPageScaffold(
@@ -90,15 +112,7 @@ class WholeWidget extends ConsumerWidget {
             return const MainPage();
           } else {
             return LoginPage(
-              loginProcess: ((context) => {
-                    Navigator.of(context).push(CupertinoPageRoute(
-                      builder: (context) => WillPopScope(
-                          onWillPop: () async {
-                            return false;
-                          },
-                          child: const MainPage()),
-                    ))
-                  }),
+              loginProcess: loginPorcess,
               loginState: snapshot.data!,
             );
           }
@@ -106,7 +120,7 @@ class WholeWidget extends ConsumerWidget {
           return const Center(child: CircularProgressIndicator());
         }
       },
-      future: SharedPreferences.getInstance(),
+      future: _checkCookie(),
     ));
   }
 }
