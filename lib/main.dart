@@ -84,6 +84,7 @@ class WholeWidget extends ConsumerWidget {
     if (pref.getString("session") == null) {
       return pref;
     }
+    nicoSession.parseCookies(pref.getString("session")!);
     final result = await nicoSession.getHistory(0, pageSize: 1);
     if (result.isEmpty) {
       pref.remove("session");
@@ -117,7 +118,7 @@ class WholeWidget extends ConsumerWidget {
             );
           }
         } else {
-          return const Center(child: CircularProgressIndicator());
+          return const Center(child: CupertinoActivityIndicator());
         }
       },
       future: _checkCookie(),
