@@ -96,7 +96,8 @@ class PlayVideoState extends State<PlayVideo> {
     final screenSize = MediaQuery.of(context).size;
     final width = screenSize.height;
     final height = screenSize.width;
-    return SizedBox(
+    return Container(
+      color: Colors.black,
       width: width,
       height: height,
       child: RotatedBox(
