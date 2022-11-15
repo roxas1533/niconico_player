@@ -21,6 +21,8 @@ class RankingParam {
   static final genreId = StateProvider((ref) => GenreKey.all);
   static final popularTagFuture =
       FutureProvider((ref) => getPopulerTag(ref.watch(genreId).key));
+  static final rankingFuture = FutureProvider.family<List<VideoInfo>, String>(
+      (ref, tag) => getRanking(tag, ref.watch(term), ref.watch(genreId).key));
 }
 
 class Ranking extends ConsumerStatefulWidget {
@@ -50,8 +52,7 @@ class RankingState extends ConsumerState<Ranking>
               )),
           error: (err, stack) => Text('Error: $err'),
           data: (snapshot) {
-            return RankigBodyWrapper(
-                tagList: snapshot, genreId: ref.watch(RankingParam.genreId));
+            return RankigBodyWrapper(tagList: snapshot);
           }),
     );
   }

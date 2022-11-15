@@ -76,6 +76,9 @@ Future<List<VideoInfo>> getRanking(
         makeVideoInfo(element),
       );
     }
+  } else {
+    debugPrint("getRanking error");
+    debugPrint(resp.statusCode.toString());
   }
   return videoInfoList;
 }

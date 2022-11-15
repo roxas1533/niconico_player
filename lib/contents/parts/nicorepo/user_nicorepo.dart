@@ -28,6 +28,7 @@ class NicorepoPageState extends State<NicorepoPage> {
 
   late int filter;
   Future<List<NicoRepoInfo>> getNicorepoList({next = false}) async {
+    if (!next) nicoRepoObject = NicoRepoObject();
     prefs = await SharedPreferences.getInstance();
     filter = prefs.getInt("NicoRepoFilter") ?? 0;
     final nicorepoList = await nicoSession.getNicorepo(widget.userId,
@@ -129,17 +130,16 @@ class NicorepoPageState extends State<NicorepoPage> {
                     }
                     return false;
                   },
-                  child: Scrollbar(
-                      child: ListView.separated(
+                  child: CustomListView(
                     itemCount: snapshot.data!.length,
-                    padding: const EdgeInsets.only(top: 10),
                     itemBuilder: (context, index) => NicorepoWidget(
                       nicoRepoInfo: snapshot.data![index],
                     ),
-                    separatorBuilder: (context, index) {
-                      return const Divider(height: 0.5);
+                    onRefresh: () async {
+                      nicorepoFuture = getNicorepoList();
+                      setState(() {});
                     },
-                  )));
+                  ));
             } else {
               return Container(
                   alignment: Alignment.center,

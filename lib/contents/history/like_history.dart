@@ -1,6 +1,7 @@
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 import 'package:niconico/constant.dart';
+import 'package:niconico/contents/parts/utls/common.dart';
 import 'package:niconico/contents/parts/utls/video_list_widget.dart';
 
 class LikeHistoryPage extends StatefulWidget {
@@ -11,10 +12,11 @@ class LikeHistoryPage extends StatefulWidget {
 }
 
 class LikeHistoryPageState extends State<LikeHistoryPage> {
-  List<LikeHistoryInfo> likeHistory = [];
   late Future<List<LikeHistoryInfo>> future;
 
   Future<List<LikeHistoryInfo>> getLikeHistory({next = false}) async {
+    List<LikeHistoryInfo> likeHistory = [];
+
     final videoHistoryData = await nicoSession.getHistory(1);
     if (videoHistoryData["data"]["items"].isEmpty) {
       return [];
@@ -56,20 +58,20 @@ class LikeHistoryPageState extends State<LikeHistoryPage> {
                 }
                 return false;
               },
-              child: Scrollbar(
-                  child: ListView.separated(
+              child: CustomListView(
                 itemCount: snapshot.data!.length,
-                padding: const EdgeInsets.only(top: 10),
-                itemBuilder: (context, index) {
+                itemBuilder: (BuildContext context, int index) {
                   return VideoListWidget(
                     videoInfo: snapshot.data![index],
                     description: snapshot.data![index].thanksMessage,
                   );
                 },
-                separatorBuilder: (context, index) {
-                  return const Divider(height: 0.5);
+                onRefresh: () async {
+                  future = getLikeHistory();
+
+                  setState(() {});
                 },
-              )));
+              ));
         } else {
           return Container(
               alignment: Alignment.center,

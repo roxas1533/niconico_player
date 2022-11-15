@@ -1,55 +1,82 @@
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
-import 'package:niconico/constant.dart';
-import 'package:niconico/nico_api.dart';
+import 'package:niconico/contents/parts/utls/common.dart';
+import 'package:niconico/contents/ranking/ranking.dart';
 
 import '../parts/utls/video_list_widget.dart';
-import 'ranking.dart';
 
-class RainkingPage extends ConsumerWidget {
-  RainkingPage({
+class RainkingPage extends ConsumerStatefulWidget {
+  const RainkingPage({
     super.key,
-    required this.genre,
     required this.tag,
   });
   final String tag;
-  final String genre;
-  final _scrollController = ScrollController();
 
   @override
-  Widget build(BuildContext context, WidgetRef ref) {
-    return FutureBuilder(
-        future: getRanking(tag, ref.watch(RankingParam.term), genre),
-        builder:
-            (BuildContext context, AsyncSnapshot<List<VideoInfo>> snapshot) {
-          if (snapshot.hasData) {
-            return Scrollbar(
-                child: ListView.separated(
-              controller: _scrollController,
-              primary: false,
-              shrinkWrap: true,
-              padding: const EdgeInsets.only(top: 5),
-              itemCount: snapshot.data!.length,
-              itemBuilder: (BuildContext context, int index) {
-                return VideoListWidget(
-                  videoInfo: snapshot.data![index],
-                  rank: index + 1,
-                );
-              },
-              separatorBuilder: (BuildContext context, int index) =>
-                  const Divider(
-                height: 1,
-                thickness: 1,
-              ),
-            ));
-          } else {
-            return Container(
-                alignment: Alignment.center,
-                child: const CupertinoActivityIndicator(
-                  color: Colors.grey,
-                ));
-          }
+  ConsumerState<RainkingPage> createState() => RainkingPageState();
+}
+
+class RainkingPageState extends ConsumerState<RainkingPage> {
+  // late Future<List<VideoInfo>> rankingFuture;
+  @override
+  void initState() {
+    super.initState();
+    // rankingFuture = getRanking(widget.tag, widget.term, widget.genre);
+  }
+
+  @override
+  Widget build(BuildContext context) {
+    final rankingFuture = ref.watch(RankingParam.rankingFuture(widget.tag));
+
+    return rankingFuture.when(
+        loading: () => Container(
+            alignment: Alignment.center,
+            child: const CupertinoActivityIndicator(
+              color: Colors.grey,
+            )),
+        error: (err, stack) => Text('Error: $err'),
+        data: (snapshot) {
+          return CustomListView(
+            itemCount: snapshot.length,
+            itemBuilder: (BuildContext context, int index) {
+              return VideoListWidget(
+                videoInfo: snapshot[index],
+                rank: index + 1,
+              );
+            },
+            onRefresh: () async {
+              ref.refresh(RankingParam.rankingFuture(widget.tag));
+            },
+          );
         });
+    //  FutureBuilder(
+    //     future: rankingFuture,
+    //     builder:
+    //         (BuildContext context, AsyncSnapshot<List<VideoInfo>> snapshot) {
+    //       if (snapshot.hasData) {
+    //         return CustomListView(
+    //           itemCount: snapshot.data!.length,
+    //           itemBuilder: (BuildContext context, int index) {
+    //             return VideoListWidget(
+    //               videoInfo: snapshot.data![index],
+    //               rank: index + 1,
+    //             );
+    //           },
+    //           onRefresh: () async {
+    //             setState(() {
+    //               rankingFuture =
+    //                   getRanking(widget.tag, widget.term, widget.genre);
+    //             });
+    //           },
+    //         );
+    //       } else {
+    //         return Container(
+    //             alignment: Alignment.center,
+    //             child: const CupertinoActivityIndicator(
+    //               color: Colors.grey,
+    //             ));
+    //       }
+    //     });
   }
 }

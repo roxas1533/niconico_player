@@ -198,3 +198,53 @@ CupertinoButton topBackButton(BuildContext context) {
     onPressed: () => Navigator.of(context).pop(),
   );
 }
+
+extension SliverListEx on SliverList {
+  static SliverList separated({
+    required int itemCount,
+    required NullableIndexedWidgetBuilder itemBuilder,
+    required NullableIndexedWidgetBuilder separatorBuilder,
+  }) {
+    return SliverList(
+      delegate: SliverChildBuilderDelegate(
+        (context, index) {
+          final itemIndex = index ~/ 2;
+          return index.isEven
+              ? itemBuilder(context, itemIndex)
+              : separatorBuilder(context, itemIndex);
+        },
+        childCount: max(0, itemCount * 2 - 1),
+      ),
+    );
+  }
+}
+
+class CustomListView extends StatelessWidget {
+  const CustomListView(
+      {super.key,
+      required this.itemCount,
+      required this.itemBuilder,
+      required this.onRefresh});
+  final int itemCount;
+  final Widget? Function(BuildContext, int) itemBuilder;
+  final Future<void> Function()? onRefresh;
+
+  @override
+  Widget build(BuildContext context) {
+    return Scrollbar(
+        child:
+            CustomScrollView(physics: const BouncingScrollPhysics(), slivers: [
+      CupertinoSliverRefreshControl(
+        onRefresh: onRefresh,
+      ),
+      SliverListEx.separated(
+        itemCount: itemCount,
+        itemBuilder: itemBuilder,
+        separatorBuilder: (BuildContext context, int index) => const Divider(
+          height: 1,
+          thickness: 1,
+        ),
+      )
+    ]));
+  }
+}
