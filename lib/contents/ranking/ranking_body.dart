@@ -50,33 +50,5 @@ class RainkingPageState extends ConsumerState<RainkingPage> {
             },
           );
         });
-    //  FutureBuilder(
-    //     future: rankingFuture,
-    //     builder:
-    //         (BuildContext context, AsyncSnapshot<List<VideoInfo>> snapshot) {
-    //       if (snapshot.hasData) {
-    //         return CustomListView(
-    //           itemCount: snapshot.data!.length,
-    //           itemBuilder: (BuildContext context, int index) {
-    //             return VideoListWidget(
-    //               videoInfo: snapshot.data![index],
-    //               rank: index + 1,
-    //             );
-    //           },
-    //           onRefresh: () async {
-    //             setState(() {
-    //               rankingFuture =
-    //                   getRanking(widget.tag, widget.term, widget.genre);
-    //             });
-    //           },
-    //         );
-    //       } else {
-    //         return Container(
-    //             alignment: Alignment.center,
-    //             child: const CupertinoActivityIndicator(
-    //               color: Colors.grey,
-    //             ));
-    //       }
-    //     });
   }
 }

@@ -2,6 +2,7 @@ import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:niconico/contents/parts/utls/common.dart';
+import 'package:shared_preferences/shared_preferences.dart';
 
 import '../../constant.dart';
 import 'ranking.dart';
@@ -33,6 +34,9 @@ class Genre extends ConsumerWidget {
                 onTap: () => {
                       ref.watch(RankingParam.genreId.notifier).state =
                           GenreKey.values[index],
+                      SharedPreferences.getInstance().then((prefs) {
+                        prefs.setInt("genreId", GenreKey.values[index].index);
+                      }),
                       // ref.watch(RankingParam.popularTagFuture).state =
                       //     getPopulerTag(GenreKey.values[index].key),
                       Navigator.of(context).pop()

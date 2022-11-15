@@ -18,7 +18,7 @@ class RankingParam {
   };
   static final tag = StateProvider((ref) => "すべて");
   static final term = StateProvider((ref) => "24h");
-  static final genreId = StateProvider((ref) => GenreKey.all);
+  static var genreId = StateProvider((ref) => GenreKey.all);
   static final popularTagFuture =
       FutureProvider((ref) => getPopulerTag(ref.watch(genreId).key));
   static final rankingFuture = FutureProvider.family<List<VideoInfo>, String>(
@@ -26,8 +26,8 @@ class RankingParam {
 }
 
 class Ranking extends ConsumerStatefulWidget {
-  const Ranking({super.key});
-
+  const Ranking({super.key, required this.savedGenreId});
+  final int savedGenreId;
   @override
   RankingState createState() => RankingState();
 }
@@ -37,6 +37,8 @@ class RankingState extends ConsumerState<Ranking>
   @override
   void initState() {
     super.initState();
+    RankingParam.genreId =
+        StateProvider((ref) => GenreKey.values[widget.savedGenreId]);
   }
 
   @override

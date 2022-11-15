@@ -98,7 +98,9 @@ class WholeWidget extends ConsumerWidget {
               onWillPop: () async {
                 return false;
               },
-              child: const MainPage()),
+              child: const MainPage(
+                savedData: null,
+              )),
         ))
       };
 
@@ -110,7 +112,7 @@ class WholeWidget extends ConsumerWidget {
         if (snapshot.hasData) {
           if (snapshot.data!.getString("session") != null) {
             nicoSession.parseCookies(snapshot.data!.getString("session")!);
-            return const MainPage();
+            return MainPage(savedData: snapshot.data!);
           } else {
             return LoginPage(
               loginProcess: loginPorcess,
@@ -127,18 +129,19 @@ class WholeWidget extends ConsumerWidget {
 }
 
 class MainPage extends StatelessWidget {
-  const MainPage({super.key});
-  final pages = const [
-    Ranking(),
-    Search(),
-    History(),
-    Nicorepo(),
-    Other(),
-  ];
+  const MainPage({super.key, required this.savedData});
+  final SharedPreferences? savedData;
+
   @override
   Widget build(BuildContext context) {
+    final pages = [
+      Ranking(savedGenreId: savedData?.getInt("genreId") ?? 0),
+      const Search(),
+      const History(),
+      const Nicorepo(),
+      const Other(),
+    ];
     return CupertinoTabScaffold(
-      // backgroundColor: CupertinoTheme.of(context).barBackgroundColor,
       tabBar: CupertinoTabBar(
         items: NaviSelectIndex.values
             .map((e) => BottomNavigationBarItem(
@@ -147,8 +150,6 @@ class MainPage extends StatelessWidget {
                     size: 30,
                   ),
                   label: (e.label),
-                  // activeColorPrimary: Colors.blue,
-                  // inactiveColorPrimary: Colors.grey,
                 ))
             .toList(),
       ),

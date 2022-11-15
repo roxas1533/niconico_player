@@ -13,8 +13,11 @@ class RankingHeader extends ConsumerWidget {
   Widget build(BuildContext context, WidgetRef ref) {
     final tag = ref.watch(RankingParam.tag);
     return CupertinoNavigationBar(
-        automaticallyImplyLeading: false,
-        middle: const Text("ランキング"),
+        middle: Column(children: [
+          const Text("ランキング"),
+          Text(ref.watch(RankingParam.genreId).label,
+              style: const TextStyle(fontSize: 11))
+        ]),
         leading: CupertinoButton(
           child: const Icon(
             Icons.menu,
