@@ -290,7 +290,7 @@ class NicoSession {
     );
     http.Response resp = await http.post(
       uri,
-      body: {"mail": "roxas1533@gmail.com", "password": "kingdom8"},
+      body: {"mail": id, "password": password},
     );
 
     if (resp.statusCode == 200 || resp.statusCode == 302) {
