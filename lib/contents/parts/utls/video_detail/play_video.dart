@@ -29,7 +29,6 @@ class PlayVideoState extends State<PlayVideo> {
   Stream<MediaState> get _mediaStateStream =>
       Rx.combineLatest2<MediaItem?, Duration, MediaState>(
           audioHandler.mediaItem,
-          // audioHandler.currentPosSubs,
           AudioService.position,
           (mediaItem, position) => MediaState(mediaItem, position));
 
@@ -51,7 +50,7 @@ class PlayVideoState extends State<PlayVideo> {
     final commentDataResPonse = await http.post(
         Uri.parse(nvComment["server"] + "/v1/threads"),
         body: json.encode(params),
-        headers: {"X-Frontend-Id": "6", "X-Frontend-Version": "0"});
+        headers: apiHeader);
 
     Map<String, dynamic> commentData =
         json.decode(utf8.decode(commentDataResPonse.bodyBytes));
@@ -69,6 +68,7 @@ class PlayVideoState extends State<PlayVideo> {
         widget.video.session,
         videoData,
         _commentObjectList);
+    nicoSession.getVideoDetail(widget.video.videoId, addHistory: true);
 
     return "temp";
   }

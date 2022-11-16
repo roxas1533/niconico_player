@@ -12,8 +12,8 @@ import 'constant.dart';
 
 Future<List<String>> getPopulerTag(String tag) async {
   List<String> tagList = [];
-  final resp = await http.get(Uri.parse(
-      '${UrlList.pcDomain.url}ranking/genre/$tag?video_ranking_menu'));
+  final resp = await http.get(Uri.https(
+      UrlList.pcDomain.url, "ranking/genre/$tag", {"video_ranking_menu": ""}));
 
   if (resp.statusCode == 200) {
     var document = parse(resp.body);
@@ -62,9 +62,14 @@ Future<List<VideoInfo>> getRanking(
     return videoInfo;
   }
 
-  final searchtag = tag == "すべて" ? "" : "tag=$tag&";
-  final resp = await http.get(Uri.parse(
-      '${UrlList.pcDomain.url}ranking/genre/$genreId?term=$term&${searchtag}rss=2.0&lang=ja-jp'));
+  final query = {
+    "term": term,
+    "tag": tag == "すべて" ? null : tag,
+    "rss": "2.0",
+    "lang": "ja-jp",
+  }..removeWhere((_, value) => value == null);
+  final resp = await http
+      .get(Uri.https(UrlList.pcDomain.url, "ranking/genre/$genreId", query));
 
   List<VideoInfo> videoInfoList = [];
 
@@ -88,24 +93,6 @@ Future<Response> search(
     {int offset = 0}) async {
   return http.get(Uri.parse(
       "${UrlList.mobileDomain.url}api/$searchType/$word?sort=$sort&order=$order&page=$offset"));
-}
-
-Future<VideoDetailInfo?> getVideoDetail(String videoId) async {
-  http.Response resp =
-      await http.get(Uri.parse('${UrlList.pcDomain.url}watch/$videoId'));
-  if (resp.statusCode == 200) {
-    final rawData = parse(resp.body)
-        .querySelector("#js-initial-watch-data")!
-        .attributes['data-api-data']!;
-
-    Map<String, dynamic> info = json.decode(rawData);
-    final VideoDetailInfo videoDetailInfo = VideoDetailInfo.fromJson(info);
-    return videoDetailInfo;
-  } else {
-    debugPrint(resp.statusCode.toString());
-    debugPrint(resp.body.toString());
-  }
-  return null;
 }
 
 Future<Map<String, dynamic>> getMylist(
@@ -305,6 +292,34 @@ class NicoSession {
       }
       _cookies = success ? _cookies : [];
       return success ? cookies : null;
+    } else {
+      debugPrint(resp.statusCode.toString());
+      debugPrint(resp.body.toString());
+    }
+    return null;
+  }
+
+  Future<VideoDetailInfo?> getVideoDetail(String videoId,
+      {bool addHistory = false}) async {
+    if (addHistory) {
+      if (_cookies.isNotEmpty) {
+        await http
+            .get(Uri.https(UrlList.pcDomain.url, "watch/$videoId"), headers: {
+          "Cookie": _toSetCookieHeader(),
+        });
+      }
+      return null;
+    }
+    http.Response resp =
+        await http.get(Uri.https(UrlList.pcDomain.url, "watch/$videoId"));
+    if (resp.statusCode == 200) {
+      final rawData = parse(resp.body)
+          .querySelector("#js-initial-watch-data")!
+          .attributes['data-api-data']!;
+
+      Map<String, dynamic> info = json.decode(rawData);
+      final VideoDetailInfo videoDetailInfo = VideoDetailInfo.fromJson(info);
+      return videoDetailInfo;
     } else {
       debugPrint(resp.statusCode.toString());
       debugPrint(resp.body.toString());

@@ -252,29 +252,6 @@ class TagInfo {
 }
 
 class VideoDetailInfo extends VideoInfo {
-  VideoDetailInfo({
-    required super.title,
-    required super.thumbnailUrl,
-    required super.videoId,
-    required super.viewCount,
-    required super.commentCount,
-    required super.mylistCount,
-    required super.goodCount,
-    required super.lengthVideo,
-    required super.postedAt,
-    required this.lengthSeconds,
-    required this.description,
-    required userName,
-    required this.isChannel,
-    required userId,
-    required userThumailUrl,
-    required this.tags,
-    required this.session,
-    required this.nvComment,
-    required this.series,
-  }) {
-    userInfo = UserInfo(id: userId, name: userName, icon: userThumailUrl);
-  }
   VideoDetailInfo.fromJson(Map<String, dynamic> json)
       : userInfo = UserInfo(
             id: (json["channel"] != null
@@ -299,6 +276,7 @@ class VideoDetailInfo extends VideoInfo {
         session = json["media"]["delivery"]["movie"]["session"],
         nvComment = json["comment"]["nvComment"],
         series = json["series"],
+        client = json["client"],
         super.fromJson(json["video"]);
   final String description;
   final bool isChannel;
@@ -308,6 +286,7 @@ class VideoDetailInfo extends VideoInfo {
   final Map<String, dynamic> session;
   final Map<String, dynamic> nvComment;
   final Map<String, dynamic>? series;
+  final Map<String, dynamic> client;
 
   static String secToTime(int duration, [bool forceHour = false]) {
     final hour = duration ~/ 3600;
@@ -324,7 +303,7 @@ class VideoDetailInfo extends VideoInfo {
 }
 
 enum UrlList {
-  pcDomain("https://www.nicovideo.jp/"),
+  pcDomain("www.nicovideo.jp"),
   mobileDomain("https://sp.nicovideo.jp/"),
   publicApiDomain("public.api.nicovideo.jp"),
   nvApiDomain("nvapi.nicovideo.jp");

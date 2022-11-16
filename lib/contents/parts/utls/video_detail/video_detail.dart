@@ -7,7 +7,6 @@ import 'package:niconico/contents/parts/utls/video_detail/series.dart';
 import 'package:niconico/contents/parts/utls/video_detail/tag.dart';
 import 'package:niconico/contents/parts/utls/video_detail/title.dart';
 import 'package:niconico/contents/parts/utls/video_detail/user.dart';
-import 'package:niconico/nico_api.dart';
 
 import '../common.dart';
 
@@ -23,7 +22,7 @@ class VideoDetail extends StatelessWidget {
     return Scaffold(
         appBar: topNaviBar("動画詳細"),
         body: FutureBuilder(
-          future: getVideoDetail(videoId),
+          future: nicoSession.getVideoDetail(videoId),
           builder:
               (BuildContext context, AsyncSnapshot<VideoDetailInfo?> snapshot) {
             if (snapshot.hasData && snapshot.data != null) {
