@@ -19,7 +19,8 @@ class _SearchHeaderState extends ConsumerState<SearchHeader> {
     return CupertinoNavigationBar(
       middle: SizedBox(
           height: kMinInteractiveDimensionCupertino - 10,
-          child: TextField(
+          child: Material(
+              child: TextField(
             decoration: InputDecoration(
               fillColor: const Color.fromARGB(255, 53, 53, 53),
               filled: true,
@@ -54,7 +55,7 @@ class _SearchHeaderState extends ConsumerState<SearchHeader> {
             ),
             onSubmitted: (e) =>
                 ref.read(SearchParam.searchWord.notifier).state = e.trim(),
-          )),
+          ))),
       automaticallyImplyLeading: false,
     );
   }
