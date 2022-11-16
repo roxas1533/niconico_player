@@ -23,9 +23,9 @@ class VideoPlayerHandler extends BaseAudioHandler
     mediaItem.add(item);
     _heartBeat = _HeartBeat(session, videoData);
     _videoViewController = VideoPlayerController.network(item.id,
-        videoPlayerOptions: VideoPlayerOptions(allowBackgroundPlayback: true))
-      ..initialize();
+        videoPlayerOptions: VideoPlayerOptions(allowBackgroundPlayback: true));
     _notifyAudioHandlerAboutPlaybackEvents(c);
+    await _videoViewController!.initialize();
     _videoViewController!.play();
   }
 
@@ -77,7 +77,7 @@ class VideoPlayerHandler extends BaseAudioHandler
   void _notifyAudioHandlerAboutPlaybackEvents(CommentObjectList c) {
     _videoViewController!.addListener(() {
       final playing = _videoViewController!.value.isPlaying;
-      c.isPlaying = playing;
+      c.isPlaying = playing && _videoViewController!.value.isInitialized;
 
       playbackState.add(playbackState.value.copyWith(
         controls: [

@@ -1,11 +1,10 @@
+import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 import 'package:niconico/constant.dart';
+import 'package:niconico/contents/parts/utls/common.dart';
 import 'package:niconico/contents/parts/utls/video_detail/spliter.dart';
 import 'package:niconico/contents/parts/utls/video_detail/video_colmun.dart';
 import 'package:niconico/contents/search/search_core.dart';
-import 'package:persistent_bottom_nav_bar_v2/persistent-tab-view.dart';
-
-import '../icon_text_button.dart';
 
 class Tag extends StatelessWidget {
   const Tag({super.key, required this.video});
@@ -33,14 +32,9 @@ class Tag extends StatelessWidget {
                       size: 16,
                       color: Colors.grey,
                     ),
-              onTap: (context) => {
-                pushNewScreen<dynamic>(
-                  context,
-                  screen: SearchForVideoDetail(
-                    searchWord: tag.name,
-                  ),
-                )
-              },
+              onTap: (context) => Navigator.of(context).push(CupertinoPageRoute(
+                  builder: (context) =>
+                      SearchForVideoDetail(searchWord: tag.name))),
             ),
         ],
       ),
@@ -61,45 +55,59 @@ class _SearchForVideoDetailState extends State<SearchForVideoDetail> {
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-        appBar: AppBar(
-          centerTitle: true,
-          elevation: 0,
-          leadingWidth: 80,
-          automaticallyImplyLeading: false,
-          leading: IconTextButton(
-            text: const Text("戻る",
-                style: TextStyle(color: Colors.blue, fontSize: 19)),
-            icon: const Icon(
-              Icons.arrow_back_ios_new,
-              color: Colors.blue,
-            ),
-            onPressed: () => Navigator.pop(context),
-            margin: 0,
-          ),
-          title: Text(widget.searchWord),
-          actions: [
-            PopupMenuButton<int>(
-                child: Container(
-                    padding: const EdgeInsets.only(right: 10),
-                    child: const Icon(Icons.sort, color: Colors.blue)),
-                onSelected: (int item) {
-                  setState(() {
-                    sort = SortKey.values[item];
-                  });
-                },
-                itemBuilder: (BuildContext context) =>
-                    SortKey.values.asMap().entries.map((e) {
-                      return PopupMenuItem<int>(
-                        value: e.key,
-                        child: Row(children: [
-                          Expanded(child: Text(e.value.display)),
-                          e.key == sort.index
-                              ? const Icon(Icons.check, color: Colors.green)
-                              : Container()
-                        ]),
+        appBar: topNaviBar(
+          widget.searchWord,
+          trailing: CupertinoButton(
+              onPressed: () => showModalBottomSheet(
+                    isScrollControlled: true,
+                    context: context,
+                    builder: (context) {
+                      return FractionallySizedBox(
+                        heightFactor: 0.8,
+                        child: Scaffold(
+                          appBar: topNaviBar(
+                            "絞り込み",
+                            leading: TextButton(
+                              child: const Text(
+                                'キャンセル',
+                                style: TextStyle(
+                                  decoration: TextDecoration.underline,
+                                  color: Colors.blue,
+                                  fontWeight: FontWeight.bold,
+                                  fontSize: 14.0,
+                                ),
+                              ),
+                              onPressed: () => Navigator.of(context).pop(),
+                            ),
+                          ),
+                          body: Scrollbar(
+                              child: ListView.separated(
+                            itemBuilder: (BuildContext context, int index) =>
+                                ListTile(
+                                    trailing: Visibility(
+                                        visible: sort.index == index,
+                                        child: const Icon(Icons.check,
+                                            color: Colors.green)),
+                                    onTap: () => {
+                                          setState(() {
+                                            sort = SortKey.values[index];
+                                          }),
+                                          Navigator.of(context).pop()
+                                        },
+                                    title: Text(
+                                      SortKey.values[index].display,
+                                      style: const TextStyle(fontSize: 18),
+                                    )),
+                            itemCount: SortKey.values.length,
+                            separatorBuilder:
+                                (BuildContext context, int index) =>
+                                    const Divider(height: 0.5),
+                          )),
+                        ),
                       );
-                    }).toList()),
-          ],
+                    },
+                  ),
+              child: const Icon(Icons.sort, color: Colors.blue)),
         ),
         body: SearchCore(
           searchWord: widget.searchWord,

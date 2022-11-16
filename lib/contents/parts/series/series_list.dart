@@ -1,7 +1,7 @@
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 import 'package:niconico/constant.dart';
-import 'package:niconico/contents/parts/utls/icon_text_button.dart';
+import 'package:niconico/contents/parts/utls/common.dart';
 import 'package:niconico/nico_api.dart';
 
 import 'series_list_widget.dart';
@@ -37,23 +37,7 @@ class _SeriesListState extends State<SeriesList> {
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-        appBar: AppBar(
-          centerTitle: true,
-          elevation: 0,
-          leadingWidth: 80,
-          automaticallyImplyLeading: false,
-          leading: IconTextButton(
-            text: const Text("戻る",
-                style: TextStyle(color: Colors.blue, fontSize: 19)),
-            icon: const Icon(
-              Icons.arrow_back_ios_new,
-              color: Colors.blue,
-            ),
-            onPressed: () => Navigator.pop(context),
-            margin: 0,
-          ),
-          title: const Text("シリーズ一覧"),
-        ),
+        appBar: topNaviBar("シリーズ一覧"),
         body: FutureBuilder(
           future: getSeriesList(),
           builder: (BuildContext context,

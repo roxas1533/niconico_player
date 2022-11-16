@@ -1,9 +1,9 @@
+import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 import 'package:niconico/constant.dart';
 import 'package:niconico/contents/parts/series/series.dart';
 import 'package:niconico/contents/parts/utls/common.dart';
 import 'package:niconico/contents/parts/utls/video_detail/video_detail.dart';
-import 'package:persistent_bottom_nav_bar_v2/persistent-tab-view.dart';
 
 import 'spliter.dart';
 
@@ -28,12 +28,8 @@ class VideoDetailSeries extends StatelessWidget {
               Container(
                   padding: const EdgeInsets.only(left: 10),
                   child: GestureDetector(
-                    onTap: () => {
-                      pushNewScreen<dynamic>(
-                        context,
-                        screen: Series(seriesId: series["id"]),
-                      )
-                    },
+                    onTap: () => Navigator.of(context).push(CupertinoPageRoute(
+                        builder: (context) => Series(seriesId: series["id"]))),
                     child: Text(
                       series["title"],
                       style: const TextStyle(
@@ -67,18 +63,15 @@ class VideoDetailSeries extends StatelessWidget {
             color: Theme.of(context).cardColor,
             child: InkWell(
                 onTap: video != null
-                    ? () {
-                        pushNewScreen<dynamic>(context,
-                            screen: VideoDetail(
-                              videoId: video.videoId,
-                            ));
-                      }
+                    ? () => Navigator.of(context).push(CupertinoPageRoute(
+                        builder: (context) =>
+                            VideoDetail(videoId: video.videoId)))
                     : null,
                 child: Container(
                   padding:
                       const EdgeInsets.symmetric(horizontal: 15, vertical: 8),
                   width: MediaQuery.of(context).size.width * 0.95,
-                  height: MediaQuery.of(context).size.height * 0.08,
+                  height: MediaQuery.of(context).size.height * 0.1,
                   child: Row(
                     children: [
                       Column(

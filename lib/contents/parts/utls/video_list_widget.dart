@@ -1,3 +1,4 @@
+import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_html/flutter_html.dart';
 import "package:niconico/constant.dart";
@@ -7,16 +8,20 @@ import 'package:niconico/contents/parts/utls/video_counter.dart';
 import 'package:niconico/contents/parts/utls/video_title.dart';
 import 'package:niconico/contents/ranking/ranking_number.dart';
 import 'package:niconico/functions.dart';
-import 'package:persistent_bottom_nav_bar_v2/persistent-tab-view.dart';
 
 import 'video_detail/video_detail.dart';
 
 class VideoListWidget extends StatelessWidget {
   const VideoListWidget(
-      {super.key, required this.videoInfo, this.rank, this.description});
+      {super.key,
+      required this.videoInfo,
+      this.rank,
+      this.description,
+      this.views});
   final VideoInfo videoInfo;
   final int? rank;
   final String? description;
+  final int? views;
 
   @override
   Widget build(BuildContext context) {
@@ -24,10 +29,11 @@ class VideoListWidget extends StatelessWidget {
     return Column(children: [
       InkWell(
           onTap: () {
-            pushNewScreen<dynamic>(
-              context,
-              screen: VideoDetail(videoId: extractVideoId(videoInfo.videoId)!),
-            );
+            Navigator.of(context).push(CupertinoPageRoute(
+              builder: (context) => VideoDetail(
+                videoId: extractVideoId(videoInfo.videoId)!,
+              ),
+            ));
           },
           child: Container(
               padding: const EdgeInsets.symmetric(vertical: 7),
@@ -52,7 +58,7 @@ class VideoListWidget extends StatelessWidget {
                         Row(
                           children: [
                             Thumbnail(videoInfo: videoInfo),
-                            VideoTitle(videoInfo: videoInfo),
+                            VideoTitle(videoInfo: videoInfo, views: views),
                           ],
                         ),
                       ],
@@ -65,7 +71,7 @@ class VideoListWidget extends StatelessWidget {
           ? Container(
               margin: const EdgeInsets.only(left: 10, right: 10, bottom: 10),
               decoration: BoxDecoration(
-                color: Theme.of(context).cardColor,
+                color: CupertinoTheme.of(context).scaffoldBackgroundColor,
                 borderRadius: BorderRadius.circular(10),
               ),
               child: Html(data: description!))

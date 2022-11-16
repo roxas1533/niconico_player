@@ -1,5 +1,6 @@
 import 'dart:math';
 
+import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 import 'package:niconico/constant.dart';
 
@@ -169,5 +170,81 @@ class _AnimatedSizeIconState extends State<AnimatedSizeIcon> {
                 size: _size,
               ),
             )));
+  }
+}
+
+CupertinoNavigationBar topNaviBar(String middle,
+    {Widget? trailing, Widget? leading, bool autoBack = true}) {
+  return CupertinoNavigationBar(
+    automaticallyImplyLeading: autoBack,
+    leading: leading,
+    previousPageTitle: "戻る",
+    trailing: trailing,
+    middle: Text(middle),
+  );
+}
+
+CupertinoButton topBackButton(BuildContext context) {
+  return CupertinoButton(
+    padding: const EdgeInsets.all(0.0),
+    child: const Text(
+      'キャンセル',
+      style: TextStyle(
+        decoration: TextDecoration.underline,
+        fontWeight: FontWeight.bold,
+        fontSize: 14.0,
+      ),
+    ),
+    onPressed: () => Navigator.of(context).pop(),
+  );
+}
+
+extension SliverListEx on SliverList {
+  static SliverList separated({
+    required int itemCount,
+    required NullableIndexedWidgetBuilder itemBuilder,
+    required NullableIndexedWidgetBuilder separatorBuilder,
+  }) {
+    return SliverList(
+      delegate: SliverChildBuilderDelegate(
+        (context, index) {
+          final itemIndex = index ~/ 2;
+          return index.isEven
+              ? itemBuilder(context, itemIndex)
+              : separatorBuilder(context, itemIndex);
+        },
+        childCount: max(0, itemCount * 2 - 1),
+      ),
+    );
+  }
+}
+
+class CustomListView extends StatelessWidget {
+  const CustomListView(
+      {super.key,
+      required this.itemCount,
+      required this.itemBuilder,
+      required this.onRefresh});
+  final int itemCount;
+  final Widget? Function(BuildContext, int) itemBuilder;
+  final Future<void> Function()? onRefresh;
+
+  @override
+  Widget build(BuildContext context) {
+    return Scrollbar(
+        child:
+            CustomScrollView(physics: const BouncingScrollPhysics(), slivers: [
+      CupertinoSliverRefreshControl(
+        onRefresh: onRefresh,
+      ),
+      SliverListEx.separated(
+        itemCount: itemCount,
+        itemBuilder: itemBuilder,
+        separatorBuilder: (BuildContext context, int index) => const Divider(
+          height: 1,
+          thickness: 1,
+        ),
+      )
+    ]));
   }
 }

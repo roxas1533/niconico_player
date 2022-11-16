@@ -5,7 +5,6 @@ import 'package:intl/intl.dart';
 import 'package:niconico/contents/parts/mylist/mylist.dart';
 import 'package:niconico/contents/parts/series/series.dart';
 import 'package:niconico/contents/parts/utls/video_detail/video_detail.dart';
-import 'package:persistent_bottom_nav_bar_v2/persistent-tab-view.dart';
 
 String tf2yn(bool tf) {
   return tf ? "yes" : "no";
@@ -108,7 +107,13 @@ String getPostedAtTime(String postedAt, bool islast24h) {
   var formatted = formatter.format(datetime);
 
   if (islast24h && difference.inHours < 24) {
-    formatted = "${difference.inHours} 時間前";
+    if (difference.inMinutes < 1) {
+      formatted = "1分以内";
+    } else if (difference.inMinutes < 60) {
+      formatted = "${difference.inMinutes} 分前";
+    } else {
+      formatted = "${difference.inHours} 時間前";
+    }
   }
 
   return formatted;
@@ -127,18 +132,21 @@ void onLinkTap(
       if (parsedUrl.pathSegments.length == 2) {
         switch (parsedUrl.pathSegments[0]) {
           case "watch":
-            pushNewScreen<dynamic>(
-              context,
-              screen: VideoDetail(videoId: parsedUrl.pathSegments[1]),
-            );
+            Navigator.of(context).push(CupertinoPageRoute(
+              builder: (context) =>
+                  VideoDetail(videoId: parsedUrl.pathSegments[1]),
+            ));
             break;
           case "mylist":
-            pushNewScreen<dynamic>(context,
-                screen: Mylist(mylistId: int.parse(parsedUrl.pathSegments[1])));
+            Navigator.of(context).push(CupertinoPageRoute(
+                builder: (context) =>
+                    Mylist(mylistId: int.parse(parsedUrl.pathSegments[1]))));
             break;
           case "series":
-            pushNewScreen<dynamic>(context,
-                screen: Series(seriesId: int.parse(parsedUrl.pathSegments[1])));
+            Navigator.of(context).push(CupertinoPageRoute(
+                builder: (context) =>
+                    Series(seriesId: int.parse(parsedUrl.pathSegments[1]))));
+
             break;
         }
       }

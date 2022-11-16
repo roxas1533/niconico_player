@@ -1,4 +1,5 @@
 import 'dart:convert';
+import 'dart:io';
 
 import 'package:flutter/cupertino.dart';
 import 'package:html/dom.dart' as html;
@@ -75,6 +76,9 @@ Future<List<VideoInfo>> getRanking(
         makeVideoInfo(element),
       );
     }
+  } else {
+    debugPrint("getRanking error");
+    debugPrint(resp.statusCode.toString());
   }
   return videoInfoList;
 }
@@ -102,34 +106,6 @@ Future<VideoDetailInfo?> getVideoDetail(String videoId) async {
     debugPrint(resp.body.toString());
   }
   return null;
-}
-
-Future<Map<String, dynamic>> getNicorepo(String? userId,
-    {String? untilId, String? objectType, String? type}) async {
-  // if (userId == null) {
-  //   return Future.value([]);
-  // }
-
-  final query = {
-    "untilId": untilId,
-    "object[type]": objectType,
-    "type": type,
-  }..removeWhere((_, value) => value == null);
-  Uri uri = Uri.https(
-    UrlList.publicApiDomain.url,
-    "v1/timelines/nicorepo/last-6-months/users/$userId/pc/entries.json",
-    query,
-  );
-
-  http.Response resp = await http.get(uri);
-
-  if (resp.statusCode == 200) {
-    Map<String, dynamic> info = json.decode(resp.body);
-    return info;
-  } else {
-    debugPrint(resp.body.toString());
-  }
-  return {};
 }
 
 Future<Map<String, dynamic>> getMylist(
@@ -204,9 +180,7 @@ Future<Map<String, dynamic>> getUserVideoList(String? useId,
   return {};
 }
 
-Future<Map<String, dynamic>> getSeries(
-  String? userId,
-) async {
+Future<Map<String, dynamic>> getSeries(String? userId) async {
   Uri uri = Uri.https(
     UrlList.nvApiDomain.url,
     "v1/users/$userId/series",
@@ -224,10 +198,7 @@ Future<Map<String, dynamic>> getSeries(
   return {};
 }
 
-Future<Map<String, dynamic>> getSeriesDetail(
-  int seriesId,
-  int page,
-) async {
+Future<Map<String, dynamic>> getSeriesDetail(int seriesId, int page) async {
   Uri uri = Uri.https(
     UrlList.nvApiDomain.url,
     "v2/series/$seriesId",
@@ -244,4 +215,122 @@ Future<Map<String, dynamic>> getSeriesDetail(
     debugPrint(resp.body.toString());
   }
   return {};
+}
+
+class NicoSession {
+  List<Cookie> _cookies = [];
+  final _regexSplitSetCookies = RegExp(',(?=[^ ])');
+  Future<Map<String, dynamic>> getNicorepo(String? userId,
+      {String? untilId, String? objectType, String? type}) async {
+    var url = "last-6-months/users/$userId";
+    if (userId == null) {
+      url = "last-1-month/my";
+      if (_cookies.isEmpty) {
+        return {};
+      }
+    }
+
+    final query = {
+      "untilId": untilId,
+      "object[type]": objectType,
+      "type": type,
+    }..removeWhere((_, value) => value == null);
+    final headers = {
+      "Cookie": _toSetCookieHeader(),
+    };
+    Uri uri = Uri.https(
+      UrlList.publicApiDomain.url,
+      "v1/timelines/nicorepo/$url/pc/entries.json",
+      query,
+    );
+
+    http.Response resp = await http.get(uri, headers: headers);
+
+    if (resp.statusCode == 200) {
+      Map<String, dynamic> info = json.decode(resp.body);
+      return info;
+    } else {
+      debugPrint(resp.body.toString());
+    }
+    return {};
+  }
+
+  Future<Map<String, dynamic>> getHistory(int type,
+      {int page = 1, int pageSize = 100}) async {
+    final query = {
+      "page": "$page",
+      "pageSize": "$pageSize",
+    };
+    final typeUrl = type == 0 ? "watch/history" : "likes";
+    final headers = {
+      "Cookie": _toSetCookieHeader(),
+      "Connection": "keep-alive",
+    }..addAll(apiHeader);
+    Uri uri = Uri.https(
+      UrlList.nvApiDomain.url,
+      "v1/users/me/$typeUrl",
+      query,
+    );
+    http.Response resp = await http.get(uri, headers: headers);
+
+    if (resp.statusCode == 200) {
+      Map<String, dynamic> info = json.decode(resp.body);
+      return info;
+    } else {
+      debugPrint(resp.body.toString());
+    }
+    return {};
+  }
+
+  Future<String?> login(String id, String password) async {
+    Uri uri = Uri.https(
+      "secure.nicovideo.jp",
+      "secure/login",
+      {"site": "niconico"},
+    );
+    http.Response resp = await http.post(
+      uri,
+      body: {"mail": id, "password": password},
+    );
+
+    if (resp.statusCode == 200 || resp.statusCode == 302) {
+      final cookies = resp.headers[HttpHeaders.setCookieHeader]!;
+      bool success = false;
+      for (final setCookie in cookies.split(_regexSplitSetCookies)) {
+        final cookie = Cookie.fromSetCookieValue(setCookie);
+        if (cookie.name == "user_session") {
+          success = true;
+        }
+        _cookies.add(cookie);
+      }
+      _cookies = success ? _cookies : [];
+      return success ? cookies : null;
+    } else {
+      debugPrint(resp.statusCode.toString());
+      debugPrint(resp.body.toString());
+    }
+    return null;
+  }
+
+  String _toSetCookieHeader() {
+    const necessaryCookie = ["user_session", "user_session_secure", "nicosid"];
+    _cookies.removeWhere((element) => !necessaryCookie.contains(element.name));
+    _cookies.removeWhere((cookie) {
+      if (cookie.expires != null) {
+        return cookie.expires!.isBefore(DateTime.now());
+      }
+      return false;
+    });
+    return _cookies.map((e) => e.toString()).join('; ');
+  }
+
+  void parseCookies(String cookie) {
+    _cookies = [];
+    for (final setCookie in cookie.split(_regexSplitSetCookies)) {
+      final cookie = Cookie.fromSetCookieValue(setCookie);
+      _cookies.add(cookie);
+    }
+  }
+
+  get cookies => _cookies;
 }

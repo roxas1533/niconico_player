@@ -2,7 +2,7 @@ import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_html/flutter_html.dart';
 import 'package:niconico/constant.dart';
-import 'package:niconico/contents/parts/utls/icon_text_button.dart';
+import 'package:niconico/contents/parts/utls/common.dart';
 import 'package:niconico/functions.dart';
 import 'package:niconico/nico_api.dart';
 
@@ -66,23 +66,7 @@ class _SeriesState extends State<Series> {
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-        appBar: AppBar(
-          centerTitle: true,
-          elevation: 0,
-          leadingWidth: 80,
-          automaticallyImplyLeading: false,
-          leading: IconTextButton(
-            text: const Text("戻る",
-                style: TextStyle(color: Colors.blue, fontSize: 19)),
-            icon: const Icon(
-              Icons.arrow_back_ios_new,
-              color: Colors.blue,
-            ),
-            onPressed: () => Navigator.pop(context),
-            margin: 0,
-          ),
-          title: const Text("シリーズ"),
-        ),
+        appBar: topNaviBar("シリーズ"),
         body: FutureBuilder(
           future: videoListFuture,
           builder:
@@ -121,13 +105,16 @@ class _SeriesState extends State<Series> {
                         child: Row(
                           children: [
                             const Icon(Icons.video_library, size: 30),
-                            Container(
-                                padding: const EdgeInsets.only(left: 10),
-                                alignment: Alignment.centerLeft,
-                                child: Text(title,
-                                    style: const TextStyle(
-                                        fontSize: 16,
-                                        fontWeight: FontWeight.bold))),
+                            Expanded(
+                              child: Container(
+                                  padding: const EdgeInsets.only(left: 10),
+                                  alignment: Alignment.centerLeft,
+                                  child: Text(title,
+                                      maxLines: 2,
+                                      style: const TextStyle(
+                                          fontSize: 16,
+                                          fontWeight: FontWeight.bold))),
+                            )
                           ],
                         )),
                     Container(

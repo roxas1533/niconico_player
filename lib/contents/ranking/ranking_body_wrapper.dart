@@ -1,15 +1,12 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
-import 'package:niconico/constant.dart';
 
 import 'ranking.dart';
 import 'ranking_body.dart';
 
 class RankigBodyWrapper extends ConsumerStatefulWidget {
-  const RankigBodyWrapper(
-      {super.key, required this.tagList, required this.genreId});
+  const RankigBodyWrapper({super.key, required this.tagList});
   final List<String> tagList;
-  final GenreKey genreId;
   @override
   ConsumerState<RankigBodyWrapper> createState() => _RankigBodyWrapperState();
 }
@@ -59,10 +56,8 @@ class _RankigBodyWrapperState extends ConsumerState<RankigBodyWrapper>
                 physics: const NeverScrollableScrollPhysics(),
                 children: [
               for (final tag in widget.tagList)
-                RainkingPage(
-                  genre: widget.genreId.key,
-                  tag: tag,
-                )
+                Consumer(
+                    builder: ((context, ref, child) => RainkingPage(tag: tag)))
             ]))
       ],
     );

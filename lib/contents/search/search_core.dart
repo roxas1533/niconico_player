@@ -1,3 +1,4 @@
+import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:niconico/constant.dart';
@@ -72,7 +73,7 @@ class _SearchState extends ConsumerState<SearchCore>
                       } else {
                         return Container(
                             alignment: Alignment.center,
-                            child: const CircularProgressIndicator(
+                            child: const CupertinoActivityIndicator(
                               color: Colors.grey,
                             ));
                       }
@@ -96,7 +97,6 @@ class _Result extends StatefulWidget {
 }
 
 class _ResultState extends State<_Result> {
-  final ScrollController _scrollController = ScrollController();
   late SearchClass searchClass;
   @override
   void initState() {
@@ -118,7 +118,7 @@ class _ResultState extends State<_Result> {
           return false;
         },
         child: Scrollbar(
-            controller: _scrollController,
+            controller: PrimaryScrollController.of(context),
             child: ListView.builder(
               padding: const EdgeInsets.only(top: 5),
               itemCount: searchClass.videoInfoList.length,

@@ -1,7 +1,7 @@
+import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 import "package:niconico/constant.dart";
 import 'package:niconico/contents/parts/utls/common.dart';
-import 'package:persistent_bottom_nav_bar_v2/persistent-tab-view.dart';
 
 import 'mylist.dart';
 
@@ -16,12 +16,8 @@ class MylistListWidget extends StatelessWidget {
   Widget build(BuildContext context) {
     final screenSize = MediaQuery.of(context).size;
     return InkWell(
-      onTap: () => {
-        pushNewScreen<dynamic>(
-          context,
-          screen: Mylist(mylistId: mylistInfto.id),
-        )
-      },
+      onTap: () => Navigator.of(context).push(CupertinoPageRoute(
+          builder: (context) => Mylist(mylistId: mylistInfto.id))),
       child: Container(
         margin: const EdgeInsets.only(left: 15.0),
         width: screenSize.width,

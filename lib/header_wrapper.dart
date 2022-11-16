@@ -1,7 +1,7 @@
-import 'package:flutter/material.dart';
+import 'package:flutter/cupertino.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 
-class Header extends ConsumerWidget implements PreferredSizeWidget {
+class Header extends ConsumerWidget implements ObstructingPreferredSizeWidget {
   const Header({super.key, required this.child});
   final Widget child;
   @override
@@ -10,5 +10,12 @@ class Header extends ConsumerWidget implements PreferredSizeWidget {
   }
 
   @override
-  Size get preferredSize => const Size.fromHeight(kToolbarHeight - 15);
+  Size get preferredSize =>
+      const Size.fromHeight(kMinInteractiveDimensionCupertino);
+
+  @override
+  bool shouldFullyObstruct(BuildContext context) {
+    final Color backgroundColor = CupertinoTheme.of(context).barBackgroundColor;
+    return backgroundColor.alpha == 0xFF;
+  }
 }
