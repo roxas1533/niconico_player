@@ -9,7 +9,7 @@ class CommentDataObject {
   final String comment;
   final int vpos;
   final int nicoruCount;
-  double fontSize;
+  double fontSizeScale;
   final Color color;
   final CommentPositoinState pos;
   final String fontName;
@@ -19,7 +19,7 @@ class CommentDataObject {
     required this.comment,
     required this.vpos,
     required this.nicoruCount,
-    required this.fontSize,
+    required this.fontSizeScale,
     required this.color,
     required this.pos,
     required this.fontName,
@@ -40,29 +40,29 @@ class CommentObjectList {
   List<CommentDataObject> commentDataList = [];
   CommentObjectList(Map<String, dynamic> commnetDataMap) {
     final threads = commnetDataMap["data"]["threads"];
-    for (final thread in threads) {
+    for (final thread in threads.reversed) {
       final comments = thread["comments"];
       for (final comment in comments) {
         comment["commands"] = comment["commands"].cast<String>();
         Color color = Colors.white;
-        double fontSize = 1;
+        double fontSizeScale = 1;
         CommentPositoinState pos = CommentPositoinState.naka;
         String fontName = "msgothic";
         bool ender = false;
         for (final c in comment["commands"]) {
           color = parseCommandColor(c) ?? color;
-          fontSize = parseCommandSize(c) ?? fontSize;
+          fontSizeScale = parseCommandSize(c) ?? fontSizeScale;
           pos = parseCommandPos(c) ?? pos;
           fontName = parseCommandFont(c) ?? fontName;
           ender = c == "ender" ? true : ender;
         }
-
         commentDataList.add(CommentDataObject(
           comment: comment["body"],
           vpos: comment["vposMs"],
           nicoruCount: comment["nicoruCount"],
           color: color,
-          fontSize: 29 * fontSize,
+          // 11はニコニコの既定行数、行間6なので11行分減らす
+          fontSizeScale: fontSizeScale,
           pos: pos,
           fontName: fontName,
           ender: ender,
@@ -82,17 +82,17 @@ class CommentObjectList {
       }
       if (comment.commentDataObject.pos == CommentPositoinState.naka) {
         if (comment.calcuatePos(n.last)) {
-          comment.y = n.last.y + n.last.commentDataObject.fontSize + 10;
+          comment.collisionComment = n.last;
           continue;
         }
       } else {
         if (comment.commentDataObject.vpos <=
             n.last.commentDataObject.vpos + 3000) {
-          var offsetY = n.last.commentDataObject.fontSize + 10;
-          if (comment.commentDataObject.pos == CommentPositoinState.shita) {
-            offsetY *= -1;
-          }
-          comment.y = n.last.y + offsetY;
+          comment.collisionComment = n.last;
+          // if (comment.commentDataObject.pos == CommentPositoinState.shita) {
+          //   offsetY *= -1;
+          // }
+          // comment.y = n.last.y + offsetY;
           continue;
         }
       }

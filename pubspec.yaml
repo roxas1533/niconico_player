@@ -91,7 +91,10 @@ flutter:
     fonts:
         - family: msgothic
           fonts:
-              - asset: assets/fonts/msgothic.ttc
+              - asset: assets/fonts/hiragino.ttc
+        - family: msgothic2
+          fonts:
+              - asset: assets\fonts\msgothic.ttc
         - family: mincho
           fonts:
               - asset: assets/fonts/yumin.ttf
@@ -101,6 +104,9 @@ flutter:
         - family: cour
           fonts:
               - asset: assets/fonts/cour.ttf
+        - family: jhenghei
+          fonts:
+              - asset: assets/fonts/microsoft-jhenghei.ttf
 
     #   - family: Trajan Pro
     #     fonts:

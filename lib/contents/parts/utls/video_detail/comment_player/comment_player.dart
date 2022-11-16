@@ -38,23 +38,26 @@ class CommentObject {
   late final double height;
   final CommentDataObject commentDataObject;
   bool isPosLock = false;
+  CommentObject? collisionComment;
 
   CommentObject(this._x, this.y, this.commentDataObject) {
     final comment = commentDataObject.comment;
+    var fontSize = (playerHeight - 66) / 11 * commentDataObject.fontSizeScale;
     if (!commentDataObject.ender) {
-      commentDataObject.fontSize = _checkResize(commentDataObject);
+      fontSize = _resizeHeight(commentDataObject, fontSize);
+      fontSize = _resizeWidth(commentDataObject, fontSize);
     }
-
+    const fontFamilyFallback = ["msgothic2", "cour", "jhenghei"];
     final ts = TextStyle(
-      fontSize: commentDataObject.fontSize,
+      fontSize: fontSize,
       fontFamily: commentDataObject.fontName,
-      fontFamilyFallback: const ["msgothic", "cour"],
+      fontFamilyFallback: fontFamilyFallback,
       fontWeight: FontWeight.w600,
       height: 1,
       color: commentDataObject.color,
       shadows: const <Shadow>[
         Shadow(
-          offset: Offset(1.3, -1.3),
+          offset: Offset(1.1, -1.1),
           color: Color.fromARGB(255, 104, 104, 104),
         ),
       ],
@@ -68,9 +71,9 @@ class CommentObject {
       text: TextSpan(
           text: comment,
           style: TextStyle(
-            fontSize: commentDataObject.fontSize,
+            fontSize: fontSize,
             fontFamily: commentDataObject.fontName,
-            fontFamilyFallback: const ["msgothic", "cour"],
+            fontFamilyFallback: fontFamilyFallback,
             fontWeight: FontWeight.w600,
             height: 1,
             foreground: Paint()
@@ -136,6 +139,11 @@ class CommentObject {
   }
 
   void update(double dt, int time) {
+    if (!isPosLock && collisionComment != null) {
+      var offsetY = collisionComment!.height + 6;
+      if (commentDataObject.pos == CommentPositoinState.shita) offsetY *= -1;
+      y = collisionComment!.y + offsetY;
+    }
     if (commentDataObject.pos == CommentPositoinState.naka) {
       final double speed = ((playerWidth + _tp.width) / (4000));
       final relativeTime = commentDataObject.vpos - time;
@@ -147,24 +155,34 @@ class CommentObject {
     }
   }
 
-  double _checkResize(CommentDataObject comment) {
-    // if (comment.fontSize != 29) {
-    //   return commentDataObject.fontSize;
-    // }
-    int counter = 0;
-    for (var i = 0; i < comment.comment.length; i++) {
-      if (comment.comment[i] == '\n') {
-        counter++;
-      }
-    }
-    if (counter >= 5) {
-      if (comment.fontSize != 29) {
+  double _resizeHeight(CommentDataObject comment, double fontSize) {
+    if (comment.comment.split("\n").length >= 6) {
+      if (comment.fontSizeScale != 1.0) {
         return playerHeight / 38;
       } else {
         return playerHeight / 25;
       }
     }
-    return comment.fontSize;
+    return fontSize;
+  }
+
+  double _resizeWidth(CommentDataObject comment, double fontSize) {
+    if (comment.pos == CommentPositoinState.naka) {
+      return fontSize;
+    }
+    final ts = TextStyle(
+      fontSize: fontSize,
+      height: 1,
+    );
+    final tempTp = TextPainter(
+      text: TextSpan(text: comment.comment, style: ts),
+      textAlign: TextAlign.left,
+      textDirection: TextDirection.ltr,
+    )..layout();
+    if (tempTp.width > playerWidth) {
+      return playerWidth / tempTp.width * fontSize;
+    }
+    return fontSize;
   }
 }
 
@@ -182,13 +200,8 @@ class _CommentPlayerState extends State<CommentPlayer>
     CommentObject.playerWidth = widget.screenSize.height;
     CommentObject.playerHeight = widget.screenSize.width;
     for (final commentdata in widget.commentObjectList.commentDataList) {
-      // if (!commentdata.isCommented &&
-      //     commentdata.vpos <= widget.commentObjectList.time) {
-      // commentdata.isCommented = true;
       widget.commentObjectList
           .add(CommentObject(widget.screenSize.height, 10, commentdata));
-      // break;
-      // }
     }
     return AnimatedBuilder(
       animation: _animation,
