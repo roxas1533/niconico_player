@@ -92,18 +92,6 @@ class WholeWidget extends ConsumerWidget {
     return pref;
   }
 
-  void loginPorcess(context) => {
-        Navigator.of(context).push(CupertinoPageRoute(
-          builder: (context) => WillPopScope(
-              onWillPop: () async {
-                return false;
-              },
-              child: const MainPage(
-                savedData: null,
-              )),
-        ))
-      };
-
   @override
   Widget build(BuildContext context, WidgetRef ref) {
     return CupertinoPageScaffold(
@@ -115,7 +103,6 @@ class WholeWidget extends ConsumerWidget {
             return MainPage(savedData: snapshot.data!);
           } else {
             return LoginPage(
-              loginProcess: loginPorcess,
               loginState: snapshot.data!,
             );
           }

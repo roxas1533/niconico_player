@@ -48,6 +48,7 @@ dependencies:
     rxdart: ^0.27.5
     video_player: ^2.4.7
     shared_preferences: ^2.0.15
+    settings_ui: ^2.0.2
     freezed_annotation:
 
 dev_dependencies:

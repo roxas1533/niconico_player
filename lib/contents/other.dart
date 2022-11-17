@@ -3,9 +3,11 @@ import 'package:flutter/material.dart';
 
 import 'mylist.dart';
 import 'parts/utls/common.dart';
+import 'setting.dart';
 
 enum OtherPage {
-  mylist(MylistPage(), Icons.star, "マイリスト");
+  mylist(MylistPage(), Icons.star, "マイリスト"),
+  setting(SettingPage(), Icons.settings, "設定");
 
   final StatelessWidget page;
   final IconData icon;
