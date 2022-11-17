@@ -1,9 +1,8 @@
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 import 'package:niconico/constant.dart';
-import 'package:niconico/contents/parts/mylist/mylist_list_widget.dart';
+import 'package:niconico/contents/mylist/mylist_list_widget.dart';
 import 'package:niconico/contents/parts/utls/common.dart';
-import 'package:niconico/nico_api.dart';
 
 class MylistList extends StatefulWidget {
   const MylistList({super.key, required this.userInfo});
@@ -15,7 +14,7 @@ class MylistList extends StatefulWidget {
 
 class _MylistListState extends State<MylistList> {
   Future<List<MylistInfo>> getMylistList() async {
-    final mylist = await getMylist(widget.userInfo.id);
+    final mylist = await nicoSession.getMylist(widget.userInfo.id);
     if (mylist["data"].isEmpty) {
       return [];
     }
@@ -82,7 +81,7 @@ class _MylistListState extends State<MylistList> {
                   physics: const NeverScrollableScrollPhysics(),
                   itemCount: snapshot.data!.length,
                   itemBuilder: (context, index) => MylistListWidget(
-                    mylistInfto: snapshot.data![index],
+                    mylistInfo: snapshot.data![index],
                   ),
                   separatorBuilder: (context, index) {
                     return const Divider(

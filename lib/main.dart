@@ -128,33 +128,65 @@ class WholeWidget extends ConsumerWidget {
   }
 }
 
-class MainPage extends StatelessWidget {
+class MainPage extends StatefulWidget {
   const MainPage({super.key, required this.savedData});
   final SharedPreferences? savedData;
+  @override
+  State<MainPage> createState() => _MainPageState();
+}
+
+class _MainPageState extends State<MainPage> {
+  final List<GlobalKey<NavigatorState>> _tabNavKeyList =
+      List.generate(5, (index) => index)
+          .map((e) => GlobalKey<NavigatorState>())
+          .toList();
+  int _oldIndex = 0;
+  final CupertinoTabController _controller = CupertinoTabController();
 
   @override
   Widget build(BuildContext context) {
     final pages = [
-      Ranking(savedGenreId: savedData?.getInt("genreId") ?? 0),
+      Ranking(savedGenreId: widget.savedData?.getInt("genreId") ?? 0),
       const Search(),
       const History(),
       const Nicorepo(),
       const Other(),
     ];
-    return CupertinoTabScaffold(
-      tabBar: CupertinoTabBar(
-        items: NaviSelectIndex.values
-            .map((e) => BottomNavigationBarItem(
-                  icon: Icon(
-                    e.icon,
-                    size: 30,
-                  ),
-                  label: (e.label),
-                ))
-            .toList(),
-      ),
-      tabBuilder: (context, index) =>
-          CupertinoTabView(builder: (context) => pages[index]),
-    );
+    return WillPopScope(
+        onWillPop: () async {
+          return !await _tabNavKeyList[_controller.index]
+              .currentState!
+              .maybePop();
+        },
+        child: CupertinoTabScaffold(
+          controller: _controller,
+          tabBar: CupertinoTabBar(
+            onTap: (index) => _onTapItem(context, index),
+            items: NaviSelectIndex.values
+                .map((e) => BottomNavigationBarItem(
+                      icon: Icon(
+                        e.icon,
+                        size: 30,
+                      ),
+                      label: (e.label),
+                    ))
+                .toList(),
+          ),
+          tabBuilder: (context, index) => CupertinoTabView(
+            builder: (context) => pages[index],
+            navigatorKey: _tabNavKeyList[index],
+          ),
+        ));
+  }
+
+  void _onTapItem(BuildContext context, int index) {
+    if (index != _oldIndex) {
+      _oldIndex = index;
+      return;
+    }
+
+    _tabNavKeyList[_controller.index]
+        .currentState!
+        .popUntil((route) => route.isFirst);
   }
 }

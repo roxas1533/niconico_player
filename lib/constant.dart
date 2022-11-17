@@ -254,16 +254,10 @@ class TagInfo {
 class VideoDetailInfo extends VideoInfo {
   VideoDetailInfo.fromJson(Map<String, dynamic> json)
       : userInfo = UserInfo(
-            id: (json["channel"] != null
-                    ? json["channel"]["id"]
-                    : json["owner"]["id"])
-                .toString(),
-            name: json["channel"] != null
-                ? json["channel"]["name"]
-                : json["owner"]["nickname"],
-            icon: json["channel"] != null
-                ? json["channel"]["thumbnail"]["url"]
-                : json["owner"]["iconUrl"]),
+            id: (json["channel"]?["id"] ?? json["owner"]["id"]).toString(),
+            name: json["channel"]?["name"] ?? json["owner"]["nickname"],
+            icon: json["channel"]?["thumbnail"]["url"] ??
+                json["owner"]["iconUrl"]),
         lengthSeconds = json["video"]["duration"],
         description = json["video"]["description"],
         isChannel = json["channel"] != null,

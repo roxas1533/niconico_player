@@ -77,7 +77,9 @@ class VideoPlayerHandler extends BaseAudioHandler
   void _notifyAudioHandlerAboutPlaybackEvents(CommentObjectList c) {
     _videoViewController!.addListener(() {
       final playing = _videoViewController!.value.isPlaying;
-      c.isPlaying = playing && _videoViewController!.value.isInitialized;
+      c.isPlaying =
+          getState(_videoViewController?.value) == VideoState.started &&
+              _videoViewController!.value.isInitialized;
 
       playbackState.add(playbackState.value.copyWith(
         controls: [
@@ -186,10 +188,10 @@ VideoState getState(VideoPlayerValue? value) {
     return VideoState.buffering;
   } else if (value.isPlaying) {
     return VideoState.started;
-  } else if (value.isInitialized) {
-    return VideoState.initialized;
   } else if (value.position == value.duration) {
     return VideoState.completed;
+  } else if (value.isInitialized) {
+    return VideoState.initialized;
   } else {
     return VideoState.paused;
   }

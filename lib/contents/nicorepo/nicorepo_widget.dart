@@ -6,7 +6,7 @@ import "package:niconico/constant.dart";
 import 'package:niconico/contents/parts/utls/common.dart';
 import 'package:niconico/functions.dart';
 
-import '../utls/video_detail/video_detail.dart';
+import '../parts/utls/video_detail/video_detail.dart';
 
 class NicorepoWidget extends StatelessWidget {
   const NicorepoWidget({

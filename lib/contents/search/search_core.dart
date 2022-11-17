@@ -2,6 +2,7 @@ import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:niconico/constant.dart';
+import 'package:niconico/contents/parts/utls/common.dart';
 import 'package:niconico/contents/parts/utls/video_list_widget.dart';
 
 import 'search_class.dart';
@@ -34,14 +35,30 @@ class _SearchState extends ConsumerState<SearchCore>
 
   @override
   Widget build(BuildContext context) {
+    final screenSize = MediaQuery.of(context).size;
     return Column(
       children: [
         Container(
           color: Theme.of(context).backgroundColor,
+          height: screenSize.height * 0.035,
           child: TabBar(
-            tabs: const [
-              Tab(text: "キーワード"),
-              Tab(text: "タグ"),
+            tabs: [
+              Row(
+                mainAxisAlignment: MainAxisAlignment.center,
+                children: const [
+                  Icon(Icons.key),
+                  SpaceBox(width: 5),
+                  Text('キーワード'),
+                ],
+              ),
+              Row(
+                mainAxisAlignment: MainAxisAlignment.center,
+                children: const [
+                  Icon(Icons.more, size: 20),
+                  SpaceBox(width: 5),
+                  Text('タグ'),
+                ],
+              ),
             ],
             indicator:
                 BoxDecoration(color: Theme.of(context).scaffoldBackgroundColor),

@@ -95,53 +95,6 @@ Future<Response> search(
       "${UrlList.mobileDomain.url}api/$searchType/$word?sort=$sort&order=$order&page=$offset"));
 }
 
-Future<Map<String, dynamic>> getMylist(
-  String? userId,
-) async {
-  // if (userId == null) {
-  //   return Future.value([]);
-  // }
-  Uri uri = Uri.https(
-    UrlList.nvApiDomain.url,
-    "v1/users/$userId/mylists",
-    {"sampleItemCount": "3"},
-  );
-
-  http.Response resp = await http.get(uri, headers: apiHeader);
-
-  if (resp.statusCode == 200) {
-    Map<String, dynamic> info = json.decode(resp.body);
-    return info;
-  } else {
-    debugPrint(resp.body.toString());
-  }
-  return {};
-}
-
-Future<Map<String, dynamic>> getMylistDetail(String? mylistId,
-    {int page = 1, String? sortKey, String? sortOrder}) async {
-  final query = {
-    "sortKey": sortKey,
-    "sortOrder": sortOrder,
-    "pageSize": "100",
-    "page": "$page"
-  }..removeWhere((_, value) => value == null);
-  Uri uri = Uri.https(
-    UrlList.nvApiDomain.url,
-    "v2/mylists/$mylistId",
-    query,
-  );
-  http.Response resp = await http.get(uri, headers: apiHeader);
-
-  if (resp.statusCode == 200) {
-    Map<String, dynamic> info = json.decode(resp.body);
-    return info;
-  } else {
-    debugPrint(resp.body.toString());
-  }
-  return {};
-}
-
 Future<Map<String, dynamic>> getUserVideoList(String? useId,
     {int page = 1, String? sortKey, String? sortOrder}) async {
   final query = {
@@ -242,6 +195,51 @@ class NicoSession {
     return {};
   }
 
+  Future<Map<String, dynamic>> getMylist(String userId) async {
+    Uri uri = Uri.https(
+      UrlList.nvApiDomain.url,
+      "v1/users/$userId/mylists",
+      {"sampleItemCount": "3"},
+    );
+    http.Response resp = await http.get(uri, headers: getCookieApiHeader());
+
+    if (resp.statusCode == 200) {
+      Map<String, dynamic> info = json.decode(resp.body);
+      return info;
+    } else {
+      debugPrint(resp.body.toString());
+    }
+    return {};
+  }
+
+  Future<Map<String, dynamic>> getMylistDetail(String? mylistId,
+      {int page = 1,
+      String? sortKey,
+      String? sortOrder,
+      bool isMine = false}) async {
+    final query = {
+      "sortKey": sortKey,
+      "sortOrder": sortOrder,
+      "pageSize": "100",
+      "page": "$page"
+    }..removeWhere((_, value) => value == null);
+
+    Uri uri = Uri.https(
+      UrlList.nvApiDomain.url,
+      isMine ? "v1/users/me/mylists/$mylistId" : "v2/mylists/$mylistId",
+      query,
+    );
+    http.Response resp = await http.get(uri, headers: getCookieApiHeader());
+
+    if (resp.statusCode == 200) {
+      Map<String, dynamic> info = json.decode(resp.body);
+      return info;
+    } else {
+      debugPrint(resp.body.toString());
+    }
+    return {};
+  }
+
   Future<Map<String, dynamic>> getHistory(int type,
       {int page = 1, int pageSize = 100}) async {
     final query = {
@@ -249,16 +247,12 @@ class NicoSession {
       "pageSize": "$pageSize",
     };
     final typeUrl = type == 0 ? "watch/history" : "likes";
-    final headers = {
-      "Cookie": _toSetCookieHeader(),
-      "Connection": "keep-alive",
-    }..addAll(apiHeader);
     Uri uri = Uri.https(
       UrlList.nvApiDomain.url,
       "v1/users/me/$typeUrl",
       query,
     );
-    http.Response resp = await http.get(uri, headers: headers);
+    http.Response resp = await http.get(uri, headers: getCookieApiHeader());
 
     if (resp.statusCode == 200) {
       Map<String, dynamic> info = json.decode(resp.body);
@@ -345,6 +339,12 @@ class NicoSession {
       final cookie = Cookie.fromSetCookieValue(setCookie);
       _cookies.add(cookie);
     }
+  }
+
+  Map<String, String> getCookieApiHeader() {
+    return {
+      "Cookie": _toSetCookieHeader(),
+    }..addAll(apiHeader);
   }
 
   get cookies => _cookies;

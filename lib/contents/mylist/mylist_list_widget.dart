@@ -6,18 +6,18 @@ import 'package:niconico/contents/parts/utls/common.dart';
 import 'mylist.dart';
 
 class MylistListWidget extends StatelessWidget {
-  const MylistListWidget({
-    super.key,
-    required this.mylistInfto,
-  });
-  final MylistInfo mylistInfto;
+  const MylistListWidget(
+      {super.key, required this.mylistInfo, this.isMine = false});
+  final MylistInfo mylistInfo;
+  final bool isMine;
 
   @override
   Widget build(BuildContext context) {
     final screenSize = MediaQuery.of(context).size;
     return InkWell(
       onTap: () => Navigator.of(context).push(CupertinoPageRoute(
-          builder: (context) => Mylist(mylistId: mylistInfto.id))),
+          builder: (context) =>
+              Mylist(mylistId: mylistInfo.id, isMine: isMine))),
       child: Container(
         margin: const EdgeInsets.only(left: 15.0),
         width: screenSize.width,
@@ -31,7 +31,7 @@ class MylistListWidget extends StatelessWidget {
             ]),
             Row(
               children: [
-                const Icon(Icons.folder),
+                const Icon(Icons.folder_outlined),
                 Container(
                   padding: const EdgeInsets.symmetric(horizontal: 20),
                   width: screenSize.width * 0.85,
@@ -40,13 +40,13 @@ class MylistListWidget extends StatelessWidget {
                     children: [
                       Container(
                         alignment: Alignment.centerLeft,
-                        child: Text(mylistInfto.name,
+                        child: Text(mylistInfo.name,
                             style: const TextStyle(fontSize: 14.0),
                             overflow: TextOverflow.ellipsis),
                       ),
                       Container(
                           alignment: Alignment.centerLeft,
-                          child: Text(mylistInfto.description,
+                          child: Text(mylistInfo.description,
                               style: const TextStyle(
                                   fontSize: 11.0, color: Colors.grey),
                               maxLines: 1,

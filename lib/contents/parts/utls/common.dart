@@ -19,8 +19,7 @@ class PositionData {
       ? VideoDetailInfo.secToTime(duration!.inSeconds)
       : '--:--';
 
-  double get getValueDuration =>
-      duration != null ? duration!.inMilliseconds.toDouble() : 0.0;
+  double get getValueDuration => duration?.inMilliseconds.toDouble() ?? 0.0;
 
   PositionData(this.position, this.duration);
 }

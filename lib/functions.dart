@@ -2,7 +2,7 @@ import 'package:flutter/cupertino.dart';
 import 'package:flutter_html/html_parser.dart';
 import 'package:html/dom.dart' as dom;
 import 'package:intl/intl.dart';
-import 'package:niconico/contents/parts/mylist/mylist.dart';
+import 'package:niconico/contents/mylist/mylist.dart';
 import 'package:niconico/contents/parts/series/series.dart';
 import 'package:niconico/contents/parts/utls/video_detail/video_detail.dart';
 
@@ -84,10 +84,7 @@ String? extractVideoId(String url) {
   final re =
       RegExp(r"(?:sm|nm|so|ca|ax|yo|nl|ig|na|cw|z[a-e]|om|sk|yk)\d{1,14}\b")
           .firstMatch(url);
-  if (re != null) {
-    return re.group(0).toString();
-  }
-  return null;
+  return re?.group(0).toString();
 }
 
 String getPostedAtTime(String postedAt, bool islast24h) {

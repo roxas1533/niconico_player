@@ -4,13 +4,13 @@ import 'package:flutter_html/flutter_html.dart';
 import 'package:niconico/constant.dart';
 import 'package:niconico/contents/parts/utls/common.dart';
 import 'package:niconico/functions.dart';
-import 'package:niconico/nico_api.dart';
 
-import '../utls/video_list_widget.dart';
+import '../parts/utls/video_list_widget.dart';
 
 class Mylist extends StatefulWidget {
-  const Mylist({super.key, required this.mylistId});
+  const Mylist({super.key, required this.mylistId, this.isMine = false});
   final int mylistId;
+  final bool isMine;
 
   @override
   State<Mylist> createState() => _MylistState();
@@ -23,8 +23,12 @@ class _MylistState extends State<Mylist> {
   MylistSort filter = MylistSort.mylistNew;
   Future<List<MylistVideoInfo>> getMylist({next = false}) async {
     if (next) page++;
-    final mylistList = await getMylistDetail(widget.mylistId.toString(),
-        page: page, sortKey: filter.key, sortOrder: filter.order);
+    final mylistList = await nicoSession.getMylistDetail(
+        widget.mylistId.toString(),
+        page: page,
+        sortKey: filter.key,
+        sortOrder: filter.order,
+        isMine: widget.isMine);
 
     if (mylistList["data"]["mylist"]["items"].isEmpty) {
       return [];
