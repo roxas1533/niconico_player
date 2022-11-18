@@ -19,6 +19,15 @@ class SettingPage extends StatelessWidget {
                 return SettingsList(
                   sections: [
                     SettingsSection(
+                        title: const Text('NGコメント設定'),
+                        tiles: <SettingsTile>[
+                          SettingsTile.navigation(
+                            onPressed: (context) => {},
+                            title: const Text("NG共有"),
+                            value: const Text('なし'),
+                          )
+                        ]),
+                    SettingsSection(
                       title: const Text('アカウント'),
                       tiles: <SettingsTile>[
                         SettingsTile(

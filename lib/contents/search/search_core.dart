@@ -40,7 +40,7 @@ class _SearchState extends ConsumerState<SearchCore>
       children: [
         Container(
           color: Theme.of(context).dividerColor,
-          height: screenSize.height * 0.035,
+          height: screenSize.height * 0.045,
           child: TabBar(
             tabs: [
               Row(
@@ -60,8 +60,9 @@ class _SearchState extends ConsumerState<SearchCore>
                 ],
               ),
             ],
-            indicator:
-                BoxDecoration(color: Theme.of(context).scaffoldBackgroundColor),
+            indicator: BoxDecoration(
+              color: Theme.of(context).scaffoldBackgroundColor,
+            ),
             controller: _tabController,
           ),
         ),
@@ -77,7 +78,7 @@ class _SearchState extends ConsumerState<SearchCore>
                     builder:
                         (BuildContext context, AsyncSnapshot<bool> snapshot) {
                       if (widget.searchWord.isEmpty) {
-                        return const Center(child: Text(""));
+                        return Container();
                       }
                       if (snapshot.hasData) {
                         if (!snapshot.data!) {

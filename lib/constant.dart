@@ -374,6 +374,16 @@ enum CommentPositoinState {
   naka,
 }
 
+enum NgCommentShareLevel {
+  none("なし"),
+  low("弱"),
+  mid("中"),
+  high("強");
+
+  final String label;
+  const NgCommentShareLevel(this.label);
+}
+
 const commetPositoin = {
   "ue": CommentPositoinState.ue,
   "shita": CommentPositoinState.shita,

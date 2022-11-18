@@ -31,7 +31,7 @@ class MylistListWidget extends StatelessWidget {
             ]),
             Row(
               children: [
-                const Icon(Icons.folder_outlined),
+                getFolderIcon(mylistInfo.isPublic),
                 Container(
                   padding: const EdgeInsets.symmetric(horizontal: 20),
                   width: screenSize.width * 0.85,
@@ -60,5 +60,21 @@ class MylistListWidget extends StatelessWidget {
         ),
       ),
     );
+  }
+
+  Widget getFolderIcon(bool isPublic) {
+    if (isPublic) {
+      return const Icon(Icons.folder_outlined);
+    } else {
+      return Stack(
+        children: const [
+          Icon(Icons.folder_outlined),
+          Positioned(
+              right: 3,
+              bottom: 6,
+              child: Icon(Icons.lock, size: 9.0, color: Colors.grey)),
+        ],
+      );
+    }
   }
 }
