@@ -30,7 +30,7 @@ class _HistoryState extends State<History> with SingleTickerProviderStateMixin {
             body: Column(
               children: [
                 Container(
-                  color: Theme.of(context).backgroundColor,
+                  color: Theme.of(context).dividerColor,
                   child: TabBar(
                     tabs: const [
                       Tab(text: "視聴"),

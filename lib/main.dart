@@ -61,10 +61,22 @@ class MyApp extends StatelessWidget {
         Locale('en', ''), //英語
       ],
       title: 'SmilePlayer3',
-      // theme: ,
+      theme: ThemeData(
+          secondaryHeaderColor: const Color.fromARGB(255, 238, 238, 238),
+          brightness: Brightness.light,
+          scaffoldBackgroundColor: CupertinoColors.systemGroupedBackground,
+          tabBarTheme: const TabBarTheme(
+            labelColor: Colors.black,
+            unselectedLabelColor: Colors.grey,
+          ),
+          cupertinoOverrideTheme: const CupertinoThemeData(
+            primaryColor: CupertinoColors.systemBlue,
+          )),
       darkTheme: ThemeData(
           brightness: Brightness.dark,
+          indicatorColor: Colors.blue,
           scaffoldBackgroundColor: const Color.fromARGB(255, 22, 22, 22),
+          secondaryHeaderColor: const Color.fromARGB(255, 22, 22, 22),
           canvasColor: CupertinoColors.black,
           cupertinoOverrideTheme: const CupertinoThemeData(
               brightness: Brightness.dark,
@@ -148,6 +160,14 @@ class _MainPageState extends State<MainPage> {
         child: CupertinoTabScaffold(
           controller: _controller,
           tabBar: CupertinoTabBar(
+            activeColor: Colors.blue,
+            border: const Border(
+              top: BorderSide(
+                color: CupertinoColors.systemGrey,
+                width: 1.0, // One physical pixel.
+                style: BorderStyle.solid,
+              ),
+            ),
             onTap: (index) => _onTapItem(context, index),
             items: NaviSelectIndex.values
                 .map((e) => BottomNavigationBarItem(

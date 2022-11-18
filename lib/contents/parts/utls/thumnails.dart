@@ -35,7 +35,8 @@ class Thumbnail extends StatelessWidget {
                 margin: const EdgeInsets.all(3.0),
                 padding: const EdgeInsets.all(1.5),
                 child: Text(videoInfo.lengthVideo,
-                    style: const TextStyle(fontSize: 11.0))),
+                    style:
+                        const TextStyle(fontSize: 11.0, color: Colors.white))),
           )
         ],
       ),

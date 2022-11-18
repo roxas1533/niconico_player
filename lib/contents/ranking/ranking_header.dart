@@ -48,7 +48,9 @@ class RankingHeader extends ConsumerWidget {
                 enabled: isEnable,
                 child: Text(RankingParam.termKey[e.value]!,
                     style: TextStyle(
-                        color: isEnable ? Colors.white : Colors.grey)),
+                        color: isEnable
+                            ? Theme.of(context).textTheme.bodyText1!.color
+                            : Colors.grey)),
               );
             }).toList(),
             onChanged: (String? value) {

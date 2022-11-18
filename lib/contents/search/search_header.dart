@@ -22,7 +22,6 @@ class _SearchHeaderState extends ConsumerState<SearchHeader> {
           child: Material(
               child: TextField(
             decoration: InputDecoration(
-              fillColor: const Color.fromARGB(255, 53, 53, 53),
               filled: true,
               border: const OutlineInputBorder(
                 borderRadius: BorderRadius.all(Radius.circular(10.0)),

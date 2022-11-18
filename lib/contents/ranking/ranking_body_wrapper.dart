@@ -37,19 +37,20 @@ class _RankigBodyWrapperState extends ConsumerState<RankigBodyWrapper>
   Widget build(BuildContext context) {
     return Column(
       children: [
-        TabBar(
-          controller: tabController,
-          isScrollable: true,
-          indicatorColor: Colors.blue,
-          tabs: [
-            for (final d in widget.tagList)
-              Container(
-                  alignment: Alignment.center,
-                  // height: screenSize.height * 0.085,
-                  padding: const EdgeInsets.symmetric(vertical: 15),
-                  child: Text(d, style: const TextStyle(fontSize: 14)))
-          ],
-        ),
+        Container(
+            color: Theme.of(context).secondaryHeaderColor,
+            child: TabBar(
+              controller: tabController,
+              isScrollable: true,
+              tabs: [
+                for (final d in widget.tagList)
+                  Container(
+                      alignment: Alignment.center,
+                      // height: screenSize.height * 0.085,
+                      padding: const EdgeInsets.symmetric(vertical: 15),
+                      child: Text(d, style: const TextStyle(fontSize: 14)))
+              ],
+            )),
         Expanded(
             child: TabBarView(
                 controller: tabController,
