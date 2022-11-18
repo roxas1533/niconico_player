@@ -1,3 +1,4 @@
+import 'package:cached_network_image/cached_network_image.dart';
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 import 'package:niconico/constant.dart';
@@ -143,8 +144,8 @@ class _AllVideoListState extends State<AllVideoList> {
                           horizontal: 10, vertical: 15),
                       child: Row(
                         children: [
-                          Image.network(
-                            widget.userInfo.icon,
+                          CachedNetworkImage(
+                            imageUrl: widget.userInfo.icon,
                             alignment: Alignment.center,
                             width: size.height * 0.045,
                             fit: BoxFit.fitWidth,

@@ -1,5 +1,6 @@
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
+import 'package:niconico/constant.dart';
 import 'package:niconico/login.dart';
 import 'package:settings_ui/settings_ui.dart';
 import 'package:shared_preferences/shared_preferences.dart';
@@ -65,6 +66,7 @@ class SettingPage extends StatelessWidget {
                                               onPressed: () {
                                                 snapshot.data!
                                                     .remove('session');
+                                                nicoSession.clearCookies();
                                                 Navigator.pushAndRemoveUntil(
                                                     context,
                                                     CupertinoPageRoute(

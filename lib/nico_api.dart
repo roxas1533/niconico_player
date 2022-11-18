@@ -348,4 +348,7 @@ class NicoSession {
   }
 
   get cookies => _cookies;
+  void clearCookies() {
+    _cookies = [];
+  }
 }

@@ -1,3 +1,4 @@
+import 'package:cached_network_image/cached_network_image.dart';
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_html/flutter_html.dart';
@@ -122,8 +123,8 @@ class _SeriesState extends State<Series> {
                             horizontal: 10, vertical: 15),
                         child: Row(
                           children: [
-                            Image.network(
-                              owner.icon,
+                            CachedNetworkImage(
+                              imageUrl: owner.icon,
                               alignment: Alignment.center,
                               width: size.height * 0.045,
                               fit: BoxFit.fitWidth,

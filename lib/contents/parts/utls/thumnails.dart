@@ -1,3 +1,4 @@
+import 'package:cached_network_image/cached_network_image.dart';
 import 'package:flutter/material.dart';
 import "package:niconico/constant.dart";
 
@@ -16,17 +17,19 @@ class Thumbnail extends StatelessWidget {
       // height: screenSize.width * 0.19125,
       child: Stack(
         children: [
-          Image.network(videoInfo.thumbnailUrl,
+          CachedNetworkImage(
+              imageUrl: videoInfo.thumbnailUrl,
               alignment: Alignment.center,
               width: screenSize.height * 0.1777,
-              fit: BoxFit.cover, errorBuilder: (context, error, stackTrace) {
-            final thum = videoInfo.getNextThumbnailUrl();
-            return Image.network(
-              width: screenSize.height * 0.1777,
               fit: BoxFit.cover,
-              thum,
-            );
-          }),
+              errorWidget: (context, error, stackTrace) {
+                final thum = videoInfo.getNextThumbnailUrl();
+                return CachedNetworkImage(
+                  imageUrl: thum,
+                  width: screenSize.height * 0.1777,
+                  fit: BoxFit.cover,
+                );
+              }),
           Container(
             alignment: Alignment.bottomRight,
             padding: const EdgeInsets.only(bottom: 3.0),

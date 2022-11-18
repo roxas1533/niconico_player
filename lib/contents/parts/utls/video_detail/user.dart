@@ -1,3 +1,4 @@
+import 'package:cached_network_image/cached_network_image.dart';
 import 'package:flutter/cupertino.dart';
 import 'package:niconico/constant.dart';
 import 'package:niconico/contents/mylist/mylist_list.dart';
@@ -22,7 +23,8 @@ class User extends StatelessWidget {
         width: screenSize.width,
         child: Row(
           children: [
-            Image.network(video.userInfo.icon, width: 50, height: 50),
+            CachedNetworkImage(
+                imageUrl: video.userInfo.icon, width: 50, height: 50),
             Container(
               padding: const EdgeInsets.only(left: 10),
               child: Text(video.userInfo.name,

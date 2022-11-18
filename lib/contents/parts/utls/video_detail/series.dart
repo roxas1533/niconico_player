@@ -1,3 +1,4 @@
+import 'package:cached_network_image/cached_network_image.dart';
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 import 'package:niconico/constant.dart';
@@ -89,7 +90,8 @@ class VideoDetailSeries extends StatelessWidget {
                                   alignment: Alignment.center,
                                   child: Row(
                                     children: [
-                                      Image.network(video.thumbnailUrl),
+                                      CachedNetworkImage(
+                                          imageUrl: video.thumbnailUrl),
                                       const SpaceBox(width: 8),
                                       Flexible(
                                           child: Text(video.title,

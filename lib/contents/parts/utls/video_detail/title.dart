@@ -1,4 +1,5 @@
 import 'package:auto_size_text/auto_size_text.dart';
+import 'package:cached_network_image/cached_network_image.dart';
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 import 'package:niconico/constant.dart';
@@ -30,8 +31,8 @@ class VideoDetailTitle extends StatelessWidget {
                   height: screenSize.height * 0.19 * (3 / 4),
                   child: AspectRatio(
                       aspectRatio: 4 / 3,
-                      child: Image.network(
-                        video.thumbnailUrl,
+                      child: CachedNetworkImage(
+                        imageUrl: video.thumbnailUrl,
                         alignment: Alignment.center,
                         width: screenSize.height * 0.19,
                         fit: BoxFit.fitWidth,

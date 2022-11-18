@@ -1,4 +1,5 @@
 import 'package:auto_size_text/auto_size_text.dart';
+import 'package:cached_network_image/cached_network_image.dart';
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_html/flutter_html.dart';
@@ -25,8 +26,8 @@ class NicorepoWidget extends StatelessWidget {
           Container(
               margin: const EdgeInsets.only(left: 5.0, top: 15),
               child: Row(children: [
-                Image.network(
-                  nicoRepoInfo.userInfo.icon,
+                CachedNetworkImage(
+                  imageUrl: nicoRepoInfo.userInfo.icon,
                   alignment: Alignment.center,
                   width: screenSize.height * 0.045,
                   fit: BoxFit.fitWidth,
@@ -74,11 +75,11 @@ class NicorepoWidget extends StatelessWidget {
                     children: [
                       AspectRatio(
                           aspectRatio: 4 / 3,
-                          child: Image.network(
-                            nicoRepoInfo.thumbnailUrl,
+                          child: CachedNetworkImage(
+                            imageUrl: nicoRepoInfo.thumbnailUrl,
                             alignment: Alignment.center,
                             fit: BoxFit.contain,
-                            errorBuilder: (context, error, stackTrace) =>
+                            errorWidget: (context, error, stackTrace) =>
                                 Image.asset(
                                     'assets/alternative_image/non-community.png'),
                           )),
